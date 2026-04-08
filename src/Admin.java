@@ -1,16 +1,17 @@
-public class Admin {
-    private String adminHello(){
+public class Admin extends User {
+    Bidder bidder = new Bidder();
+    public String Hello(){
         return "Admin xin chào!";
     }
 }
-class Bidder extends Admin{
-    public void bidderHello(){
-        System.out.println("Bidder xin chào!");
+class Bidder extends User{
+    public String Hello(){
+        return "Bidder xin chào!";
     }
 }
 
-void main(){
-    Bidder b = new Bidder();
-    String a = (((Admin) b).adminHello());
-    System.out.println(a);
+class Seller extends Bidder{
+    public String Hello(){
+        return "Seller xin chào!";
+    }
 }
