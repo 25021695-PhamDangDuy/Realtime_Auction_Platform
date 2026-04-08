@@ -1,5 +1,10 @@
+import myApplication.models.Admin;
+import myApplication.models.Bidder;
+import myApplication.models.Seller;
+import myApplication.models.User;
+
 void main(){
-    HashMap<String,User> tasks = new HashMap<>();
+    HashMap<String, User> tasks = new HashMap<>();
 
     Admin ad1 = new Admin();
     Admin ad2 = new Admin();
