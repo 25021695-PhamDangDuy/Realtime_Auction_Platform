@@ -27,7 +27,6 @@ class Seller extends User{
     void setBalance(double bal){
         balance += bal;
     }
-
 }
 
 
