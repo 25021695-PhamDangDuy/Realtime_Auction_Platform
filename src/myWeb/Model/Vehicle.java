@@ -10,6 +10,6 @@ public class Vehicle extends Item{
         return owner;
     }
     public String toString(){
-        return "Vehicles:" + "id=" + getId() + ", name=" + getName() + "Owner:" + getOwner();
+        return "Vehicles: " + "id=" + getId() + ", name= " + getName() + "Owner: " + getOwner();
     }
 }
