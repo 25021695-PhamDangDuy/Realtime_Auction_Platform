@@ -9,6 +9,12 @@ public class Vehicle extends Item{
     public String getOwner(){
         return owner;
     }
+
+    @Override
+    public Double getprice(Double price) {
+        return price;
+    }
+
     public String toString(){
         return "Vehicles: " + "id=" + getId() + ", name= " + getName() + "Owner: " + getOwner();
     }
