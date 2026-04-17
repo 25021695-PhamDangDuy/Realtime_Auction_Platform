@@ -1,4 +1,4 @@
-package myWeb.Function.sellerSkills;
+package myWeb.Function;
 
 import java.time.LocalDateTime;
 

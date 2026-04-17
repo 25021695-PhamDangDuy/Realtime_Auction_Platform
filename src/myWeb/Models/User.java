@@ -1,6 +1,5 @@
-package myWeb.Model;
+package myWeb.Models;
 
-import java.util.List;
 public abstract class User {
     private String ID, Name, Password;
 
@@ -15,17 +14,6 @@ public abstract class User {
     //Setter
     protected void setName(String name) {
         Name = name;
-    }
-}
-class Seller extends User{
-    List<Item> productlist;
-    double balance;
-    public Seller(String ID,String Name,String password) {
-        super(ID, Name, password);
-        this.balance = 0.0;
-    }
-    void setBalance(double bal){
-        balance += bal;
     }
 }
 

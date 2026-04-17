@@ -1,4 +1,4 @@
-package myWeb.Model;
+package myWeb.Models;
 
 public class Art extends Item{
     String author;
