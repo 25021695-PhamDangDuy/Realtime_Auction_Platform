@@ -1,4 +1,4 @@
-package myWeb.Models;
+package myWeb.models;
 
 public abstract class User {
     private String ID, Name, Password;

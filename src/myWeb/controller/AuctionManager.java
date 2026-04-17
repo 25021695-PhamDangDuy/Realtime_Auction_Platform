@@ -1,6 +1,6 @@
-package myWeb.Controller;
+package myWeb.controller;
 
-import myWeb.Models.User;
+import myWeb.models.User;
 import java.util.ArrayList;
 import java.util.List;
 

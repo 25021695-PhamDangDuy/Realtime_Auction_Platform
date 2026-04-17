@@ -1,4 +1,4 @@
-package myWeb.Models;
+package myWeb.models;
 
 import java.util.List;
 

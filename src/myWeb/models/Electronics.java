@@ -1,4 +1,4 @@
-package myWeb.Models;
+package myWeb.models;
 
 public class Electronics extends Item{
     private Integer MonthofWarranty;//số tháng bảo hành.

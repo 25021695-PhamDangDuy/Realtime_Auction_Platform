@@ -1,4 +1,4 @@
-package myWeb.Models;
+package myWeb.models;
 
 abstract class Item {
     String id,name,condition;

@@ -1,7 +1,7 @@
-package myWeb.Models;
-import myWeb.Function.balanceSkills.*;
+package myWeb.models;
+import myWeb.function.balanceSkills.*;
 
-public class Bidder extends User implements balanceModifyAble{
+public class Bidder extends User implements balanceModifiable{
     private double balance=0;
 
     public Bidder(String id,String name,String password){
@@ -10,12 +10,17 @@ public class Bidder extends User implements balanceModifyAble{
 
     @Override
     public void setBalance(double bal){
-        balance+=bal;
+        if (bal < 0){
+            System.out.println("số dư không hợp lệ");
+        }else {
+            balance = bal;
+        }
     }
 
     @Override
     public double getBalance() {
         return balance;
     }
+
 }
 
