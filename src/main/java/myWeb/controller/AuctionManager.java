@@ -1,6 +1,6 @@
-package myWeb.Controller;
+package myWeb.controller;
 
-import myWeb.Model.User;
+import myWeb.models.User;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +22,7 @@ public class AuctionManager {
             return instance;
         }
     }
+
 
 
 }
