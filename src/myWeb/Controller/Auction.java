@@ -23,7 +23,7 @@ class Auction{
         if (current == AuctionStatus.OPEN){
             return next == AuctionStatus.RUNNING || next == AuctionStatus.CANCELED;//cancel nếu phiên đấu giá không hợp lệ.
         } else if (current == AuctionStatus.RUNNING){
-            return next == AuctionStatus.FINISH || next == AuctionStatus.CANCELED;//cancel nếu có một ai đó gian lận.
+            return next == AuctionStatus.FINISH || next == AuctionStatus.CANCELED;//cancel nếu có một người gian lận.
         } else if (current == AuctionStatus.FINISH){
             return next == AuctionStatus.PAID || next == AuctionStatus.CANCELED;
         } else {
