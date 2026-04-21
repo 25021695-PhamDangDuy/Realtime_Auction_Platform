@@ -1,8 +1,9 @@
-package myWeb.Model;
+package myWeb.models;
 
 abstract class Item {
     String id,name,condition;
     Double price;
+
     public Item(String id,String name,String condition,double price){
         this.id = id;
         this.name = name;
