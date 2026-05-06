@@ -1,4 +1,4 @@
-package auctionlogin;
+package Screen;
 
 import javafx.application.Application;
 import javafx.geometry.Insets;
