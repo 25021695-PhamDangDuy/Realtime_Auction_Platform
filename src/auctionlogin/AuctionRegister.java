@@ -49,7 +49,7 @@ public class AuctionRegister extends Application {
         grid.add(confirmPwField, 1, 4);
 
         // Nút Đăng ký
-        Button btnRegister = new Button("Đăng ký ngay");
+        Button btnRegister = new Button("Đăng ký ");
         btnRegister.setStyle("-fx-background-color: #27ae60; -fx-text-fill: white;");
         btnRegister.setPrefWidth(200);
         grid.add(btnRegister, 1, 5);
@@ -71,7 +71,7 @@ public class AuctionRegister extends Application {
                 message.setFill(Color.FIREBRICK);
                 message.setText("Mật khẩu xác nhận không khớp!");
             } else {
-                // Ở ĐÂY: Bạn sẽ gọi tới Database để INSERT user mới
+
                 message.setFill(Color.GREEN);
                 message.setText("Đăng ký thành công! Hãy quay lại đăng nhập.");
             }
