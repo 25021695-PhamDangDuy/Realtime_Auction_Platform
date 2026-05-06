@@ -13,6 +13,7 @@ public class AuctionManager {
     private AuctionManager(){
         users = new ArrayList<>();
     }
+    //Instance
     public static AuctionManager getInstance() {
         //Thêm khóa an toàn cho safety mutiThreads: synchronized
         synchronized (AuctionManager.class) {
@@ -22,6 +23,11 @@ public class AuctionManager {
             return instance;
         }
     }
+
+
+
+
+
 
 
 }

@@ -15,6 +15,8 @@ public abstract class User {
     protected void setName(String name) {
         Name = name;
     }
+
+
 }
 
 
