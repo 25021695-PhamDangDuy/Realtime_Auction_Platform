@@ -1,4 +1,4 @@
-package myWeb.GUI;
+package auctionlogin;
 
 import javafx.application.Application;
 import javafx.geometry.Insets;
