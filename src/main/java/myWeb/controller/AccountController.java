@@ -55,12 +55,14 @@ public class AccountController{
         return true;
     }
 
-    public void Register(String id, String name, String pw) {
-        if (this.isPWValidStrong(pw) && this.isNameValidStrong(name)) {
+    public void Register(String id, String name, String pw, String idPW) {
+        if (this.isPWValidStrong(pw) && this.isNameValidStrong(name) && pw.equals(idPW)) {
             userList.put(name, new Bidder(id, name, pw));
             System.out.println("Đăng kí thành công!");
+        } else if (!pw.equals(idPW)) {
+            System.out.println("MK không trùng nhau");
         }else{
-            System.out.println("MK - Tên không đủ mạnh");;
+            System.out.println("MK không đủ mạnh");
         }
     }
 
@@ -71,4 +73,6 @@ public class AccountController{
             System.out.println("Login không thành công");
         }
     }
+
+
 }
