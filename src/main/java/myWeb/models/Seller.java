@@ -2,7 +2,7 @@ package myWeb.models;
 
 import java.util.List;
 
-class Seller extends Bidder{
+public class Seller extends Bidder{
     List<Item> productlist;
     double balance;
 
