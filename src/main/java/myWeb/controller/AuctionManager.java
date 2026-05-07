@@ -1,6 +1,10 @@
 package myWeb.controller;
 
+import myWeb.models.Item;
+import myWeb.models.Seller;
 import myWeb.models.User;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,20 +27,10 @@ public class AuctionManager {
             return instance;
         }
     }
-    public void createSession(String productId, double reservePrice){
-        AuctionSession session = new AuctionSession(productId,reservePrice);
+    public void createSession(String produceId, Item item, Seller seller, double startPrice, double minIncreament, LocalDateTime endtime){
+        AuctionSession session = new AuctionSession(produceId,item,seller,startPrice,minIncreament,endtime);
         sessions.add(session);
-        System.out.println("Đã tạo phiên đấu giá cho:" + productId);
+        System.out.println("Đã tạo phiên đấu giá cho:" + produceId);
     }
-    public synchronized void handleBid(String productId, String bidder, double amount){
-        for (AuctionSession s : sessions){
-            if (s.getProduceId().equals(productId)){
-                s.placeBid(bidder,amount);
-                break;
-            }
-        }
-    }
-
-
 
 }

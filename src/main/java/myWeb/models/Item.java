@@ -1,6 +1,6 @@
 package myWeb.models;
 
-abstract class Item {
+public abstract class Item {
     String id,name,condition;
     Double price;
 

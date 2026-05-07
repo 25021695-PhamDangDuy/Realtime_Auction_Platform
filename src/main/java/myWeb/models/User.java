@@ -10,7 +10,7 @@ public abstract class User {
     }
     //Getter
     protected String getName(){return Name;}
-    protected String getID(){return ID;}
+    public String getID(){return ID;}
     //Setter
     protected void setName(String name) {
         Name = name;
