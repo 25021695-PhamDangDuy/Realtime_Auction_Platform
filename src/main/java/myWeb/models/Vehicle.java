@@ -1,12 +1,12 @@
 package myWeb.models;
 
 public class Vehicle extends Item{
-    private String owner;
-    public Vehicle(String id,String name,Double price,String condition,String owner){
+    private Bidder owner;
+    public Vehicle(String id,String name,Double price,String condition,Bidder owner){
         super(id,name,condition,price);
         this.owner = owner;
     }
-    public String getOwner(){
+    public Bidder getOwner(){
         return owner;
     }
 
