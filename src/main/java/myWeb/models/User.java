@@ -11,10 +11,14 @@ public abstract class User {
     //Getter
     public String getName(){return Name;}
     public String getID(){return ID;}
+    public String getPassword(){return Password;}
     //Setter
     protected void setName(String name) {
         Name = name;
     }
+    public void setPassword(String newPW){Password = newPW; }
+
+
 }
 
 

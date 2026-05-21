@@ -57,25 +57,7 @@ public class AuctionRegister extends Application {
         Text message = new Text();
         grid.add(message, 1, 6);
 
-        // Logic xử lý
-        btnRegister.setOnAction(e -> {
-            String name = nameField.getText();
-            String user = userField.getText();
-            String pass = pwField.getText();
-            String confirm = confirmPwField.getText();
 
-            if (name.isEmpty() || user.isEmpty() || pass.isEmpty()) {
-                message.setFill(Color.FIREBRICK);
-                message.setText("Vui lòng nhập đầy đủ thông tin!");
-            } else if (!pass.equals(confirm)) {
-                message.setFill(Color.FIREBRICK);
-                message.setText("Mật khẩu xác nhận không khớp!");
-            } else {
-
-                message.setFill(Color.GREEN);
-                message.setText("Đăng ký thành công! Hãy quay lại đăng nhập.");
-            }
-        });
 
         Scene scene = new Scene(grid, 450, 400);
         primaryStage.setScene(scene);
