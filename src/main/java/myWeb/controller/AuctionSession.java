@@ -1,5 +1,6 @@
 package myWeb.controller;
 
+import myWeb.function.SessionChecker;
 import myWeb.function.SessionStatus;
 import myWeb.models.Bidder;
 import myWeb.models.Item;
@@ -63,7 +64,7 @@ public class AuctionSession {
 
     public synchronized void placeBid(Bidder bidder, double bidAmount) throws IllegalArgumentException{
         // 1. Kiểm tra thời gian & trạng thái
-        if (!status.equals(SessionStatus.RUNNING)) {
+        if (status != (SessionStatus.RUNNING)) {
             throw new IllegalArgumentException(status.getDescription());
         }
         // 2. Chống gian lận: Người bán tự đẩy giá (Shill Bidding)
@@ -72,7 +73,7 @@ public class AuctionSession {
         }
 
         // 3. Tránh tự "đấu" chính mình
-        if (topBidder != null && bidder.getID().equals(topBidder.getID())) {
+        if (bidder.getID().equals(topBidder.getID())) {
             throw new IllegalArgumentException("Bạn đang là người giữ giá cao nhất rồi!");
         }
         // 4. Kiểm tra số tiền: Phải lớn hơn hoặc bằng (Giá hiện tại + Bước giá)
@@ -85,5 +86,19 @@ public class AuctionSession {
         this.topBidder = bidder;
     }
 
+    public void extendEndTime(LocalDateTime newEndTime) throws NullPointerException{
+        SessionChecker sessionChecker = new SessionChecker();
+        if(newEndTime == null){
+            throw new NullPointerException("Null tham số");
+        }
+        /*
+        Điều kiện để mở giới hạn thời gian:
+        1. endTime cũ phải trước endTime mới
+        2. khoảng cách tối thiểu phải lớn hơn hoặc 1 phút và tối đa 10 ngày
+         */
+        if (sessionChecker.durationTime(endTime,newEndTime,1,14400)){
+            endTime = newEndTime;
+        }
+    }
 }
 

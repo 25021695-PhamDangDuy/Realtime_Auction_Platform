@@ -2,8 +2,8 @@ package myWeb.models;
 
 public class Electronics extends Item{
     private Integer MonthofWarranty;//số tháng bảo hành.
-    public Electronics (String id,String name,Double price,String condition,Integer monthofwarranty){
-        super(id,name,condition,price);
+    public Electronics (User user, String id,String name,Double price,String condition,Integer monthofwarranty){
+        super(user,id,name,condition,price);
         this.MonthofWarranty = monthofwarranty;
     }
     public Integer getMonthofWarranty() {

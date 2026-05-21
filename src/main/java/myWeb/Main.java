@@ -15,7 +15,7 @@ public class Main {
         Bidder b2 = new Bidder("B002","Dũng","00000");
         Bidder b3 = new Bidder("B003","Long","0000");
 
-        Vehicle car = new Vehicle("001","Toyota", 2000d,"New", a);
+        Vehicle car = new Vehicle(a,"001","Toyota", 2000d,"New", a);
         Electronics electronics = new Electronics("002","SmartPhone",2000d,"New", 6);
         System.out.println("Khởi tạo thành công đối tượng");
 
