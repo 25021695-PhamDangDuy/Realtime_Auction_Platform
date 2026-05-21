@@ -7,7 +7,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 
 public class SessionChecker {
-    public boolean durationTime(LocalDateTime startTime, LocalDateTime endTime) throws IllegalArgumentException, NullPointerException{
+    public boolean durationTime(LocalDateTime startTime, LocalDateTime endTime, int minMinutes , int maxMinutes) throws IllegalArgumentException, NullPointerException{
         if(startTime == null || endTime == null){
             throw new NullPointerException("Tham số thiếu");
         }
@@ -19,10 +19,10 @@ public class SessionChecker {
         if(startTime.isAfter(endTime) || startTime.isEqual(endTime)){
             throw new IllegalArgumentException("StartTime is after than EndTime");
         }
-        if(duration.toMinutes() < 30){
+        if(duration.toMinutes() < minMinutes){
             throw new IllegalArgumentException("Duration must be longer than 30 minutes");
         }
-        if(duration.toDays() > 30){
+        if(duration.toDays() > maxMinutes){
             throw new IllegalArgumentException("Duration must be shorter than 30 days ");
         }
         return true;
@@ -39,13 +39,37 @@ public class SessionChecker {
         return true;
     }
 
-    public void isSessionTimeUp(AuctionSession session){
-        if(session.getEndTime().isAfter(LocalDateTime.now()) || session.getEndTime().equals(LocalDateTime.now())){
-            System.out.println("Phiên đã kết thúc, Người chiến thẳng là: " + session.getTopBidder());
-            session.setStatus(SessionStatus.FINISHED);
-            session.getItem().setItemStatus(ItemStatus.SOLD);
-            //Chuyển Item sang owner
-            //Notify cho các bên
+    public boolean isSessionTimeUp(AuctionSession session){
+        if(session == null){
+            throw new NullPointerException("Session is not available");
+        }
+        if(session.getEndTime().isBefore(LocalDateTime.now()) || session.getEndTime().equals(LocalDateTime.now())){
+            return true;
+        }else{
+            return false;
         }
     }
+
+    public boolean isAuctioning(AuctionSession session) throws NullPointerException{
+        if(session == null){
+            throw new NullPointerException("Session is not available");
+        }
+        if(this.isSessionTimeUp(session) && (session.getStatus() == SessionStatus.RUNNING) ){
+            return true;
+        }else {
+            return false;
+        }
+    }
+
+    public boolean isUpComing(AuctionSession session) throws NullPointerException {
+        if(session == null){
+            throw new NullPointerException("Session is not available");
+        }
+        if(!(this.isSessionTimeUp(session)) && (session.getStatus() == SessionStatus.UPCOMING) ){
+            return true;
+        }else {
+            return false;
+        }
+    }
+
 }
