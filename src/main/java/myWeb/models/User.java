@@ -9,8 +9,8 @@ public abstract class User {
         this.Password = Password;
     }
     //Getter
-    protected String getName(){return Name;}
-    protected String getID(){return ID;}
+    public String getName(){return Name;}
+    public String getID(){return ID;}
     //Setter
     protected void setName(String name) {
         Name = name;
