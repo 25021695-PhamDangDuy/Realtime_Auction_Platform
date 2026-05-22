@@ -1,5 +1,6 @@
 package myWeb.controller;
 
+import myWeb.function.ItemStatus;
 import myWeb.function.SessionChecker;
 import myWeb.function.SessionStatus;
 import myWeb.models.Bidder;
@@ -20,6 +21,8 @@ public class AuctionSession {
     private LocalDateTime startTime;// Thời gian bắt đầu
     private LocalDateTime endTime;// thời gian kết thúc
     private SessionStatus status;// trạng thái phiên
+
+    private SessionChecker sessionChecker = new SessionChecker();
 
     //Tạo
     public AuctionSession(String productId,Item item,Seller seller,double startPrice,double minIncrement,LocalDateTime endTime,LocalDateTime startTime, SessionStatus status) {
@@ -53,13 +56,6 @@ public class AuctionSession {
     }
     public Seller getSeller() {
         return seller;
-    }
-
-    public void setStatus(SessionStatus status) throws NullPointerException {
-        if(status == null){
-            throw new NullPointerException("status parameter is null");
-        }
-        this.status = status;
     }
 
     public synchronized void placeBid(Bidder bidder, double bidAmount) throws IllegalArgumentException{
@@ -99,6 +95,57 @@ public class AuctionSession {
         if (sessionChecker.durationTime(endTime,newEndTime,1,14400)){
             endTime = newEndTime;
         }
+    }
+    public void finishSession() throws IllegalArgumentException{
+        if(sessionChecker.isSessionTimeUp(this)){
+            status = SessionStatus.FINISHED;
+            Bidder winner = topBidder;
+            Item reward = item;
+
+            winner.addItem(reward);
+            reward.setOwner(winner);
+            reward.setItemStatus(ItemStatus.SOLD);
+        }else{
+            throw new IllegalArgumentException("Session is not timeup!");
+        }
+
+    }
+
+    public void cancelSession() throws IllegalArgumentException {
+        if(status != SessionStatus.CANCELED){
+            status = SessionStatus.CANCELED;
+            item.setItemStatus(ItemStatus.AVAILABLE);
+        }else {
+            throw new IllegalArgumentException("This session have canceled");
+        }
+    }
+
+    public void pendSession() throws IllegalArgumentException{
+        /*
+        Điều kiện dùng phiên là: phiên đang chạy
+         */
+        if(sessionChecker.isAuctioning(this) && !sessionChecker.isSessionTimeUp(this)){
+            status = SessionStatus.PENDING;
+        }else {
+            throw new IllegalArgumentException("Session is not Auctioning");
+        }
+    }
+
+    public void unPendSession() throws IllegalArgumentException {
+        if(status == SessionStatus.PENDING){
+            status = SessionStatus.RUNNING;
+        }else {
+            throw new IllegalArgumentException("Session is not Pending");
+        }
+    }
+
+    public void runSession() throws IllegalArgumentException {
+        if(sessionChecker.isUpComing(this)){
+            status = SessionStatus.RUNNING;
+        } else {
+            throw new IllegalArgumentException("Session is not upcoming");
+
+    }
     }
 }
 

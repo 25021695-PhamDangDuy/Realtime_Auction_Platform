@@ -101,22 +101,16 @@ public class AuctionManager {
         if(!sessions.contains(session)){
             throw new IllegalArgumentException("Không tìm thấy session");
         }
-        if(sessionChecker.isSessionTimeUp(session)){
-            session.setStatus(SessionStatus.FINISHED);
-            Bidder winner = session.getTopBidder();
-            Item reward = session.getItem();
-
-            winner.addItem(reward);
-            reward.setOwner(winner);
-            reward.setItemStatus(ItemStatus.SOLD);
-        }else {
-            throw new Exception("Session still Auctioning");
+        try{
+            session.finishSession();
+        }catch (IllegalArgumentException e){
+            throw new IllegalArgumentException(e);
         }
     }
 
 
     public void cancelSession(AuctionSession session) throws NullPointerException,IllegalArgumentException {
-        /**
+        /*
          * Điều kiện hủy phiên : Phiên đang ở trạng thái hoặc UPCOMING hoặc RUNNING hoặc PENDING
          */
         if(session == null){
@@ -125,10 +119,10 @@ public class AuctionManager {
         if(!sessions.contains(session)){
             throw new IllegalArgumentException("Không tìm thấy session");
         }
-        if(session.getStatus() != SessionStatus.CANCELED){
-            session.setStatus(SessionStatus.CANCELED);
-            Item item = session.getItem();
-            item.setItemStatus(ItemStatus.AVAILABLE);
+        try{
+            session.cancelSession();
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException(e);
         }
     }
 
@@ -139,11 +133,33 @@ public class AuctionManager {
         if(!sessions.contains(session)){
             throw new IllegalArgumentException("Không tìm thấy session");
         }
+        try{
+            session.pendSession();
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException(e);
+        }
+
+    }
+
+    public void unPendSession(AuctionSession session,LocalDateTime newEndTime) {
         /*
-        Điều kiện dùng phiên là: phiên đang chạy
+        Khi tiến hành chạy lại(unPending) phiên thì sẽ tiến hành các điều kiện sau:
+        0. Kiểm tra tham số đầu vào
+        1. Mở lại trạng thái cho phiên
+        2. Tăng giới hạn thời gian cho phiên
+        3. Thông báo tới các Observer
          */
-        if(sessionChecker.isAuctioning(session) && !sessionChecker.isSessionTimeUp(session)){
-            session.setStatus(SessionStatus.PENDING);
+        if(session == null || newEndTime == null){
+            throw new NullPointerException("Null tham số");
+        }
+        if(!sessions.contains(session)){
+            throw new IllegalArgumentException("Không tìm thấy session");
+        }
+        try {
+            session.unPendSession();
+            session.extendEndTime(newEndTime);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException(e);
         }
     }
 

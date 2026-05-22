@@ -11,7 +11,7 @@ public class SessionChecker {
         if(startTime == null || endTime == null){
             throw new NullPointerException("Tham số thiếu");
         }
-        //Config: Giới hạn một phiên sẽ gồm tối thiểu 30 phút, và tối đa 30 ngày
+        //Config: Giới hạn một phiên sẽ gồm tối thiểu minMinutes phút, và tối đa maxMinutes phút
         Duration duration = Duration.between(startTime,endTime);
         if(startTime.isBefore(LocalDateTime.now().minusMinutes(1))) {
             throw new IllegalArgumentException("StartTime is before than Now");
@@ -20,10 +20,10 @@ public class SessionChecker {
             throw new IllegalArgumentException("StartTime is after than EndTime");
         }
         if(duration.toMinutes() < minMinutes){
-            throw new IllegalArgumentException("Duration must be longer than 30 minutes");
+            throw new IllegalArgumentException("Duration must be longer than"+ minMinutes + "minutes");
         }
         if(duration.toDays() > maxMinutes){
-            throw new IllegalArgumentException("Duration must be shorter than 30 days ");
+            throw new IllegalArgumentException("Duration must be shorter than" + maxMinutes + "minutes");
         }
         return true;
 
@@ -65,7 +65,7 @@ public class SessionChecker {
         if(session == null){
             throw new NullPointerException("Session is not available");
         }
-        if(!(this.isSessionTimeUp(session)) && (session.getStatus() == SessionStatus.UPCOMING) ){
+        if(!(this.isAuctioning(session)) && (session.getStatus() == SessionStatus.UPCOMING) ){
             return true;
         }else {
             return false;
