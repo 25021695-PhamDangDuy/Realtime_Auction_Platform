@@ -1,7 +1,6 @@
 package myWeb.models;
-
-
-public class Bidder extends User {
+import myWeb.controller.AuctionObserver;
+public class Bidder extends User implements AuctionObserver {
     private double balance=0;
 
     public Bidder(String id,String name,String password){
@@ -18,6 +17,17 @@ public class Bidder extends User {
 
     public double getBalance() {
         return balance;
+    }
+
+    @Override
+    public String getName() {
+        return super.getName();
+    }
+
+    @Override
+    public void update(String message){
+        System.out.println("Bidder " + getName() + " : " + message);
+
     }
 
 }

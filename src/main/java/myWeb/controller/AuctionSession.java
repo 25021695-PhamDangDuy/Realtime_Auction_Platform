@@ -6,6 +6,8 @@ import myWeb.models.Item;
 import myWeb.models.Seller;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AuctionSession {
     private String productId;
@@ -19,6 +21,7 @@ public class AuctionSession {
     private LocalDateTime startTime;// Thời gian bắt đầu
     private LocalDateTime endTime;// thời gian kết thúc
     private SessionStatus status;// trạng thái phiên
+    private List<AuctionObserver> observers = new ArrayList<>(); //danh sách người theo dõi
 
     //Tạo
     public AuctionSession(String productId,Item item,Seller seller,double startPrice,double minIncrement,LocalDateTime endTime,LocalDateTime startTime, SessionStatus status) {
@@ -31,7 +34,24 @@ public class AuctionSession {
         this.startTime = startTime;
         this.status = status;
     }
-
+    //hàm đăng ký theo dõi/ hủy theo dõi phiên đấu giá
+    public void attach(AuctionObserver observer){
+        if (!observers.contains(observer)){
+            observers.add(observer);
+        }
+    }
+    public void detach(AuctionObserver observer){
+        observers.remove(observer);
+    }
+    //gửi thông báo
+    public void notifyObservers(String message){
+        for (AuctionObserver observer : observers){
+            observer.update(message);
+        }
+    }
+    public void broadcastToAll(String message){
+        System.out.println("Broadcast to all server:" + message);
+    }
     public String getProduceId() {
         return productId;
     }
@@ -84,6 +104,5 @@ public class AuctionSession {
         this.currentPrice = bidAmount;
         this.topBidder = bidder;
     }
-
 }
 
