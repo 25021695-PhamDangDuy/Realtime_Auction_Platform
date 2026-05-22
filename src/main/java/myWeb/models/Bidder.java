@@ -1,12 +1,13 @@
 package myWeb.models;
 
 
+import myWeb.controller.AuctionObserver;
 import myWeb.function.ItemStatus;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Bidder extends User {
+public class Bidder extends User implements AuctionObserver {
     private double balance=0;
     private List<Item> itemList;
 
@@ -30,6 +31,16 @@ public class Bidder extends User {
         return balance;
     }
 
+    @Override
+    public String getName() {
+        return super.getName();
+    }
+
+    @Override
+    public void update(String message){
+        System.out.println("Bidder " + getName() + " : " + message);
+
+    }
     //Setter
     public void setBalance(double bal){
         if (bal < 0){

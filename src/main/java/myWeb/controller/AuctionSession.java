@@ -8,6 +8,8 @@ import myWeb.models.Item;
 import myWeb.models.Seller;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AuctionSession {
     private String productId;
@@ -21,6 +23,7 @@ public class AuctionSession {
     private LocalDateTime startTime;// Thời gian bắt đầu
     private LocalDateTime endTime;// thời gian kết thúc
     private SessionStatus status;// trạng thái phiên
+    private List<AuctionObserver> observers = new ArrayList<>(); //danh sách người theo dõi
 
     private SessionChecker sessionChecker = new SessionChecker();
 
@@ -35,7 +38,24 @@ public class AuctionSession {
         this.startTime = startTime;
         this.status = status;
     }
-
+    //hàm đăng ký theo dõi/ hủy theo dõi phiên đấu giá
+    public void attach(AuctionObserver observer){
+        if (!observers.contains(observer)){
+            observers.add(observer);
+        }
+    }
+    public void detach(AuctionObserver observer){
+        observers.remove(observer);
+    }
+    //gửi thông báo
+    public void notifyObservers(String message){
+        for (AuctionObserver observer : observers){
+            observer.update(message);
+        }
+    }
+    public void broadcastToAll(String message){
+        System.out.println("Broadcast to all server:" + message);
+    }
     public String getProduceId() {
         return productId;
     }
@@ -58,9 +78,16 @@ public class AuctionSession {
         return seller;
     }
 
+    public void setStatus(SessionStatus status) throws NullPointerException {
+        if(status == null){
+            throw new NullPointerException("status parameter is null");
+        }
+        this.status = status;
+    }
+
     public synchronized void placeBid(Bidder bidder, double bidAmount) throws IllegalArgumentException{
         // 1. Kiểm tra thời gian & trạng thái
-        if (status != (SessionStatus.RUNNING)) {
+        if (!status.equals(SessionStatus.RUNNING)) {
             throw new IllegalArgumentException(status.getDescription());
         }
         // 2. Chống gian lận: Người bán tự đẩy giá (Shill Bidding)
@@ -69,7 +96,7 @@ public class AuctionSession {
         }
 
         // 3. Tránh tự "đấu" chính mình
-        if (bidder.getID().equals(topBidder.getID())) {
+        if (topBidder != null && bidder.getID().equals(topBidder.getID())) {
             throw new IllegalArgumentException("Bạn đang là người giữ giá cao nhất rồi!");
         }
         // 4. Kiểm tra số tiền: Phải lớn hơn hoặc bằng (Giá hiện tại + Bước giá)
