@@ -1,5 +1,6 @@
 package myWeb.controller;
 import myWeb.function.SessionStatus;
+import myWeb.models.AuctionSession;
 
 public class AuctionController {
     private AuctionSession session;

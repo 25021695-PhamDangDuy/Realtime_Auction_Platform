@@ -1,10 +1,7 @@
-package myWeb.controller;
+package myWeb.models;
 
-import myWeb.function.SessionChecker;
-import myWeb.function.SessionStatus;
-import myWeb.models.Bidder;
+import myWeb.controller.AuctionManager;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,18 +22,27 @@ public class AuctionSessionWatcher implements Runnable{
         status = false;
     }
     @Override
+    /*
+    Thực thi: Duyệt qua mảng các phiên đấu giá trong manager, nếu một phiên đấu giá đã đến giờ dừng -> thực hiện các logic dừng phiên đó
+
+     */
     public void run() {
         while (status){
             List<AuctionSession> auctionSessionList = new ArrayList<>();
 
-            for(AuctionSession as : manager.getSessions()){
-                try{
+            for(AuctionSession as : manager.getSessions()) {
+                try {
                     manager.finishSession(as);
-                } catch (Exception e){
+                    auctionSessionList.add(as); //Thực hiện xóa phiên sau đó
+                } catch (NullPointerException e) {
+                    System.out.println(e.getMessage());
+                    failedSession.add(as); //thêm phiên lỗi vào danh sách lỗi
+                }catch (IllegalArgumentException e) {
+                    System.out.println(e.getMessage());
+                }catch (Exception e) {
                     System.out.println(e.getMessage());
                 }finally {
-                    failedSession.add(as); //thêm phiên lỗi vào danh sách lỗi
-                    auctionSessionList.add(as); //Thực hiện xóa phiên sau đó
+                    System.out.println("Finished Scan");
                 }
             }
 
