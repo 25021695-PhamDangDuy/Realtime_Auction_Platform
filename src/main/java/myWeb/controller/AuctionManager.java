@@ -3,12 +3,8 @@ package myWeb.controller;
 import myWeb.function.ItemStatus;
 import myWeb.function.SessionChecker;
 import myWeb.function.SessionStatus;
-import myWeb.models.Bidder;
-import myWeb.models.Item;
-import myWeb.models.Seller;
-import myWeb.models.User;
+import myWeb.models.*;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +37,7 @@ public class AuctionManager {
     public void createSession(String productId, Item item, Seller seller, double startPrice, double minIncrement, LocalDateTime endtime) {
         try{
             LocalDateTime now = LocalDateTime.now();
-            if(sessionChecker.durationTime(now,endtime,30,43200) && sessionChecker.isItemAvailable(item)){
+            if(sessionChecker.durationTime(now,endtime,1,43200) && sessionChecker.isItemAvailable(item)){
                 AuctionSession session = new AuctionSession(productId,item,seller,startPrice,minIncrement,endtime,now,SessionStatus.RUNNING);
                 item.setItemStatus(ItemStatus.AUCTIONING);
                 sessions.add(session);
@@ -53,7 +49,7 @@ public class AuctionManager {
     }
     public void createSession(String productId, Item item, Seller seller, double startPrice, double minIncrement, LocalDateTime endtime, LocalDateTime startTime) {
         try{
-            if(sessionChecker.durationTime(startTime,endtime,30,43200) && sessionChecker.isItemAvailable(item)){
+            if(sessionChecker.durationTime(startTime,endtime,5,43200) && sessionChecker.isItemAvailable(item)){
                 AuctionSession session = new AuctionSession(productId,item,seller,startPrice,minIncrement,endtime,startTime,SessionStatus.UPCOMING);
                 item.setItemStatus(ItemStatus.AUCTIONING);
                 sessions.add(session);

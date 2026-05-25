@@ -33,6 +33,10 @@ public abstract class Item {
         return itemStatus;
     }
 
+    public User getOwner() {
+        return owner;
+    }
+
     public synchronized void setItemStatus(ItemStatus itemStatus) throws NullPointerException{
         if(itemStatus == null){
             throw new NullPointerException();

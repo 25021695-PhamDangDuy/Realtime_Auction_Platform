@@ -1,6 +1,6 @@
 package myWeb.function;
 
-import myWeb.controller.AuctionSession;
+import myWeb.models.AuctionSession;
 import myWeb.models.Item;
 
 import java.time.Duration;
@@ -54,7 +54,7 @@ public class SessionChecker {
         if(session == null){
             throw new NullPointerException("Session is not available");
         }
-        if(this.isSessionTimeUp(session) && (session.getStatus() == SessionStatus.RUNNING) ){
+        if(!this.isSessionTimeUp(session) && (session.getStatus() == SessionStatus.RUNNING) ){
             return true;
         }else {
             return false;
