@@ -1,10 +1,7 @@
 package myWeb.models;
 
 import myWeb.controller.AuctionObserver;
-import myWeb.function.BidStatus;
-import myWeb.function.ItemStatus;
-import myWeb.function.SessionChecker;
-import myWeb.function.SessionStatus;
+import myWeb.function.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -189,5 +186,26 @@ public class AuctionSession {
 
     }
     }
+    private final SystemLogger logger = SystemLogger.getInstance();
+    public void processBid(String userId,double price){
+        logger.info("Người dùng: " + userId + " gửi yêu cầu đặt giá: " + price + "VNĐ");
+        if (price <= currentPrice){
+            logger.warning("Đặt giá thất bại! Số tiền thấp hơn giá khởi điểm");
+            return;
+        }
+        //Nếu có lỗi nghiêm trọng trong quá trình đấu giá
+        try{
+            //cập nhật thông tin đấu giá.
+            this.currentPrice = price;
+            Bidder topBidder = this.getTopBidder();
+            String topBidderId = topBidder.getID();
+            logger.info("CẬP NHẬT THÀNH CÔNG: User [" + userId + "] hiện đang dẫn đầu phiên với mức giá " + price + "Đ");
+
+        } catch (Exception e) {
+            logger.crash("Lỗi nghiêm trọng khi cập nhật lượt đấu giá!",e);
+
+        }
+    }
+
 }
 
