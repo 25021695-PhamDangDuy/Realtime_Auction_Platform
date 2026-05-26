@@ -1,13 +1,13 @@
 package myWeb.function;
 
 public class SystemLogger {
-    private static volatile myWeb.function.SystemLogger instance;
+    private static volatile SystemLogger instance;
     private SystemLogger(){}
-    public static myWeb.function.SystemLogger getInstance(){
+    public static SystemLogger getInstance(){
         if (instance == null){
-            synchronized (myWeb.function.SystemLogger.class){
+            synchronized (SystemLogger.class){
                 if (instance == null){
-                    instance = new myWeb.function.SystemLogger();
+                    instance = new SystemLogger();
 
                 }
             }
@@ -18,6 +18,5 @@ public class SystemLogger {
         String threadName = Thread.currentThread().getName();
         String timeStamp = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date());
         System.out.println(String.format("[%s] [%s] [%s]: %s",timeStamp,level,threadName,msg));
-        }
     }
-
+}

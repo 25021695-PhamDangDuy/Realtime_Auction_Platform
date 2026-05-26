@@ -3,8 +3,8 @@ package myWeb.models;
 public class Art extends Item{
     String author;
     String material;
-    public Art(String id,String name,Double price,String condition,String author,String material){
-        super(id,name,condition,price);
+    public Art(User user,String id,String name,Double price,String condition,String author,String material){
+        super(user,id,name,condition,price);
         this.author = author;
         this.material = material;
     }
