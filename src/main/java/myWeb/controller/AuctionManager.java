@@ -24,13 +24,16 @@ public class AuctionManager {
     }
 
     public static AuctionManager getInstance() {
-        //Thêm khóa an toàn cho safety mutiThreads: synchronized
-        synchronized (AuctionManager.class) {
-            if (instance == null) {
-                instance = new AuctionManager();
+        if(instance == null) {
+            //Thêm khóa an toàn cho safety mutiThreads: synchronized
+            synchronized (AuctionManager.class) {
+                if (instance == null) {
+                    instance = new AuctionManager();
+                }
+                return instance;
             }
-            return instance;
         }
+        return instance;
     }
     //CreateSession: Quy tắc là đặt sản phẩm đấu giá phải có tổng thời gian tối thiểu 30 phút, và hạn đóng phải trước 20p so với thời gian mở.
     //CreateSession(1): Sử dụng khi muốn tạo phiên đấu giá với trạng thái mở ngay lập tức

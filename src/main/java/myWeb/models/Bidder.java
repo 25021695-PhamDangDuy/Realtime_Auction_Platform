@@ -8,8 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Bidder extends User implements AuctionObserver {
-    private double balance=0;
+    private Wallet wallet;
     private List<Item> itemList;
+
 
     //Lock Objects
     /**
@@ -28,9 +29,14 @@ public class Bidder extends User implements AuctionObserver {
     }
     //Getter
     public double getBalance() {
-        return balance;
+        return wallet.getBalance();
     }
-
+    public double getLockBalance(){
+        return  wallet.getBalanceLocked();
+    }
+    public String getWalletID(){
+        return wallet.getID();
+    }
     @Override
     public String getName() {
         return super.getName();
@@ -42,13 +48,8 @@ public class Bidder extends User implements AuctionObserver {
 
     }
     //Setter
-    public void setBalance(double bal){
-        if (bal < 0){
-            System.out.println("số dư không hợp lệ");
-        }else {
-            balance = bal;
-        }
-    }
+
+
     public synchronized void addItem(Item item) throws NullPointerException,IllegalArgumentException{
         //Kiểm tra xem item có null k
         if(item == null){

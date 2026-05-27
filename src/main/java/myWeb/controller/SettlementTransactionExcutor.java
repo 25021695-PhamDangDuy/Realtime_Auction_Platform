@@ -1,0 +1,29 @@
+package myWeb.controller;
+
+import myWeb.function.TransactionExcutor;
+import myWeb.function.TransactionStatus;
+import myWeb.models.AuctionSession;
+import myWeb.models.SettlementTransaction;
+import myWeb.models.Transaction;
+import myWeb.models.Wallet;
+
+public class SettlementTransactionExcutor implements TransactionExcutor {
+    @Override
+    public void excute(Transaction transaction, WalletManager walletManager) throws IllegalArgumentException {
+        if (transaction instanceof SettlementTransaction) {
+            SettlementTransaction settlementTransaction = ((SettlementTransaction) transaction);
+            String walletID1 = settlementTransaction.getSenderWalletID();
+            String walletID2 = settlementTransaction.getReceiverWalletID();
+            String userID1 = settlementTransaction.getSenderID();
+            String userID2 = settlementTransaction.getReceiverID();
+            double money = settlementTransaction.getAmount();
+
+            walletManager.unlockMoney(walletID1,userID1,money);
+            walletManager.transferMoney(walletID1, walletID2, userID1, userID2, money);
+            transaction.setTransactionStatus(TransactionStatus.SUCCESS);
+        } else {
+            transaction.setTransactionStatus(TransactionStatus.FAILED);
+            throw new IllegalArgumentException("Transaction is not type available");
+        }
+    }
+}
