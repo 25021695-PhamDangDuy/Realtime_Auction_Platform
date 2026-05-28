@@ -1,6 +1,7 @@
 package myWeb.models;
 
 
+import java.util.UUID;
 
 /*
 Đây sẽ là lớp để lưu trữ chính số dư của một người
@@ -12,26 +13,26 @@ package myWeb.models;
 Để phục vụ sau này phát triển đấu giá nhiều phiên cùng lúc, ta cần thiết lập bảo vệ đa luồng
  */
 public class Wallet {
-    private String ID;
-    private String ownerID;
-    private double balance;
-    private double balanceLocked;
+    private UUID ID;
+    private UUID ownerID;
+    private long balance;
+    private long balanceLocked;
     //Set key
     private Object withdrawKey = new Object();
     private Object depositKey = new Object();
     private Object lockMoneyKey = new Object();
     private Object unlockMoneyKey = new Object();
 
-    public Wallet(String ID,String user,double amount){
-        this.ID = ID;
+    public Wallet(UUID user,long amount){
+        this.ID = UUID.randomUUID();
         this.ownerID = user;
         this.balance = amount;
     }
 
-    public String getID(){return ID;}
-    public double getBalance(){return balance;}
-    public double getBalanceLocked(){return balanceLocked;}
-    public String getOwnerID(){return ownerID;}
+    public UUID getID(){return ID;}
+    public long getBalance(){return balance;}
+    public long getBalanceLocked(){return balanceLocked;}
+    public UUID getOwnerID(){return ownerID;}
 
     public void withdraw(double amount) throws IllegalArgumentException {
         if (amount > balance) {

@@ -8,8 +8,8 @@ public class Seller extends Bidder implements AuctionObserver {
     List<Item> productlist;
     double balance;
 
-    public Seller(String ID,String Name,String password) {
-        super(ID, Name, password);
+    public Seller(String Name,String password) {
+        super(Name, password);
         this.balance = 0.0;
     }
 

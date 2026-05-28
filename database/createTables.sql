@@ -58,8 +58,12 @@ CREATE TABLE IF NOT EXISTS transactions(
                                            ID TEXT PRIMARY KEY ,
                                            sender_ID TEXT NOT NULL ,
                                            receiver_ID TEXT,
+                                           session_ID TEXT,
                                            amount REAL NOT NULL CHECK ( amount >= 0 ),
                                            timestamp TEXT NOT NULL ,
                                            type TEXT NOT NULL ,
-                                           status TEXT NOT NULL
+                                           status TEXT NOT NULL,
+    FOREIGN KEY (sender_ID) REFERENCES users(ID),
+    FOREIGN KEY (receiver_ID) REFERENCES users(ID),
+    FOREIGN KEY (session_ID) REFERENCES sessions(ID)
 );

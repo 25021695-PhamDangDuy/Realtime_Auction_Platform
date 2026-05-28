@@ -6,6 +6,7 @@ import myWeb.function.TransactionType;
 import myWeb.models.*;
 
 import java.util.HashMap;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /*
@@ -15,7 +16,7 @@ public class PaymentManager {
     private WalletManager walletManager;
     private static PaymentManager instance;
     private TransactionExcutor excutor;
-    private ConcurrentHashMap<String, Transaction> transactionHistory; // Lưu lịch sử
+    private ConcurrentHashMap<UUID, Transaction> transactionHistory; // Lưu lịch sử
     private ConcurrentHashMap<Class<? extends Transaction>, TransactionExcutor> strategies;
 
     private PaymentManager(){
@@ -50,41 +51,37 @@ public class PaymentManager {
 
         if (type == TransferTransaction.class) {
             transaction = new TransferTransaction(
-                    (String) params.get("ID"),
-                    (String) params.get("senderID"),
-                    (String) params.get("receiverID"),
-                    (String) params.get("senderWalletID"),
-                    (String) params.get("receiverWalletID"),
-                    (Double) params.get("amount")
+                    (UUID) params.get("senderID"),
+                    (UUID) params.get("receiverID"),
+                    (UUID) params.get("senderWalletID"),
+                    (UUID) params.get("receiverWalletID"),
+                    (long) params.get("amount")
             );
         }
         if (type == SettlementTransaction.class) {
             transaction = new SettlementTransaction(
-                    (String) params.get("ID"),
                     (AuctionSession) params.get("session")
             );
         }
         if (type == WithdrawTransaction.class) {
             transaction = new WithdrawTransaction(
-                    (String) params.get("ID"),
-                    (Double) params.get("amount"),
-                    (String) params.get("senderID"),
-                    (String) params.get("senderWalletID")
+                    (long) params.get("amount"),
+                    (UUID) params.get("senderID"),
+                    (UUID) params.get("senderWalletID")
             );
         }
         if (type == DepositTransaction.class) {
             transaction = new DepositTransaction(
-                    (String) params.get("ID"),
-                    (Double) params.get("amount"),
-                    (String) params.get("senderID"),
-                    (String) params.get("senderWalletID")
+                    (long) params.get("amount"),
+                    (UUID) params.get("senderID"),
+                    (UUID) params.get("senderWalletID")
             );
         }
         // Thêm các loại giao dịch khác
 
         if (transaction != null) {
             transaction.setTransactionStatus(TransactionStatus.PENDING);
-            transactionHistory.put(transaction.getTransactionID(), transaction);
+            transactionHistory.put(transaction.getID(), transaction);
         }
 
         return transaction;
@@ -117,8 +114,8 @@ public class PaymentManager {
 
 
     // ===== LOCK TIỀN CHO PHIÊN ĐẤU GIÁ =====
-    public void lockMoneyForAuction(String walletID, String ownerID,
-                                    double amount)
+    public void lockMoneyForAuction(UUID walletID, UUID ownerID,
+                                    long amount)
             throws IllegalArgumentException {
         try {
             walletManager.lockMoney(walletID, ownerID, amount);
@@ -130,8 +127,8 @@ public class PaymentManager {
     }
 
     // ===== UNLOCK TIỀN =====
-    public void unlockMoneyFromAuction(String walletID, String ownerID,
-                                       double amount)
+    public void unlockMoneyFromAuction(UUID walletID, UUID ownerID,
+                                       long amount)
             throws IllegalArgumentException {
         try {
             walletManager.unlockMoney(walletID, ownerID, amount);

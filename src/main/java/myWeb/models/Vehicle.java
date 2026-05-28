@@ -1,10 +1,10 @@
 package myWeb.models;
 
 public class Vehicle extends Item{
-    public Vehicle(User user,String id,String name,Double price,String condition){
-        super(user,id,name,condition,price);
+    public Vehicle(User user,String name,long price,String condition){
+        super(user,name,condition,price);
     }
     public String toString(){
-        return "Vehicles: " + "id=" + getId() + ", name= " + getName() + "Owner: " + this.getOwner();
+        return "Vehicles: " + "id=" + getID() + ", name= " + getName() + "Owner: " + this.getOwner();
     }
 }

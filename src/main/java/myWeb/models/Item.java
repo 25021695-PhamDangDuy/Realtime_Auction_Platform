@@ -2,37 +2,41 @@ package myWeb.models;
 
 import myWeb.function.ItemStatus;
 
+import java.util.UUID;
+
 public abstract class Item {
-    private String id,name,condition;
-    private Double price;
+    private UUID ID;
+    private String name;
+    private String condition;
+    private long price;
     private ItemStatus itemStatus;
     private User owner;
 
     //Lock Object
     private final Object ownerKey = new Object();
 
-    public Item(User user,String id,String name,String condition,double price){
+
+    public Item(User user,String name,String condition,long price){
         this.owner = user;
-        this.id = id;
+        this.ID = UUID.randomUUID();
         this.name = name;
         this.price = price;
         this.condition = condition;
         this.itemStatus = ItemStatus.AVAILABLE;
     }
-    public String getId(){
-        return id;
+    public UUID getID(){
+        return ID;
     }
     public String getName(){
         return name;
     }
-    public Double getPrice(){return price;}
+    public Long getPrice(){return price;}
     public String getCondition(){
         return condition;
     }
     public ItemStatus getItemStatus() {
         return itemStatus;
     }
-
     public User getOwner() {
         return owner;
     }

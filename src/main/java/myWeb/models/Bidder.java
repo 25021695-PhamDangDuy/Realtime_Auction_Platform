@@ -6,6 +6,7 @@ import myWeb.function.ItemStatus;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class Bidder extends User implements AuctionObserver {
     private Wallet wallet;
@@ -23,18 +24,18 @@ public class Bidder extends User implements AuctionObserver {
     private final Object itemListKeyLock = new Object();
 
     //Constructor
-    public Bidder(String id,String name,String password){
-        super(id,name,password);
+    public Bidder(String name,String password){
+        super(name,password);
         this.itemList = new ArrayList<>();
     }
     //Getter
-    public double getBalance() {
+    public long getBalance() {
         return wallet.getBalance();
     }
     public double getLockBalance(){
         return  wallet.getBalanceLocked();
     }
-    public String getWalletID(){
+    public UUID getWalletID(){
         return wallet.getID();
     }
     @Override
