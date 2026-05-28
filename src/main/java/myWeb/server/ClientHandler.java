@@ -4,6 +4,7 @@ package myWeb.server;
 import myWeb.server.command.BidCommand;
 import myWeb.server.command.Command;
 import myWeb.server.command.LoginCommand;
+import myWeb.server.command.RegisterCommand;
 
 import java.io.*;
 import java.net.Socket;
@@ -21,6 +22,7 @@ public class ClientHandler implements Runnable {
     static {
         commandRegistry.put("LOGIN", new LoginCommand());
         commandRegistry.put("BID", new BidCommand());
+        commandRegistry.put("REGISTER", new RegisterCommand());
     }
 
     public ClientHandler(Socket socket) { this.socket = socket; }
