@@ -147,7 +147,6 @@ public class AuctionSession {
         }else{
             throw new IllegalArgumentException("Session is not timeup!");
         }
-
     }
 
     public void cancelSession() throws IllegalArgumentException {
