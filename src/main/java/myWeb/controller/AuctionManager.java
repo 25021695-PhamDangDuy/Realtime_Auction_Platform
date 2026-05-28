@@ -8,6 +8,7 @@ import myWeb.models.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class AuctionManager {
@@ -37,36 +38,36 @@ public class AuctionManager {
     }
     //CreateSession: Quy tắc là đặt sản phẩm đấu giá phải có tổng thời gian tối thiểu 30 phút, và hạn đóng phải trước 20p so với thời gian mở.
     //CreateSession(1): Sử dụng khi muốn tạo phiên đấu giá với trạng thái mở ngay lập tức
-    public void createSession(String productId, Item item, Seller seller, double startPrice, double minIncrement, LocalDateTime endtime) {
+    public void createSession(Item item, Seller seller, long startPrice, long minIncrement, LocalDateTime endtime) {
         try{
             LocalDateTime now = LocalDateTime.now();
             if(sessionChecker.durationTime(now,endtime,1,43200) && sessionChecker.isItemAvailable(item)){
-                AuctionSession session = new AuctionSession(productId,item,seller,startPrice,minIncrement,endtime,now,SessionStatus.RUNNING);
+                AuctionSession session = new AuctionSession(item,seller,startPrice,minIncrement,endtime,now,SessionStatus.RUNNING);
                 item.setItemStatus(ItemStatus.AUCTIONING);
                 sessions.add(session);
-                System.out.println("Đã tạo phiên đấu giá cho:" + productId);
+                System.out.println("Đã tạo phiên đấu giá cho:" + session.getID().toString());
             }
         }catch (Exception e){
             System.out.println(e.getMessage());
         }
     }
-    public void createSession(String productId, Item item, Seller seller, double startPrice, double minIncrement, LocalDateTime endtime, LocalDateTime startTime) {
+    public void createSession(Item item, Seller seller, long startPrice, long minIncrement, LocalDateTime endtime, LocalDateTime startTime) {
         try{
             if(sessionChecker.durationTime(startTime,endtime,5,43200) && sessionChecker.isItemAvailable(item)){
-                AuctionSession session = new AuctionSession(productId,item,seller,startPrice,minIncrement,endtime,startTime,SessionStatus.UPCOMING);
+                AuctionSession session = new AuctionSession(item,seller,startPrice,minIncrement,endtime,startTime,SessionStatus.UPCOMING);
                 item.setItemStatus(ItemStatus.AUCTIONING);
                 sessions.add(session);
-                System.out.println("Đã tạo phiên đấu giá cho:" + productId);
+                System.out.println("Đã tạo phiên đấu giá cho:" + session.getID().toString());
             }
         }catch (Exception e){
             System.out.println(e.getMessage());
         }
     }
 
-    public AuctionSession getSession(String ID) {
+    public AuctionSession getSession(UUID ID) {
         AuctionSession re = null;
         for (AuctionSession as : sessions) {
-            if (ID.equals(as.getProduceId())) {
+            if (ID.equals(as.getID())) {
                 re = as;
             }
         }
@@ -81,8 +82,8 @@ public class AuctionManager {
         return sessions;
     }
 
-    public void placeBid(AuctionSession auctionSession, Bidder bidder, Double amount) throws IllegalArgumentException,NullPointerException {
-        if(auctionSession == null || bidder == null || amount == null){
+    public void placeBid(AuctionSession auctionSession, Bidder bidder, long amount) throws IllegalArgumentException,NullPointerException {
+        if(auctionSession == null || bidder == null){
             throw new NullPointerException("Null tham số");
         }
         if(!sessions.contains(auctionSession)){

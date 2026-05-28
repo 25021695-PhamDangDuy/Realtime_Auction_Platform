@@ -4,18 +4,19 @@ import myWeb.function.TransactionStatus;
 import myWeb.function.TransactionType;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public class TransferTransaction extends Transaction{
-    private String receiverWalletID;
-    private String receiverID;
+    private UUID receiverWalletID;
+    private UUID receiverID;
 
-    public String getReceiverWalletID(){return receiverWalletID;}
-    public String getReceiverID() {
+    public UUID getReceiverWalletID(){return receiverWalletID;}
+    public UUID getReceiverID() {
         return receiverID;
     }
 
-    public TransferTransaction(String ID, String senderID, String receiverID, String senderWalletID, String receiverWalletID, double amount){
-        super(ID,amount,senderWalletID,senderID,LocalDateTime.now());
+    public TransferTransaction(UUID senderID, UUID receiverID, UUID senderWalletID, UUID receiverWalletID, long amount){
+        super(amount,senderWalletID,senderID,LocalDateTime.now());
         this.receiverWalletID = receiverWalletID;
         this.transactionType = TransactionType.TRANSFER_MONEY;
         this.transactionStatus = TransactionStatus.PENDING;

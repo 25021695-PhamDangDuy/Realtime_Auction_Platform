@@ -4,14 +4,16 @@ import myWeb.function.TransactionExcutor;
 import myWeb.models.Transaction;
 import myWeb.models.WithdrawTransaction;
 
+import java.util.UUID;
+
 public class WithdrawTransactionExcutor implements TransactionExcutor {
 
     @Override
     public void excute(Transaction transaction, WalletManager walletManager) {
         if(transaction instanceof WithdrawTransaction){
-            String walletID = transaction.getSenderWalletID();
-            String senderID = transaction.getSenderID();
-            double amount = transaction.getAmount();
+            UUID walletID = transaction.getSenderWalletID();
+            UUID senderID = transaction.getSenderID();
+            long amount = transaction.getAmount();
             walletManager.withdrawWallet(walletID,senderID,amount);
         }else{
             throw new IllegalArgumentException("Transaction is not avaiable");

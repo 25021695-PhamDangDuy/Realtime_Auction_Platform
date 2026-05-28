@@ -57,7 +57,7 @@ public class AccountController{
 
     public void Register(String id, String name, String pw, String idPW) {
         if (this.isPWValidStrong(pw) && this.isNameValidStrong(name) && pw.equals(idPW)) {
-            userList.put(name, new Bidder(id, name, pw));
+            userList.put(name, new Bidder(name, pw));
             System.out.println("Đăng kí thành công!");
         } else if (!pw.equals(idPW)) {
             System.out.println("MK không trùng nhau");

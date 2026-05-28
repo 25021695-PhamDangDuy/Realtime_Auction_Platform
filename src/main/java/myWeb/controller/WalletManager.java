@@ -2,11 +2,12 @@ package myWeb.controller;
 
 import myWeb.models.Wallet;
 
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class WalletManager {
-    private ConcurrentHashMap<String,Wallet> Wallets;
+    private ConcurrentHashMap<UUID,Wallet> Wallets;
     private static WalletManager instance;  //Singleton
 
     private WalletManager(){
@@ -22,7 +23,7 @@ public class WalletManager {
         return instance;
     }
 
-    private Wallet getWallet(String ID) throws IllegalArgumentException, NullPointerException{
+    private Wallet getWallet(UUID ID) throws IllegalArgumentException, NullPointerException{
         if(ID == null){
             throw new NullPointerException("ID is null");
         }
@@ -32,18 +33,18 @@ public class WalletManager {
         return Wallets.get(ID);
     }
 
-    public void createWallet(String ID, String ownerID,double amount){
+    public void createWallet(UUID ownerID, long amount){
         //Logic ID
 
         //Logic ownerID
 
         //Logic amount
 
-        Wallet newWallet = new Wallet(ID,ownerID,amount);
-        Wallets.put(ID,newWallet);
+        Wallet newWallet = new Wallet(ownerID,amount);
+        Wallets.put(newWallet.getID(),newWallet);
     }
 
-    public void withdrawWallet(String walletID,String ownerID,double amount) throws IllegalArgumentException{
+    public void withdrawWallet(UUID walletID,UUID ownerID,long amount) throws IllegalArgumentException{
         try{
             Wallet wallet = this.getWallet(walletID);
             //Kiểm tra xem có phải ví của owner k
@@ -56,7 +57,7 @@ public class WalletManager {
         }
     }
 
-    public void depositWallet(String walletID,String ownerID,double amount) throws  IllegalArgumentException{
+    public void depositWallet(UUID walletID,UUID ownerID,long amount) throws  IllegalArgumentException{
         try{
             Wallet wallet = this.getWallet(walletID);
             //Kiểm tra xem có phải ví của owner k
@@ -69,7 +70,7 @@ public class WalletManager {
         }
     }
 
-    public void transferMoney(String walletSender, String walletReveicer, String SenderID, String ReveicerID, double amount){
+    public void transferMoney(UUID walletSender, UUID walletReveicer, UUID SenderID, UUID ReveicerID, long amount){
         try{
             Wallet wallet1 = this.getWallet(walletSender);
             Wallet wallet2 = this.getWallet(walletReveicer);
@@ -85,7 +86,7 @@ public class WalletManager {
         }
     }
 
-    public void lockMoney(String walletID,String ownerID, double amount) throws IllegalArgumentException{
+    public void lockMoney(UUID walletID,UUID ownerID, long amount) throws IllegalArgumentException{
         try{
             Wallet wallet = this.getWallet(walletID);
             if(!wallet.getOwnerID().equals(ownerID)){
@@ -98,7 +99,7 @@ public class WalletManager {
         }
     }
 
-    public void unlockMoney(String walletID,String ownerID, double amount) throws IllegalArgumentException{
+    public void unlockMoney(UUID walletID,UUID ownerID, long amount) throws IllegalArgumentException{
         try{
             Wallet wallet = this.getWallet(walletID);
             if(!wallet.getOwnerID().equals(ownerID)){

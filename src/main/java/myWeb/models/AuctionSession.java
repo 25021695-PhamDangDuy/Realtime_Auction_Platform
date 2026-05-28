@@ -9,15 +9,16 @@ import myWeb.function.SessionStatus;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class AuctionSession {
-    private String productId;
+    private UUID ID;
     private Item item;
     private Seller seller;
 
-    private double currentPrice;//giá hiện tại
+    private long currentPrice;//giá hiện tại
     private BidHistory bidHistory;
-    private double minIncrement; // bước giá tối thiểu
+    private long minIncrement; // bước giá tối thiểu
 
 
     private LocalDateTime startTime;// Thời gian bắt đầu
@@ -28,8 +29,8 @@ public class AuctionSession {
     private SessionChecker sessionChecker = new SessionChecker();
 
     //Tạo
-    public AuctionSession(String productId,Item item,Seller seller,double startPrice,double minIncrement,LocalDateTime endTime,LocalDateTime startTime, SessionStatus status) {
-        this.productId = productId;
+    public AuctionSession(Item item,Seller seller,long startPrice,long minIncrement,LocalDateTime endTime,LocalDateTime startTime, SessionStatus status) {
+        this.ID = UUID.randomUUID();
         this.item=item;
         this.seller=seller;
         this.currentPrice=startPrice;
@@ -61,8 +62,8 @@ public class AuctionSession {
     }
 
     //Getter
-    public String getProduceId() {
-        return productId;
+    public UUID getID() {
+        return ID;
     }
     public LocalDateTime getStartTime() {
         return startTime;
@@ -73,7 +74,7 @@ public class AuctionSession {
     public SessionStatus getStatus() {
         return status;
     }
-    public double getMinIncrement(){return minIncrement;}
+    public long getMinIncrement(){return minIncrement;}
     public Bidder getTopBidder() {
         BidTicket lastTicket = bidHistory.topLegal();
         if (lastTicket != null) {
@@ -89,7 +90,7 @@ public class AuctionSession {
     public Seller getSeller() {
         return seller;
     }
-    public double getCurrentPrice(){return currentPrice;}
+    public long getCurrentPrice(){return currentPrice;}
 
     public void setStatus(SessionStatus status) throws NullPointerException {
         if(status == null){
@@ -98,7 +99,7 @@ public class AuctionSession {
         this.status = status;
     }
 
-    public synchronized void placeBid(Bidder bidder, double bidAmount) throws IllegalArgumentException{
+    public synchronized void placeBid(Bidder bidder, long bidAmount) throws IllegalArgumentException{
         // 1. Kiểm tra thời gian & trạng thái
         if (!status.equals(SessionStatus.RUNNING)) {
             throw new IllegalArgumentException(status.getDescription());

@@ -6,6 +6,8 @@ import myWeb.models.SettlementTransaction;
 import myWeb.models.Transaction;
 import myWeb.models.TransferTransaction;
 
+import java.util.UUID;
+
 public class TransferTransactionExcutor implements TransactionExcutor {
 
     @Override
@@ -13,11 +15,11 @@ public class TransferTransactionExcutor implements TransactionExcutor {
         if (transaction instanceof TransferTransaction) {
             TransferTransaction transferTransaction = ((TransferTransaction) transaction);
 
-            String walletID1 = transferTransaction.getSenderWalletID();
-            String walletID2 = transferTransaction.getReceiverWalletID();
-            String userID1 = transferTransaction.getSenderID();
-            String userID2 = transferTransaction.getReceiverID();
-            double money = transferTransaction.getAmount();
+            UUID walletID1 = transferTransaction.getSenderWalletID();
+            UUID walletID2 = transferTransaction.getReceiverWalletID();
+            UUID userID1 = transferTransaction.getSenderID();
+            UUID userID2 = transferTransaction.getReceiverID();
+            long money = transferTransaction.getAmount();
 
             walletManager.transferMoney(walletID1, walletID2, userID1, userID2, money);
             transaction.setTransactionStatus(TransactionStatus.SUCCESS);
