@@ -1,6 +1,6 @@
 package myWeb.models;
 
-public abstract class User {
+public class User {
     private String ID, Name, Password;
 
     public User(String ID,String Name,String Password) {
