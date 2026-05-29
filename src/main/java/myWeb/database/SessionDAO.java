@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public class SessionDAO implements DataAccessObject<AuctionSession>{
     public Set<User> getObsever(AuctionSession session){
-
+        return null;
     }
 
     @Override
