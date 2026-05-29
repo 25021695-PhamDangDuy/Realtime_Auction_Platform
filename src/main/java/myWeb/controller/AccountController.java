@@ -11,6 +11,15 @@ import java.util.List;
 
 //Class kiểm soát đăng nhập và tài khoản người dùng
 public class AccountController{
+    // thêm SIngleton để quản lý tập trung
+    private static AccountController instance;
+    public static synchronized AccountController getInstance() {
+        if (instance == null) {
+            instance = new AccountController();
+        }
+        return instance;
+    }
+
     //Map người dùng được lưu dưới dạng User - username(String)
     private HashMap<String,User> userList;
 
@@ -19,7 +28,10 @@ public class AccountController{
     //Setting bộ quy tắc cho PW
     List<StrongRule> rulePW;
 
-    public AccountController(){
+    private AccountController(){
+        userList = new HashMap<>();
+        ruleName = new ArrayList<>();
+        rulePW = new ArrayList<>();
 
         //Tùy chỉnh cho quy tắc mật khẩu
         rulePW.add(new LengthRule(6));
@@ -55,23 +67,28 @@ public class AccountController{
         return true;
     }
 
-    public void Register(String id, String name, String pw, String idPW) {
-        if (this.isPWValidStrong(pw) && this.isNameValidStrong(name) && pw.equals(idPW)) {
-            userList.put(name, new Bidder(id, name, pw));
-            System.out.println("Đăng kí thành công!");
-        } else if (!pw.equals(idPW)) {
-            System.out.println("MK không trùng nhau");
-        }else{
-            System.out.println("MK không đủ mạnh");
+    public void Register(String id, String name, String pw, String idPW) throws Exception{
+        // Trả lỗi cụ thể để Command bắt được và gửi về cho khách hàng
+        if (!pw.equals(idPW)) {
+            throw new Exception("Mật khẩu xác nhận không trùng khớp!");
         }
+        if (!this.isPWValidStrong(pw)) {
+            throw new Exception("Mật khẩu không đủ mạnh (Cần ít nhất 6 ký tự và đa dạng)!");
+        }
+        if (!this.isNameValidStrong(name)) {
+            throw new Exception("Tên đăng nhập không hợp lệ hoặc đã tồn tại!");
+        }
+
+        // Nếu qua hết các bài test -> Đăng ký thành công!
+        userList.put(name, new Bidder(id, name, pw));
     }
 
-    public void Login(String name, String pw){
-        if (userList.containsKey(name) && (userList.get(name).getPassword()).equals(pw)){
-            System.out.println("Login thành công");
-        }else{
-            System.out.println("Login không thành công");
+    public User Login(String name, String pw) throws Exception{
+        if (userList.containsKey(name) && userList.get(name).getPassword().equals(pw)) {
+            return userList.get(name); // Thả đối tượng User ra cho Mạng hứng
         }
+
+        throw new Exception("Sai tài khoản hoặc mật khẩu!");
     }
 
 
