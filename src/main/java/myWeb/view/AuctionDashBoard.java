@@ -1,4 +1,5 @@
 package myWeb.view;
+import myWeb.view.AuctionGridCard;
 
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -19,24 +20,44 @@ import java.util.List;
 
 
 public class AuctionDashBoard extends Application {
-    static class AuctionItem{
-        String name;
-        String price;
-        String timeLeft;
-        public AuctionItem(String name, String price,String timeLeft){
-            this.name = name;
-            this.price = price;
-            this.timeLeft = timeLeft;
-        }
-    }
+     static class AuctionItem{
+         String name;
+         String price;
+         String timeLeft;
+         String status; // Thêm trường này để phục vụ bộ lọc "Chưa bắt đầu/Đang diễn ra" trong ảnh yêu cầu
+
+         // 2. Constructor nhận vào đúng các tham số kiểu String
+         public AuctionItem(String name, String price, String timeLeft, String status) {
+             this.name = name;
+             this.price = price;
+             this.timeLeft = timeLeft;
+             this.status = status;
+         }
+         // 3. Các hàm lấy giá trị chuỗi trực tiếp (Thay thế cho các Property bị lỗi)
+         public String getName() {
+             return name;
+         }
+
+         public String getPrice() {
+             return price;
+         }
+
+         public String getTimeLeft() {
+             return timeLeft;
+         }
+
+         public String getStatus() {
+             return status;
+         }
+     }
     private final List<AuctionItem> mockData = new ArrayList<>();
     private StackPane contentArea;
     public void start(Stage primaryStage) {
         //<Dữ liệu mẫu>//
-        mockData.add(new AuctionItem("iPhone 15 Pro Max", "$1,200", "00:02:15"));
-        mockData.add(new AuctionItem("MacBook Pro M3", "$2,400", "00:45:10"));
-        mockData.add(new AuctionItem("Rolex Submariner", "$9,500", "04:12:00"));
-        mockData.add(new AuctionItem("PlayStation 5 Pro", "$600", "01:30:25"));
+        mockData.add(new AuctionItem("iPhone 15 Pro Max", "$1,200", "00:02:15","Đang diễn ra"));
+        mockData.add(new AuctionItem("MacBook Pro M3", "$2,400", "00:45:10","Đang diễn ra"));
+        mockData.add(new AuctionItem("Rolex Submariner", "$9,500", "04:12:00","Đang diễn ra"));
+        mockData.add(new AuctionItem("PlayStation 5 Pro", "$600", "01:30:25","Đang diễn ra"));
 
         //Tạo thanh điều khiển trên(Top Bar) chuyển chế độ xem
         HBox topBar = new HBox(15);
@@ -51,6 +72,7 @@ public class AuctionDashBoard extends Application {
         HBox.setHgrow(spacer,Priority.ALWAYS);
         Button btnGridView = new Button("Xem dạng lưới");
         Button btnListView = new Button("Xem dạng cột");
+        Button btnMarketplace = new Button("Sàn Đấu Giá");
         String btnStyle = "-fx-background-color: #34495e; -fx-text-fill: white; -fx-cursor: hand;";
         btnGridView.setStyle(btnStyle);
         btnListView.setStyle(btnStyle);
@@ -62,6 +84,17 @@ public class AuctionDashBoard extends Application {
         // Đăng ký sự kiện đổi Layout khi click nút
         btnGridView.setOnAction(e -> switchViewMode("GRID"));
         btnListView.setOnAction(e -> switchViewMode("COLUMN"));
+        btnMarketplace.setOnAction(e -> {
+            // Khởi tạo màn hình Marketplace và truyền danh sách dữ liệu gốc vào
+            AuctionMarketplace marketplace = new AuctionMarketplace(mockData);
+
+            // Dọn sạch giao diện cũ ở vùng trung tâm và chèn Marketplace vào hiển thị
+            contentArea.getChildren().clear();
+            contentArea.getChildren().add(marketplace);
+        });
+
+// 3. Thêm nút này vào thanh topBar của bạn (Thêm vào sau spacer)
+        topBar.getChildren().add(btnMarketplace);
 
         // Mặc định ban đầu hiển thị dạng LƯỚI (Trang chủ)
         switchViewMode("GRID");
@@ -73,6 +106,7 @@ public class AuctionDashBoard extends Application {
         primaryStage.setTitle("Danh sách phiên đấu giá ");
         primaryStage.setScene(scene);
         primaryStage.show();
+        // Logic này đặt bên trong sự kiện click nút "Danh sách theo dõi" ở Dashboard của bạn:
     }
     private void switchViewMode(String mode){
         contentArea.getChildren().clear();
