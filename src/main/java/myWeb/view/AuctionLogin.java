@@ -15,8 +15,6 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.*;
 import myWeb.view.network.ServerConnection;
-import myWeb.view.AccountDataBase;
-
 import static javafx.application.Application.launch;
 
 public class AuctionLogin extends Application {
@@ -68,18 +66,6 @@ public class AuctionLogin extends Application {
                 actiontarget.setText("Vui lòng nhập tên tài khoản,mật khẩu !");
                 actiontarget.setStyle("-fx-fill: #e53935;");
                 return;
-            }
-            if (AccountDataBase.checkLogin(username, password)) {
-                actiontarget.setText("Đăng nhập thành công! Đang vào hệ thống...");
-                actiontarget.setStyle("-fx-fill: #2e7d32;");
-
-                try {
-                    AuctionDashBoard dashBoardApp = new AuctionDashBoard();
-                    dashBoardApp.start(primaryStage);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-
             } else {
                 actiontarget.setText("Tài khoản hoặc mật khẩu không chính xác!");
                 actiontarget.setStyle("-fx-fill: #e53935;");

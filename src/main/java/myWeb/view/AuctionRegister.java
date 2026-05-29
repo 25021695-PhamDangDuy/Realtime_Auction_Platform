@@ -14,7 +14,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import myWeb.view.network.ServerConnection;
-import myWeb.view.AccountDataBase;
+
 
 
 public class AuctionRegister extends Application {
@@ -69,13 +69,7 @@ public class AuctionRegister extends Application {
                 message.setFill(javafx.scene.paint.Color.FIREBRICK);
                 return;
             }
-            if (!password.equals(confirmpw)) {
-                message.setText("Mật khẩu xác nhận không trùng khớp!");
-                message.setFill(javafx.scene.paint.Color.RED);
-                return;
-            }
-            myWeb.models.User newUser = new myWeb.models.User(username, password,confirmpw);
-            AccountDataBase.addUser(newUser);
+
 
             message.setText("Đăng ký thành công! Đang chuyển cảnh...");
             message.setFill(javafx.scene.paint.Color.GREEN);
