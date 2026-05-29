@@ -9,8 +9,7 @@ CREATE TABLE IF NOT EXISTS wallets(
                                       owner_ID TEXT NOT NULL ,
                                       Balance REAL DEFAULT 0.0 CHECK ( Balance >= 0.0 ),
                                       BalanceLocked REAL DEFAULT 0.0 CHECK ( BalanceLocked >= 0.0 ),
-                                      FOREIGN KEY (owner_ID) REFERENCES users(ID),
-    PRIMARY KEY (ID,owner_ID)
+                                      FOREIGN KEY (owner_ID) REFERENCES users(ID)
 );
 
 CREATE TABLE IF NOT EXISTS items(
@@ -21,8 +20,7 @@ CREATE TABLE IF NOT EXISTS items(
                                     Condition TEXT,
                                     Status TEXT NOT NULL ,
 
-                                    FOREIGN KEY (owner_ID) REFERENCES users(ID),
-    PRIMARY KEY (ID,owner_ID)
+                                    FOREIGN KEY (owner_ID) REFERENCES users(ID)
 );
 
 CREATE TABLE IF NOT EXISTS bidTickets(
@@ -40,15 +38,13 @@ CREATE TABLE IF NOT EXISTS sessions(
                                        ID           TEXT PRIMARY KEY,
                                        item_ID    TEXT NOT NULL,
                                        seller_ID   TEXT NOT NULL,
-    topBidTicketID TEXT,
                                        currentPrice REAL NOT NULL CHECK ( currentPrice >= 0 ),
                                        minIncrement REAL NOT NULL CHECK ( minIncrement >= 0 ),
                                        startTime TEXT NOT NULL ,
                                        endTime TEXT NOT NULL ,
                                        status TEXT NOT NULL ,
                                        FOREIGN KEY (seller_ID) REFERENCES users(ID),
-                                       FOREIGN KEY (item_ID) REFERENCES  items(ID),
-    FOREIGN KEY (topBidTicketID) REFERENCES bidTickets(ID)
+                                       FOREIGN KEY (item_ID) REFERENCES  items(ID)
 );
 
 CREATE TABLE IF NOT EXISTS observers_sessions(
