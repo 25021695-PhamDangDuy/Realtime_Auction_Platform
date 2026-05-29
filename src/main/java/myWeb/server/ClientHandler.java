@@ -9,6 +9,7 @@ import java.io.*;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class ClientHandler implements Runnable {
     private final Socket socket;
@@ -61,7 +62,7 @@ public class ClientHandler implements Runnable {
     }
 
     public void sendMessage(String message) { if (out != null) out.println(message); }
-    public String getUserId() { return (clientSession != null) ? clientSession.getUserId() : null; }
+    public UUID getUserId() { return (clientSession != null) ? clientSession.getUserId() : null; }
 
     private void closeResources() {
         try {

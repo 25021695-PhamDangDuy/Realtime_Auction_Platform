@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS users(
-                                    ID TEXT PRIMARY KEY,
-                                    Username TEXT NOT NULL ,
-                                    Password TEXT NOT NULL
+    ID TEXT PRIMARY KEY,
+    Username TEXT NOT NULL,
+    Password TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS wallets(
@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS items(
                                     Price REAL NOT NULL CHECK ( Price >= 0 ),
                                     Condition TEXT,
                                     Status TEXT NOT NULL ,
+
                                     FOREIGN KEY (owner_ID) REFERENCES users(ID)
 );
 
@@ -67,3 +68,18 @@ CREATE TABLE IF NOT EXISTS transactions(
     FOREIGN KEY (receiver_ID) REFERENCES users(ID),
     FOREIGN KEY (session_ID) REFERENCES sessions(ID)
 );
+
+CREATE TABLE IF NOT EXISTS art_item(
+    ID TEXT PRIMARY KEY ,
+    author TEXT,
+    material TEXT,
+    FOREIGN KEY (ID) REFERENCES items(ID)
+);
+
+CREATE TABLE IF NOT EXISTS electronic_item(
+    ID TEXT PRIMARY KEY ,
+    HSD INTEGER,
+    FOREIGN KEY (ID) REFERENCES  items(ID)
+);
+
+ALTER TABLE users ADD COLUMN role TEXT NOT NULL;

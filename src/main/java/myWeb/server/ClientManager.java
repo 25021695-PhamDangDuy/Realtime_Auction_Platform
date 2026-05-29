@@ -1,6 +1,7 @@
 package myWeb.server;
 
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ClientManager {
@@ -16,7 +17,7 @@ public class ClientManager {
 
     public static void sendMessageToUser(String targetUserId, String message) {
         for (ClientHandler client : activeClients) {
-            String id = client.getUserId();
+            UUID id = client.getUserId();
             if (id != null && id.equals(targetUserId)) {
                 client.sendMessage(message);
                 break;
@@ -26,7 +27,7 @@ public class ClientManager {
 
     public static void sendMessageToGroup(Set<String> targetUserIds, String message) {
         for (ClientHandler client : activeClients) {
-            String id = client.getUserId();
+            UUID id = client.getUserId();
             if (id != null && targetUserIds.contains(id)) {
                 client.sendMessage(message);
             }

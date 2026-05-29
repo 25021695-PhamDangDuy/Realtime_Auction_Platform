@@ -3,14 +3,17 @@ package myWeb.models;
 import myWeb.controller.AuctionObserver;
 
 import java.util.List;
+import java.util.UUID;
 
 public class Seller extends Bidder implements AuctionObserver {
     List<Item> productlist;
-    double balance;
+
 
     public Seller(String Name,String password) {
         super(Name, password);
-        this.balance = 0.0;
+    }
+    public Seller(UUID ID, String name, String pw){
+        super(ID, name, pw);
     }
 
     @Override

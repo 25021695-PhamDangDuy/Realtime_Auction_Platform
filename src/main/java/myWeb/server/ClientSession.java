@@ -1,6 +1,7 @@
 package myWeb.server;
 
 import java.io.PrintWriter;
+import java.util.UUID;
 
 import myWeb.models.User;
 import myWeb.server.ClientHandler;
@@ -22,7 +23,7 @@ public class ClientSession {
         if (out != null) out.println(message);
     }
 
-    public String getUserId() {
+    public UUID getUserId() {
         return (this.currentUser != null) ? this.currentUser.getID() : null;
     }
 
