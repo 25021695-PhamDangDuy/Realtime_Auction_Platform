@@ -179,11 +179,22 @@ public class AuctionHomeScreen extends Application {
         Button btnRoom = createNavButton("🔨 Phòng đấu giá", false);
         Button btnNoti = createNavButton("🔔 Thông báo", false);
         Button btnProfile = createNavButton("👤 Tài khoản", false);
-
+        btnRoom.setOnAction( event ->  {
+            try {
+                Stage currentStage = (Stage) btnRoom.getScene().getWindow();
+                AuctionRoom room = new AuctionRoom();
+                Stage roomStage = new Stage();
+                room.start(roomStage);
+                currentStage.close();
+                System.out.println("[LOG NAVIGATION]: Đã chuyển từ Trang chủ sang Phòng đấu giá thành công.");
+            } catch (Exception e) {
+                System.err.println("[LOG ERROR]: Không thể chuyển cảnh sang phòng đấu giá: " + e.getMessage());
+                e.printStackTrace();
+            }
+        });
         taskbar.getChildren().addAll(btnHome, btnRoom, btnNoti, btnProfile);
         return taskbar;
     }
-
     private Button createNavButton(String text, boolean isActive) {
         Button btn = new Button(text);
         btn.setPrefWidth(140);
@@ -194,6 +205,9 @@ public class AuctionHomeScreen extends Application {
         }
         return btn;
     }
+
+
+
 
     // --- LOGIC ĐỒNG HỒ REALTIME ---
     private void startRealtimeClock() {

@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import myWeb.view.network.ServerConnection;
 
 import java.text.NumberFormat;
 import java.util.Locale;
@@ -35,6 +36,7 @@ public class AuctionRoom extends Application {
 
     private final NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
     private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+    private ServerConnection connection = new ServerConnection();
 
     @Override
     public void start(Stage primaryStage) {
@@ -200,8 +202,42 @@ public class AuctionRoom extends Application {
 
 
         // Sự kiện xử lý nút xác nhận Đặt Giá
-        btnSubmitBid.setOnAction(e -> handlePlaceBid());
+        btnSubmitBid.setOnAction(e -> {
+            String bidAmountStr = txtBidInput.getText().trim();
+            if (bidAmountStr.isEmpty()) {
+                System.out.println("Vui lòng nhập số tiền muốn đặt!");
+                // Nếu có biến message hiển thị lỗi, bạn cập nhật tại đây:
+                // message.setText("Vui lòng nhập số tiền muốn đặt!");
+                return;
+            }
 
+            try {
+                // Kiểm tra xem số tiền nhập vào có hợp lệ hay không (phải là số lớn hơn 0)
+                long bidAmount = Long.parseLong(bidAmountStr);
+                if (bidAmount <= 0) {
+                    System.out.println("Số tiền đặt giá phải lớn hơn 0!");
+                    return;
+                }
+
+                // ---- BƯỚC 2: Ghép chuỗi theo cú pháp phân tách bằng dấu gạch đứng (|) ----
+                // Lệnh khởi động viết hoa theo quy chuẩn hệ thống của bạn (Ví dụ: BID)
+                // Cú pháp mẫu: BID|<số_tiền_đặt>
+                // (Nếu cần gửi kèm mã phòng/mã phiên, bạn có thể ghép: "BID|" + auctionId + "|" + bidAmount)
+                String command = "BID|" + bidAmount;
+
+                // ---- BƯỚC 3: Gọi hàm gửi lệnh đi tới server ----
+                connection.sendCommand(command);
+                System.out.println("[LOG SENT]: Đã gửi yêu cầu đặt giá -> " + command);
+
+                // Xóa trống ô nhập sau khi bấm đặt để tiện cho lần nhập sau
+                txtBidInput.clear();
+
+            } catch (NumberFormatException ex) {
+                System.err.println("[LOG ERROR]: Số tiền nhập vào không hợp lệ!");
+            } catch (Exception ex) {
+                System.err.println("[LOG ERROR]: Lỗi kết nối mạng khi đặt giá: " + ex.getMessage());
+            }
+        });
         // 4. KHỐI LỊCH SỬ TRẢ GIÁ TRỰC TIẾP (Tạo không khí kịch tính)
         VBox historyBox = new VBox(10);
         Label lblHistTitle = new Label("📜 Lịch sử đặt giá phòng đấu (Realtime Log):");

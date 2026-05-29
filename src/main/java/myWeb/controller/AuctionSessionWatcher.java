@@ -1,7 +1,7 @@
 package myWeb.controller;
 
 import myWeb.models.AuctionSession;
-import myWeb.models.SettlementTransaction;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,17 +10,12 @@ public class AuctionSessionWatcher implements Runnable{
     private AuctionManager manager;
     private volatile boolean status = true;
     private List<AuctionSession> failedSession = new ArrayList<>();
-    private PaymentManager paymentManager;
     /*
     Tại sao phải dùng volatile? Bản chất của Thread khi tạo sẽ có một vùng bộ nhớ đệm (cache) lưu các biến thuộc tính của class
     Vì vậy bản chất khi ta chạy run() nó sẽ chỉ soi biến status trong cache của riêng thread đó. Khi các luồng như system gọi hàm stop
     -> Luồng này vẫn chạy while -> gây lỗi hệ thống
     Biến volatile sẽ tạo một ràng buộc rằng biến status này phải được Đọc/Ghi ở RAM toàn sever, vì thế nó có thể cập nhập nhanh trạng thái
      */
-    public AuctionSessionWatcher(){
-        manager = AuctionManager.getInstance();
-        paymentManager = PaymentManager.getInstance();
-    }
     public void stop() {
         status = false;
     }
