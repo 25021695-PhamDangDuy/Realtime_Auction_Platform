@@ -28,7 +28,6 @@ public class AccountController{
         ruleName.add(new LengthRule(3));
         ruleName.add(new ExistRule(userList.keySet()));
 
-        
     }
 
     //Kiểm tra mật khẩu:

@@ -27,6 +27,13 @@ public class Wallet {
         this.ID = UUID.randomUUID();
         this.ownerID = user;
         this.balance = amount;
+        this.balanceLocked = 0;
+    }
+    public Wallet(UUID user,long amount,long unlockMoney){
+        this.ID = UUID.randomUUID();
+        this.ownerID = user;
+        this.balance = amount;
+        this.balanceLocked = unlockMoney;
     }
 
     public UUID getID(){return ID;}

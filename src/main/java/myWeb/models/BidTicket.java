@@ -25,6 +25,14 @@ public class BidTicket {
         amount = a;
         status = bs;
     }
+    public BidTicket(UUID id, Bidder bidder, AuctionSession as, LocalDateTime t, long a, BidStatus bs){
+        this.ID = id;
+        this.bidder = bidder;
+        session = as;
+        timeBid = t;
+        amount = a;
+        status = bs;
+    }
 
     public UUID getID(){return  ID;}
     public Bidder getBidder() {

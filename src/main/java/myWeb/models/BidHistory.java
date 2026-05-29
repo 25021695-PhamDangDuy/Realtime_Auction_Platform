@@ -3,6 +3,7 @@ package myWeb.models;
 import myWeb.function.BidStatus;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -22,6 +23,12 @@ public class BidHistory {
         this.session = session;
         this.history = new ConcurrentLinkedDeque<>();
         size = new AtomicInteger(0);
+    }
+
+    public BidHistory(List<BidTicket> list){
+        AuctionSession session = list.get(0).getSession();
+        size.set(list.size());
+        history.addAll(list);
     }
 
     /*

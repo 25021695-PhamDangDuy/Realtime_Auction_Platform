@@ -49,7 +49,7 @@ public class ArtDAO extends ItemDAOImpl<Art> {
         try (Connection conn = databaseCreator.getConnection()) {
             PreparedStatement psmt = conn.prepareStatement(insertArtSQL);
 
-            String idGson = gson.toJson(art.getID());
+            String idGson = art.getID().toString();
             psmt.setString(1, idGson);
             psmt.setString(2, art.getAuthor());
             psmt.setString(3, art.getMaterial());
@@ -71,7 +71,7 @@ public class ArtDAO extends ItemDAOImpl<Art> {
         try (Connection conn = databaseCreator.getConnection()) {
             PreparedStatement psmt = conn.prepareStatement(updateArtSQL);
 
-            String idGson = gson.toJson(art.getID());
+            String idGson = art.getID().toString();
             psmt.setString(1, art.getAuthor());
             psmt.setString(2, art.getMaterial());
             psmt.setString(3, idGson);

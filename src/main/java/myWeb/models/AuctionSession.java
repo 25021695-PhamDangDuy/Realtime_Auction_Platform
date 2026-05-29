@@ -42,6 +42,19 @@ public class AuctionSession {
         //Khởi tạo lịch sử lấy đối tượng hiện tại làm chìa khóa kiểm tra tấm vé
         bidHistory = new BidHistory(this);
     }
+    public AuctionSession(UUID id,Item item,Seller seller,long startPrice,long minIncrement,LocalDateTime endTime,LocalDateTime startTime, SessionStatus status, BidHistory bidHistory) {
+        this.ID = id;
+        this.item=item;
+        this.seller=seller;
+        this.currentPrice=startPrice;
+        this.minIncrement=minIncrement;
+        this.endTime=endTime;
+        this.startTime = startTime;
+        this.status = status;
+
+        //Khởi tạo lịch sử lấy đối tượng hiện tại làm chìa khóa kiểm tra tấm vé
+        this.bidHistory = bidHistory;
+    }
     //hàm đăng ký theo dõi/ hủy theo dõi phiên đấu giá
     public void attach(AuctionObserver observer){
         if (!observers.contains(observer)){

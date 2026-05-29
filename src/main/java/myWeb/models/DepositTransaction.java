@@ -12,4 +12,10 @@ public class DepositTransaction extends Transaction{
         this.transactionType = TransactionType.DEPOSIT_WALLET;
         this.transactionStatus = TransactionStatus.PENDING;
     }
+
+    public DepositTransaction(UUID transactionID, long amount, UUID senderWalletID, UUID senderID,
+                              LocalDateTime timestamp, TransactionStatus status) {
+        super(transactionID, amount, senderWalletID, senderID, timestamp, status);
+        this.transactionType = TransactionType.DEPOSIT_WALLET;
+    }
 }

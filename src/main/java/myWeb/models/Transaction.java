@@ -35,6 +35,16 @@ public abstract class Transaction {
         this.transactionStatus = TransactionStatus.PENDING;
         this.senderID = senderID;
     }
+
+    protected Transaction(UUID transactionID, long amount, UUID walletID, UUID senderID, LocalDateTime time, TransactionStatus status) {
+        this.transactionID = transactionID;
+        this.amount = amount;
+        this.senderWalletID = walletID;
+        this.senderID = senderID;
+        this.timestamp = time;
+        this.transactionStatus = status;
+    }
+
     public Transaction(){}  // Mở rộng khả năng đa hình hàm constructor cho các class con
 
     /*

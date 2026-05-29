@@ -1,6 +1,8 @@
 package myWeb.function;
 
-public enum BidStatus {
+import java.io.Serializable;
+
+public enum BidStatus  {
     VALID("Hợp lệ"),
     INVALID("Bị hủy"),
     WARNING("Tình trạng cảnh báo"),

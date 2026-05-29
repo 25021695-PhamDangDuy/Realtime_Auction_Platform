@@ -153,7 +153,7 @@ public class WalletDAO implements DataAccessObject<Wallet> {
         long balance = rs.getLong("balance");
         long balanceLocked = rs.getLong("balance_locked");
 
-        Wallet wallet = new Wallet(ownerId, balance);
+        Wallet wallet = new Wallet(ownerId, balance,balanceLocked);
         return wallet;
     }
 

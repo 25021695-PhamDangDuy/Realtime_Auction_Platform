@@ -29,4 +29,14 @@ public class SettlementTransaction extends Transaction{
         this.receiverID = session.getSeller().getID();
     }
 
+    public SettlementTransaction(UUID transactionID, long amount, UUID senderWalletID, UUID senderID,
+                                 LocalDateTime timestamp, TransactionStatus status, AuctionSession session,
+                                 UUID receiverWalletID, UUID receiverID) {
+        super(transactionID, amount, senderWalletID, senderID, timestamp, status);
+        this.session = session;
+        this.receiverWalletID = receiverWalletID;
+        this.receiverID = receiverID;
+        this.transactionType = TransactionType.AUCTION_SETTLEMENT;
+    }
+
 }

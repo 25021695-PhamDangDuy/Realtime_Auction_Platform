@@ -12,4 +12,10 @@ public class WithdrawTransaction extends Transaction{
         this.transactionType = TransactionType.WITHDRAW_WALLET;
         this.transactionStatus = TransactionStatus.PENDING;
     }
+
+    public WithdrawTransaction(UUID transactionID, long amount, UUID senderWalletID, UUID senderID,
+                               LocalDateTime timestamp, TransactionStatus status) {
+        super(transactionID, amount, senderWalletID, senderID, timestamp, status);
+        this.transactionType = TransactionType.WITHDRAW_WALLET;
+    }
 }
