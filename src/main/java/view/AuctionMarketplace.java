@@ -13,7 +13,7 @@ import javafx.scene.layout.HBox;
 
 import java.util.List;
 
-import static javafx.application.Application.launch;
+
 
 public class AuctionMarketplace extends BorderPane {
     private final ObservableList<AuctionDashBoard.AuctionItem> masterData = FXCollections.observableArrayList();

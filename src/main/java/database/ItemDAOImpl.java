@@ -1,5 +1,6 @@
-package database;
+package DataBase;
 
+import DataBase.DatabaseCreator;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -7,7 +8,7 @@ import models.Item;
 import java.sql.*;
 import java.util.*;
 
-public abstract class ItemDAOImpl<T extends Item> implements ItemDAO<T> {
+public abstract class ItemDAOImpl<T extends Item> implements DataBase.ItemDAO<T> {
     protected DatabaseCreator databaseCreator = DatabaseCreator.getInstance();
     protected Gson gson = new GsonBuilder().setPrettyPrinting().create();
 

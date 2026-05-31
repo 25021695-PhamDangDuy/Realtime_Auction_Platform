@@ -1,4 +1,4 @@
-package myWeb.view;
+package view;
 
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -14,7 +14,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.*;
-import myWeb.view.network.ServerConnection;
+import view.network.ServerConnection;
 import static javafx.application.Application.launch;
 
 public class AuctionLogin extends Application {
