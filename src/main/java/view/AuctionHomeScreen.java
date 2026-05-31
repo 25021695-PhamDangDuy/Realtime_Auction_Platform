@@ -162,6 +162,7 @@ public class AuctionHomeScreen extends Application {
         // Sự kiện khi nhấn nút (Sẽ code chuyển Scene sang phòng đấu ở đây)
         btnView.setOnAction(e -> {
             System.out.println("Chuyển hướng người dùng sang phòng đấu của: " + session.itemName);
+            AuctionRoom room = new AuctionRoom();
         });
 
         card.getChildren().addAll(topRow, imgBox, lblName, lblPrice, btnView);

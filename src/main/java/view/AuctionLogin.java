@@ -15,7 +15,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.*;
 import view.network.ServerConnection;
-import static javafx.application.Application.launch;
+
 
 public class AuctionLogin extends Application {
     private ServerConnection connection;
@@ -78,6 +78,8 @@ public class AuctionLogin extends Application {
             String command = "LOGIN|" + username;
             try {
                 connection.sendCommand(command);
+                AuctionHomeScreen homeScreen = new AuctionHomeScreen();
+                homeScreen.start(primaryStage);
 
                 // Hiển thị trạng thái tạm thời trên giao diện
                 actiontarget.setFill(javafx.scene.paint.Color.GREEN);
