@@ -1,4 +1,4 @@
-package myWeb.function;
+package function;
 
 public enum LogLevel {
     INFO,
