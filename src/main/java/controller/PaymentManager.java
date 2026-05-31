@@ -1,8 +1,15 @@
 package controller;
 
+import database.DepositTransactionDAO;
+import database.SettlementTransactionDAO;
+import database.TransactionDAO;
+import database.WithdrawTransactionDAO;
+import function.SystemLogger;
 import function.TransactionExcutor;
 import function.TransactionStatus;
 import models.*;
+
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -14,8 +21,8 @@ public class PaymentManager {
     private WalletManager walletManager;
     private static PaymentManager instance;
     private TransactionExcutor excutor;
-    private ConcurrentHashMap<UUID, Transaction> transactionHistory; // Lưu lịch sử
     private ConcurrentHashMap<Class<? extends Transaction>, TransactionExcutor> strategies;
+    private SystemLogger log = SystemLogger.getInstance();
 
     private PaymentManager(){
         walletManager = WalletManager.getInstance();
@@ -44,9 +51,9 @@ public class PaymentManager {
     Tiến hành tạo giao dịch bất kì, sử dụng nguyên lí đóng gói để tạo tính đa hình cho method. Từ đó tập trung quản lí thông qua
     thông qua class PaymentManager này
      */
-    public Transaction createTransaction(Class<? extends Transaction> type , HashMap<String, Object> params) {
+    public Transaction createTransaction(Class<? extends Transaction> type , HashMap<String, Object> params) throws SQLException{
         Transaction transaction = null;
-
+        TransactionDAO transactionDAO = null;
         if (type == TransferTransaction.class) {
             transaction = new TransferTransaction(
                     (UUID) params.get("senderID"),
@@ -60,6 +67,7 @@ public class PaymentManager {
             transaction = new SettlementTransaction(
                     (AuctionSession) params.get("session")
             );
+            transactionDAO = new SettlementTransactionDAO();
         }
         if (type == WithdrawTransaction.class) {
             transaction = new WithdrawTransaction(
@@ -67,6 +75,7 @@ public class PaymentManager {
                     (UUID) params.get("senderID"),
                     (UUID) params.get("senderWalletID")
             );
+            transactionDAO = new WithdrawTransactionDAO();
         }
         if (type == DepositTransaction.class) {
             transaction = new DepositTransaction(
@@ -74,12 +83,18 @@ public class PaymentManager {
                     (UUID) params.get("senderID"),
                     (UUID) params.get("senderWalletID")
             );
+            transactionDAO = new DepositTransactionDAO();
         }
         // Thêm các loại giao dịch khác
 
         if (transaction != null) {
-            transaction.setTransactionStatus(TransactionStatus.PENDING);
-            transactionHistory.put(transaction.getID(), transaction);
+            try {
+                transaction.setTransactionStatus(TransactionStatus.PENDING);
+                transactionDAO.save(transaction);
+            }catch (SQLException s){
+                log.crash("Lỗi tạo giao dịch",s);
+                throw new SQLException(s);
+            }
         }
 
         return transaction;
@@ -90,13 +105,13 @@ public class PaymentManager {
             throws IllegalArgumentException {
 
         if (transaction == null) {
-            throw new IllegalArgumentException("Transaction cannot be null");
+            throw new IllegalArgumentException("Tham số vào đang bị null");
         }
 
         try {
             if (excutor == null) {
                 throw new IllegalArgumentException(
-                        "No executor found for transaction type: " + transaction.getClass().getSimpleName()
+                        "Không tìm thấy strategy phù hợp: " + transaction.getClass().getSimpleName()
                 );
             }
 

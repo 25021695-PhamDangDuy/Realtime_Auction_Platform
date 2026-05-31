@@ -44,9 +44,9 @@ public class SystemLogger {
     // Hàm logic ghi log cốt lõi (được đồng bộ hóa đa luồng)
     private synchronized void writeLog(LogLevel level, String message, Throwable throwable) {
         // Kiểm tra xem log này có đủ độ nghiêm trọng để in ra không
-        if (level.getPriority() < minimumLevel.getPriority()) {
-            return;
-        }
+//        if (level.getPriority() < minimumLevel.getPriority()) {
+//            return;
+//        }
 
         String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(new Date());
         String threadName = Thread.currentThread().getName();

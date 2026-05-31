@@ -1,11 +1,17 @@
 package controller;
 
+import database.ItemDAOImpl;
+import database.SessionDAO;
 import function.ItemStatus;
 import function.SessionChecker;
 import function.SessionStatus;
+import function.SystemLogger;
 import models.*;
+
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -13,15 +19,14 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class AuctionManager {
     //Thuộc tính
     private static AuctionManager instance; //Singleton
-    private List<User> users;
-    private CopyOnWriteArrayList<AuctionSession> sessions = new CopyOnWriteArrayList<>();
     private CopyOnWriteArrayList<AuctionSession> finishedSessions = new CopyOnWriteArrayList<>();
     private SessionChecker sessionChecker = new SessionChecker();
-
+    private SessionDAO sessionDAO = new SessionDAO();
+    private ItemDAOImpl itemDAO;
+    private SystemLogger log = SystemLogger.getInstance();
+    private PaymentManager paymentManager = PaymentManager.getInstance();
     //Contructor
-    private AuctionManager() {
-        users = new ArrayList<>();
-    }
+    private AuctionManager(){}
 
     public static AuctionManager getInstance() {
         if(instance == null) {
@@ -43,8 +48,10 @@ public class AuctionManager {
             if(sessionChecker.durationTime(now,endtime,1,43200) && sessionChecker.isItemAvailable(item)){
                 AuctionSession session = new AuctionSession(item,seller,startPrice,minIncrement,endtime,now,SessionStatus.RUNNING);
                 item.setItemStatus(ItemStatus.AUCTIONING);
-                sessions.add(session);
-                System.out.println("Đã tạo phiên đấu giá cho:" + session.getID().toString());
+
+                sessionDAO.save(session);
+                itemDAO.update(item);
+                log.info("Đã tạo phiên đấu giá ID:" + session.getID().toString() + "|SUCCESS");
             }
         }catch (Exception e){
             System.out.println(e.getMessage());
@@ -55,21 +62,19 @@ public class AuctionManager {
             if(sessionChecker.durationTime(startTime,endtime,5,43200) && sessionChecker.isItemAvailable(item)){
                 AuctionSession session = new AuctionSession(item,seller,startPrice,minIncrement,endtime,startTime,SessionStatus.UPCOMING);
                 item.setItemStatus(ItemStatus.AUCTIONING);
-                sessions.add(session);
-                System.out.println("Đã tạo phiên đấu giá cho:" + session.getID().toString());
+
+                sessionDAO.save(session);
+                itemDAO.update(item);
+                log.info("Đã tạo phiên đấu giá ID:" + session.getID().toString() + "|SUCCESS");
             }
         }catch (Exception e){
             System.out.println(e.getMessage());
         }
     }
 
-    public AuctionSession getSession(UUID ID) {
-        AuctionSession re = null;
-        for (AuctionSession as : sessions) {
-            if (ID.equals(as.getID())) {
-                re = as;
-            }
-        }
+    public AuctionSession getSession(UUID ID) throws SQLException {
+        AuctionSession re = sessionDAO.get(ID);
+
         if (re == null) {
             throw new RuntimeException("Không tìm thấy phiên đấu giá");
         } else {
@@ -77,19 +82,27 @@ public class AuctionManager {
         }
     }
 
-    public List<AuctionSession> getSessions() {
-        return sessions;
+    public List<AuctionSession> getSessionsAll() throws SQLException{
+        List<AuctionSession> list = sessionDAO.getAll();
+        if(list.size() == 0){
+            throw new NullPointerException("Không tồn tại phiên đấu giá");
+        }
+        return list;
     }
 
-    public void placeBid(AuctionSession auctionSession, Bidder bidder, long amount) throws IllegalArgumentException,NullPointerException {
+
+
+    public void placeBid(AuctionSession auctionSession, Bidder bidder, long amount) throws IllegalArgumentException,NullPointerException, SQLException {
         if(auctionSession == null || bidder == null){
             throw new NullPointerException("Null tham số");
         }
-        if(!sessions.contains(auctionSession)){
-            throw new IllegalArgumentException("Không tìm thấy session");
-        }
+
+        //Logic kiểm tra phiên có trong db chưa?
+        //Cơ chế extend thời gian
+
         auctionSession.placeBid(bidder, amount);
-        System.out.println("Đặt giá thầu thành công: " + amount);
+        sessionDAO.update(auctionSession);
+        log.info("Đặt giá thầu thành công: " + amount);
 
     }
 
@@ -97,50 +110,51 @@ public class AuctionManager {
         if(session == null){
             throw new NullPointerException("Null session");
         }
-        if(!sessions.contains(session)){
-            throw new IllegalArgumentException("Không tìm thấy session");
-        }
-        try{
-            session.finishSession();
-        }catch (IllegalArgumentException e){
-            throw new IllegalArgumentException(e);
-        }
+        //Logic kiểm tra phiên có trong db chưa?
+        HashMap<String,Object> sessionMap = new HashMap<>();
+        sessionMap.put("session",session);
+        Transaction settlementTransaction = paymentManager.createTransaction(SettlementTransaction.class,sessionMap);
+
+        session.finishSession();
+        sessionDAO.update(session);
+        paymentManager.executeTransaction(settlementTransaction);
+        itemDAO.update(session.getItem());   //Chưa tin nó lưu được vào item table
+        log.info("Phiên đấu giá ID:" + session.getID().toString() + " đã kết thúc");
+
     }
 
 
-    public void cancelSession(AuctionSession session) throws NullPointerException,IllegalArgumentException {
+    public void cancelSession(AuctionSession session) throws NullPointerException,IllegalArgumentException, SQLException {
         /*
          * Điều kiện hủy phiên : Phiên đang ở trạng thái hoặc UPCOMING hoặc RUNNING hoặc PENDING
          */
         if(session == null){
             throw new NullPointerException("Null session");
         }
-        if(!sessions.contains(session)){
-            throw new IllegalArgumentException("Không tìm thấy session");
-        }
-        try{
-            session.cancelSession();
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException(e);
-        }
+        //Logic kiểm tra phiên có trong db chưa?
+
+        session.cancelSession();
+        sessionDAO.update(session);
+        log.info("Phiên đấu giá ID:" + session.getID().toString() + " đã bị hủy");
+
+
     }
 
-    public void pendSession(AuctionSession session) throws NullPointerException,IllegalArgumentException{
+    public void pendSession(AuctionSession session) throws NullPointerException,IllegalArgumentException, SQLException{
         if(session == null){
             throw new NullPointerException("Null session");
         }
-        if(!sessions.contains(session)){
-            throw new IllegalArgumentException("Không tìm thấy session");
-        }
-        try{
-            session.pendSession();
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException(e);
-        }
+        //Logic kiểm tra phiên có trong db chưa?
+
+        session.pendSession();
+        sessionDAO.update(session);
+        log.info("Phiên đấu giá ID:" + session.getID().toString() + " đã bị dừng");
+
+
 
     }
 
-    public void unPendSession(AuctionSession session,LocalDateTime newEndTime) {
+    public void unPendSession(AuctionSession session,LocalDateTime newEndTime) throws NullPointerException, SQLException {
         /*
         Khi tiến hành chạy lại(unPending) phiên thì sẽ tiến hành các điều kiện sau:
         0. Kiểm tra tham số đầu vào
@@ -151,15 +165,19 @@ public class AuctionManager {
         if(session == null || newEndTime == null){
             throw new NullPointerException("Null tham số");
         }
-        if(!sessions.contains(session)){
-            throw new IllegalArgumentException("Không tìm thấy session");
-        }
-        try {
+        //Logic kiểm tra phiên có trong db chưa?
+
             session.unPendSession();
             session.extendEndTime(newEndTime);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException(e);
+            sessionDAO.update(session);
+    }
+
+    public List<AuctionSession> getSessionActive() throws SQLException{
+        List<AuctionSession> list = sessionDAO.getActiveSessions();
+        if (list == null){
+            throw new NullPointerException("Không còn phiên đang hoạt động");
         }
+        return list;
     }
 
 }

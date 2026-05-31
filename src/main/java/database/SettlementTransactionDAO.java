@@ -2,6 +2,7 @@ package database;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import function.SystemLogger;
 import function.TransactionStatus;
 import function.TransactionType;
 
@@ -20,6 +21,7 @@ import java.util.UUID;
 public class SettlementTransactionDAO implements TransactionDAO<SettlementTransaction> {
     protected DatabaseCreator databaseCreator = DatabaseCreator.getInstance();
     protected Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private SystemLogger log = SystemLogger.getInstance();
 
     @Override
     public SettlementTransaction getBySenderID(UUID senderID) {
@@ -34,7 +36,7 @@ public class SettlementTransactionDAO implements TransactionDAO<SettlementTransa
                 return mapResultSetToSettlementTransaction(rs);
             }
         } catch (SQLException e) {
-            System.out.println("Error getting settlement transaction by sender: " + e.getMessage());
+            System.out.println(" getting settlement transaction by sender: " + e.getMessage());
         }
         return null;
     }

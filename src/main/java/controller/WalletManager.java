@@ -1,15 +1,20 @@
 package controller;
 
+import database.WalletDAO;
+import function.SystemLogger;
 import models.Wallet;
+
+import java.sql.SQLException;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class WalletManager {
-    private ConcurrentHashMap<UUID,Wallet> Wallets;
+    private WalletDAO walletDAO;
     private static WalletManager instance;  //Singleton
+    private SystemLogger log = SystemLogger.getInstance();
 
     private WalletManager(){
-        Wallets = new ConcurrentHashMap<>();
+        walletDAO = new WalletDAO();
     }
 
     public static WalletManager getInstance(){
@@ -21,93 +26,90 @@ public class WalletManager {
         return instance;
     }
 
-    private Wallet getWallet(UUID ID) throws IllegalArgumentException, NullPointerException{
+    private Wallet getWallet(UUID ID) throws IllegalArgumentException, NullPointerException, SQLException{
         if(ID == null){
             throw new NullPointerException("ID is null");
         }
-        if(!Wallets.contains(ID)){
-            throw new IllegalArgumentException("Wallet is not found");
+        Wallet rs = null;
+        try{
+            rs = walletDAO.get(ID);
+        } catch (SQLException e) {
+            log.crash("Lỗi SQL khi thực thi lấy thông tin ví theo ID ví: " + ID.toString(), e);
+            throw new SQLException(e);
         }
-        return Wallets.get(ID);
+        if(rs == null){
+            log.warning("ID: " + ID.toString() + " ví chưa tồn tại");
+            throw new IllegalArgumentException("ví chưa tồn tại: " + ID.toString());
+        }
+        return rs;
     }
 
-    public void createWallet(UUID ownerID, long amount){
-        //Logic ID
-
+    public void createWallet(UUID ownerID, long amount) throws IllegalArgumentException, SQLException{
+        UUID walletID = UUID.randomUUID();
         //Logic ownerID
-
+        if(!walletDAO.isHasOwnerID(ownerID)){
+            throw new IllegalArgumentException("userID: " + ownerID.toString() + " đã có tồn tại ví tiền");
+        }
         //Logic amount
-
-        Wallet newWallet = new Wallet(ownerID,amount);
-        Wallets.put(newWallet.getID(),newWallet);
+        if(amount < 1000){
+            throw new IllegalArgumentException("Không thể tạo số tiền nhỏ hơn 1000 đồng");
+        }
+        Wallet newWallet = new Wallet(walletID,ownerID,amount,0);
+        walletDAO.save(newWallet);
+        log.info("Tạo ví mới ID:" + walletID + "|SUCCESS");
     }
 
-    public void withdrawWallet(UUID walletID,UUID ownerID,long amount) throws IllegalArgumentException{
-        try{
-            Wallet wallet = this.getWallet(walletID);
-            //Kiểm tra xem có phải ví của owner k
-            if(!wallet.getOwnerID().equals(ownerID)){
-                throw new IllegalArgumentException("User is not owned this Wallet");
-            }
-            wallet.withdraw(amount);
-        }catch (IllegalArgumentException | NullPointerException e){
-            System.out.println(e.getMessage());
-        }
+    public void withdrawWallet(UUID walletID,UUID ownerID,long amount) throws IllegalArgumentException, NullPointerException, SQLException{
+        Wallet wallet = getWalletHelper(walletID, ownerID);
+        wallet.withdraw(amount);
+        walletDAO.update(wallet);
+        log.info("Rút tiền ví:" + walletID + "|SUCCESS");
     }
 
-    public void depositWallet(UUID walletID,UUID ownerID,long amount) throws  IllegalArgumentException{
-        try{
-            Wallet wallet = this.getWallet(walletID);
-            //Kiểm tra xem có phải ví của owner k
-            if(!wallet.getOwnerID().equals(ownerID)){
-                throw new IllegalArgumentException("User is not owned this Wallet");
-            }
-            wallet.deposit(amount);
-        }catch (IllegalArgumentException | NullPointerException e){
-            System.out.println(e.getMessage());
-        }
+
+    public void depositWallet(UUID walletID,UUID ownerID,long amount) throws  IllegalArgumentException,NullPointerException,SQLException{
+        Wallet wallet = getWalletHelper(walletID,ownerID);
+        wallet.deposit(amount);
+        walletDAO.update(wallet);
+        log.info("Nạp tiền ví:" + walletID + "|SUCCESS");
     }
 
-    public void transferMoney(UUID walletSender, UUID walletReveicer, UUID SenderID, UUID ReveicerID, long amount){
-        try{
-            Wallet wallet1 = this.getWallet(walletSender);
-            Wallet wallet2 = this.getWallet(walletReveicer);
+    public void transferMoney(UUID walletSender, UUID walletReveicer, UUID SenderID, UUID ReveicerID, long amount) throws SQLException, NullPointerException,IllegalArgumentException{
 
-            if(!wallet1.getOwnerID().equals(SenderID) || !wallet2.getOwnerID().equals(ReveicerID)){
-                throw new IllegalArgumentException("User is not owned Wallet");
-            }
+        Wallet wallet1 = getWalletHelper(walletSender,SenderID);
+        Wallet wallet2 = getWalletHelper(walletReveicer,ReveicerID);
 
-            wallet1.withdraw(amount);
-            wallet2.deposit(amount);
-        }catch (IllegalArgumentException | NullPointerException e){
-            System.out.println(e.getMessage());
-        }
+        wallet1.withdraw(amount);
+        wallet2.deposit(amount);
+
+        walletDAO.update(wallet1);
+        walletDAO.update(wallet2);
+        log.info("Chuyển tiền từ ví ID: " + walletSender + " sang ID: " + walletReveicer + " số tiền: " + amount + "|SUCCESS" );
+
     }
 
-    public void lockMoney(UUID walletID,UUID ownerID, long amount) throws IllegalArgumentException{
-        try{
-            Wallet wallet = this.getWallet(walletID);
-            if(!wallet.getOwnerID().equals(ownerID)){
-                throw new IllegalArgumentException("User is not owned Wallet");
-            }
-
-            wallet.lockMoney(amount);
-        }catch (IllegalArgumentException | NullPointerException e){
-            System.out.println(e.getMessage());
-        }
+    public void lockMoney(UUID walletID,UUID ownerID, long amount) throws IllegalArgumentException, NullPointerException, SQLException{
+        Wallet wallet = getWalletHelper(walletID,ownerID);
+        wallet.lockMoney(amount);
+        walletDAO.update(wallet);
     }
 
-    public void unlockMoney(UUID walletID,UUID ownerID, long amount) throws IllegalArgumentException{
-        try{
-            Wallet wallet = this.getWallet(walletID);
-            if(!wallet.getOwnerID().equals(ownerID)){
-                throw new IllegalArgumentException("User is not owned Wallet");
-            }
+    public void unlockMoney(UUID walletID,UUID ownerID, long amount) throws IllegalArgumentException, NullPointerException, SQLException{
+        Wallet wallet = getWalletHelper(walletID,ownerID);
+        wallet.unlockMoney(amount);
+        walletDAO.update(wallet);
+    }
 
-            wallet.unlockMoney(amount);
-        }catch (IllegalArgumentException | NullPointerException e){
-            System.out.println(e.getMessage());
+    private Wallet getWalletHelper(UUID walletID, UUID ownerID) throws SQLException,NullPointerException,IllegalArgumentException {
+        if(ownerID == null){
+            throw new NullPointerException("ownerID là null");
         }
+        Wallet wallet = this.getWallet(walletID);
+        //Kiểm tra xem có phải ví của owner k
+        if(!wallet.getOwnerID().equals(ownerID)){
+            throw new IllegalArgumentException("ownerID: " + ownerID.toString() + " không phải chủ của ví ID: " + walletID.toString());
+        }
+        return wallet;
     }
 
 }

@@ -1,6 +1,9 @@
 package controller;
 
+import function.SystemLogger;
 import models.AuctionSession;
+
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,6 +12,7 @@ public class AuctionSessionWatcher implements Runnable{
     private volatile boolean status = true;
     private List<AuctionSession> failedSession = new ArrayList<>();
     private PaymentManager paymentManager;
+    private SystemLogger log = SystemLogger.getInstance();
     /*
     Tại sao phải dùng volatile? Bản chất của Thread khi tạo sẽ có một vùng bộ nhớ đệm (cache) lưu các biến thuộc tính của class
     Vì vậy bản chất khi ta chạy run() nó sẽ chỉ soi biến status trong cache của riêng thread đó. Khi các luồng như system gọi hàm stop
@@ -28,13 +32,20 @@ public class AuctionSessionWatcher implements Runnable{
 
      */
     public void run() {
-        while (status){
-            List<AuctionSession> auctionSessionList = new ArrayList<>();
 
-            for(AuctionSession as : manager.getSessions()) {
+        while (status){
+            List<AuctionSession> auctionSessionList = null;
+            try {
+                auctionSessionList = manager.getSessionActive();
+            } catch (SQLException e) {
+                log.crash("SessionWatcher lỗi SQL",e);
+                throw new RuntimeException(e);
+
+            }
+
+            for(AuctionSession as : auctionSessionList) {
                 try {
                     manager.finishSession(as);
-                    auctionSessionList.add(as); //Thực hiện xóa phiên sau đó
                 } catch (NullPointerException e) {
                     System.out.println(e.getMessage());
                     failedSession.add(as); //thêm phiên lỗi vào danh sách lỗi
@@ -47,7 +58,6 @@ public class AuctionSessionWatcher implements Runnable{
                 }
             }
 
-            manager.getSessions().removeAll(auctionSessionList); //Xóa toàn bộ phiên đã thành công
             try {
                 Thread.sleep(5000);
             } catch (InterruptedException e) {

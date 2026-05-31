@@ -1,10 +1,8 @@
 package controller;
 
-import function.DiversityRule;
-import function.ExistRule;
-import function.LengthRule;
+import database.BidderDAOImpl;
+import function.*;
 
-import function.StrongRule;
 import models.Bidder;
 import models.User;
 import java.util.HashMap;
@@ -13,8 +11,8 @@ import java.util.List;
 //Class kiểm soát đăng nhập và tài khoản người dùng
 public class AccountController{
     //Map người dùng được lưu dưới dạng User - username(String)
-    private HashMap<String,User> userList;
-
+    private BidderDAOImpl bidderDAO = new BidderDAOImpl();
+    private SystemLogger log = SystemLogger.getInstance();
     //Setting bộ quy tắc cho việc setName
     List<StrongRule> ruleName;
     //Setting bộ quy tắc cho PW
@@ -27,7 +25,7 @@ public class AccountController{
         rulePW.add(new DiversityRule());
         //Tùy chỉnh cho quy tắc đặt tên
         ruleName.add(new LengthRule(3));
-        ruleName.add(new ExistRule(userList.keySet()));
+//        ruleName.add(new ExistRule(userList.keySet()));
 
     }
 
@@ -55,10 +53,12 @@ public class AccountController{
         return true;
     }
 
-    public void Register(String id, String name, String pw, String idPW) {
+    public void Register(String name, String pw, String idPW) {
         if (this.isPWValidStrong(pw) && this.isNameValidStrong(name) && pw.equals(idPW)) {
-            userList.put(name, new Bidder(name, pw));
-            System.out.println("Đăng kí thành công!");
+            Bidder bidder = new Bidder(name,pw);
+
+            bidderDAO.save(bidder);
+            log.info("Tài khoản ID:" + bidder.getID().toString() + " tạo thành công");
         } else if (!pw.equals(idPW)) {
             System.out.println("MK không trùng nhau");
         }else{
@@ -66,13 +66,13 @@ public class AccountController{
         }
     }
 
-    public void Login(String name, String pw){
-        if (userList.containsKey(name) && (userList.get(name).getPassword()).equals(pw)){
-            System.out.println("Login thành công");
-        }else{
-            System.out.println("Login không thành công");
-        }
-    }
+//    public void Login(String name, String pw){
+//        if (userList.containsKey(name) && (userList.get(name).getPassword()).equals(pw)){
+//            System.out.println("Login thành công");
+//        }else{
+//            System.out.println("Login không thành công");
+//        }
+//    }
 
 
 }
