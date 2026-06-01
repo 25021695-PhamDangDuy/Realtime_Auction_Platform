@@ -16,7 +16,7 @@ public class BidTicket {
     private BidStatus status;
 
     //Sau khi set final thi chi duy nhat constructor la dat data
-    public BidTicket(Bidder bidder, AuctionSession as, LocalDateTime t, long a, BidStatus bs){
+    public BidTicket(Bidder bidder, AuctionSession as, LocalDateTime t, Double a, BidStatus bs){
         this.ID = UUID.randomUUID();
         this.bidder = bidder;
         session = as;

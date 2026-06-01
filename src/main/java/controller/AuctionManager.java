@@ -10,7 +10,6 @@ import models.*;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -92,7 +91,7 @@ public class AuctionManager {
 
 
 
-    public void placeBid(AuctionSession auctionSession, Bidder bidder, long amount) throws IllegalArgumentException,NullPointerException, SQLException {
+    public void placeBid(AuctionSession auctionSession, Bidder bidder, Double amount) throws IllegalArgumentException,NullPointerException, SQLException {
         if(auctionSession == null || bidder == null){
             throw new NullPointerException("Null tham số");
         }

@@ -18,7 +18,7 @@ public class AuctionSession {
     private Item item;
     private Seller seller;
 
-    private long currentPrice;//giá hiện tại
+    private Double currentPrice;//giá hiện tại
     private BidTicket topBid;
     private long minIncrement; // bước giá tối thiểu
 
@@ -32,7 +32,7 @@ public class AuctionSession {
     private BidTicketDAO bidTicketDAO = new BidTicketDAO();
 
     //Tạo
-    public AuctionSession(Item item,Seller seller,long startPrice,long minIncrement,LocalDateTime endTime,LocalDateTime startTime, SessionStatus status) {
+    public AuctionSession(Item item, Seller seller, Double startPrice, long minIncrement, LocalDateTime endTime, LocalDateTime startTime, SessionStatus status) {
         this.ID = UUID.randomUUID();
         this.item=item;
         this.seller=seller;
@@ -43,7 +43,7 @@ public class AuctionSession {
         this.status = status;
 
     }
-    public AuctionSession(UUID id,Item item,Seller seller,long startPrice,long minIncrement,LocalDateTime endTime,LocalDateTime startTime, SessionStatus status, BidHistory bidHistory) {
+    public AuctionSession(UUID id, Item item, Seller seller, long startPrice, long minIncrement, LocalDateTime endTime, LocalDateTime startTime, SessionStatus status, BidHistory bidHistory) {
         this.ID = id;
         this.item=item;
         this.seller=seller;
@@ -110,7 +110,7 @@ public class AuctionSession {
         this.status = status;
     }
 
-    public synchronized void placeBid(Bidder bidder, long bidAmount) throws IllegalArgumentException{
+    public synchronized void placeBid(Bidder bidder, Double bidAmount) throws IllegalArgumentException{
         // 1. Kiểm tra thời gian & trạng thái
         if (!status.equals(SessionStatus.RUNNING)) {
             throw new IllegalArgumentException(status.getDescription());
