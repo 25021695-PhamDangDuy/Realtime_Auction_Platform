@@ -1,9 +1,10 @@
 package server.command;
 
 import controller.AccountController;
+import models.User;
 import server.ClientSession;
 import server.Role;
-
+import server.AuctionServer;
 import java.util.Set;
 import java.util.UUID;
 

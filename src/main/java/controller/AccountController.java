@@ -5,6 +5,9 @@ import function.*;
 
 import models.Bidder;
 import models.User;
+import models.Wallet;
+
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -56,12 +59,14 @@ public class AccountController{
         return true;
     }
 
-    public void Register(String name, String pw, String idPW) {
+    public void Register(String name, String pw, String idPW) throws SQLException {
         if (this.isPWValidStrong(pw) && this.isNameValidStrong(name) && pw.equals(idPW)) {
             Bidder bidder = new Bidder(name,pw);
 
             bidderDAO.save(bidder);
+            WalletManager.getInstance().createWallet(bidder.getID(),0);
             log.info("Tài khoản ID:" + bidder.getID().toString() + " tạo thành công");
+
         } else if (!pw.equals(idPW)) {
             System.out.println("MK không trùng nhau");
         }else{
