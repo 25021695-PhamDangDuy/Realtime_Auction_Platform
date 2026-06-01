@@ -50,6 +50,9 @@ public class AccountController{
       if (getUserDAO.getbyUsername(name) != null){
           throw new IllegalArgumentException("Tên đã được sử dụng");
       }
+      if (!passwordValidator.checkEquals(pw,idPW)){
+          throw new IllegalArgumentException("Mật khẩu không giống nhau");
+      }
       Bidder newBidder = new Bidder(name,pw);
 
       bidderDAO.save(newBidder);
@@ -73,5 +76,5 @@ public class AccountController{
 
     }
 
-//    public void UpdateInfor(String name, )
+    //    public void UpdateInfor(String name, )
 }

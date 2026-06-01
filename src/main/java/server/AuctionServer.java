@@ -1,5 +1,7 @@
 package server;
 
+import controller.WalletManager;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -12,6 +14,7 @@ public class AuctionServer {
 
     public static void main(String[] args) {
         System.out.println("=== HỆ THỐNG ĐẤU GIÁ KHỞI ĐỘNG ===");
+        WalletManager manager = WalletManager.getInstance();
 
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
             while (true) {

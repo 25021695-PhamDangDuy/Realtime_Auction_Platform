@@ -13,9 +13,20 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import view.network.MessageListener;
+import view.network.ServerConnection;
 
-public class AuctionRegister extends Application {
-    public void start(Stage primaryStage){
+
+
+public class AuctionRegister extends Application implements MessageListener {
+    private ServerConnection connection = new ServerConnection();
+    private Stage primaryStage;
+    private javafx.scene.text.Text message;
+
+
+    public void start(Stage stage){
+        this.primaryStage = stage;
+        connection.setMessageListener(this);
         primaryStage.setTitle("Đăng ký tài khoản đấu giá");
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);//căn giữa màn hình;
@@ -52,17 +63,82 @@ public class AuctionRegister extends Application {
         btnRegister.setStyle("-fx-background-color: #27ae60; -fx-text-fill: white;");
         btnRegister.setPrefWidth(200);
         grid.add(btnRegister, 1, 5);
-
-        Text message = new Text();
+        message = new Text();
         grid.add(message, 1, 6);
+        btnRegister.setOnAction(event -> {
+            String username = userField.getText().trim();
+            String password = pwField.getText().trim();
+            String confirmpw = confirmPwField.getText().trim();
 
+            if (username.isEmpty() || password.isEmpty() || confirmpw.isEmpty()) {
+                System.out.println("Vui lòng điền đầy đủ thông tin!");
+                message.setText("Vui lòng điền đầy đủ thông tin!");
+                message.setFill(javafx.scene.paint.Color.FIREBRICK);
+                return;
+            }
+            if (!password.equals(confirmpw)) {
+                System.out.println("Mật khẩu nhập lại không khớp!");
+                message.setText("Mật khẩu nhập lại không trùng khớp!");
+                message.setFill(javafx.scene.paint.Color.FIREBRICK);
+                return;
+            }
+            String command = "REGISTER| " + username + "|" + password + "|" + confirmpw;
+            try {
+                connection.sendCommand(command);
+                System.out.println("[LOG SENT]: Đã gửi yêu cầu đăng ký -> " + command);
 
-
+                message.setFill(javafx.scene.paint.Color.BLUE);
+                message.setText("Đang gửi yêu cầu đăng ký...");
+            } catch (Exception e) {
+                System.err.println("[LOG ERROR]: Lỗi: " + e.getMessage());
+                message.setFill(javafx.scene.paint.Color.FIREBRICK);
+                message.setText("Lỗi kết nối mạng!");
+            }
+            try{
+                AuctionLogin loginApp = new AuctionLogin();
+                loginApp.start(primaryStage);
+            } catch (Exception ex){
+                ex.printStackTrace();
+            }
+        });
         Scene scene = new Scene(grid, 450, 400);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
+    public void onMessageReceived(String serverMessage) {
+        // Luôn cập nhật UI từ luồng Server bằng Platform.runLater
+        javafx.application.Platform.runLater(() -> {
+            System.out.println("Nhận được từ server (Register): " + serverMessage);
+
+            // Giả sử server của bạn kia trả về "REGISTER_SUCCESS" khi tạo tk thành công
+            if ("REGISTER_SUCCESS".equals(serverMessage)) {
+                message.setText("Đăng ký thành công! Đang chuyển sang Đăng nhập...");
+                message.setFill(javafx.scene.paint.Color.GREEN);
+
+                try {
+                    // Đăng ký thành công thì chuyển về màn hình Login cho user nhập lại
+                    AuctionLogin loginApp = new AuctionLogin();
+                    loginApp.start(primaryStage);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+            // Giả sử server trả về "REGISTER_EXISTS" nếu tên tài khoản bị trùng dưới database
+            else if ("REGISTER_EXISTS".equals(serverMessage)) {
+                message.setText("Tên tài khoản đã tồn tại trên hệ thống!");
+                message.setFill(javafx.scene.paint.Color.FIREBRICK);
+            }
+            else {
+                message.setText("Đăng ký thất bại! Vui lòng thử lại.");
+                message.setFill(javafx.scene.paint.Color.FIREBRICK);
+            }
+        });
+    }
     public static void main(String[] args) {
         launch(args);
     }
+
+
+
+
 }
