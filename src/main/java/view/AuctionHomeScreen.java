@@ -177,9 +177,9 @@ public class AuctionHomeScreen extends Application {
         taskbar.setAlignment(Pos.CENTER);
 
         Button btnHome = createNavButton("🏠 Trang chủ", true);
-        Button btnRoom = createNavButton("🔨 Phòng đấu giá", false);
+        Button btnRoom = createNavButton("🔨 Phòng đấu giá", true);
         Button btnNoti = createNavButton("🔔 Thông báo", false);
-        Button btnProfile = createNavButton("👤 Tài khoản", false);
+        Button btnProfile = createNavButton("👤 Tài khoản", true);
         btnRoom.setOnAction( event ->  {
             try {
                 Stage currentStage = (Stage) btnRoom.getScene().getWindow();
@@ -190,6 +190,19 @@ public class AuctionHomeScreen extends Application {
                 System.out.println("[LOG NAVIGATION]: Đã chuyển từ Trang chủ sang Phòng đấu giá thành công.");
             } catch (Exception e) {
                 System.err.println("[LOG ERROR]: Không thể chuyển cảnh sang phòng đấu giá: " + e.getMessage());
+                e.printStackTrace();
+            }
+        });
+        btnProfile.setOnAction(event -> {
+            try{
+                Stage currentStage = (Stage) btnProfile.getScene().getWindow();
+                Account account = new Account();
+                Stage accountStage = new Stage();
+                account.start(accountStage);
+                currentStage.close();
+                System.out.println("[LOG NAVIGATION]: Chuyển cửa sổ sang Account thành công.");
+            } catch (Exception e) {
+                System.err.println("[LOG ERROR]: Không thể chuyển cảnh tài khoản: " + e.getMessage());
                 e.printStackTrace();
             }
         });
@@ -206,10 +219,6 @@ public class AuctionHomeScreen extends Application {
         }
         return btn;
     }
-
-
-
-
     // --- LOGIC ĐỒNG HỒ REALTIME ---
     private void startRealtimeClock() {
         executorService.scheduleAtFixedRate(() -> Platform.runLater(() -> {
