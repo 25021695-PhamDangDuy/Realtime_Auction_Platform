@@ -3,6 +3,7 @@ package database;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import function.SystemLogger;
 import models.Wallet;
 import java.sql.*;
 import java.util.ArrayList;
@@ -12,9 +13,10 @@ import java.util.UUID;
 public class WalletDAO implements DataAccessObject<Wallet> {
     protected DatabaseCreator databaseCreator = DatabaseCreator.getInstance();
     protected Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private SystemLogger log = SystemLogger.getInstance();
 
     @Override
-    public void save(Wallet wallet) {
+    public void save(Wallet wallet) throws SQLException {
         String insertSQL = "INSERT INTO wallet(ID, owner_ID, balance, balance_locked) VALUES(?, ?, ?, ?)";
         try (Connection conn = databaseCreator.getConnection()) {
             PreparedStatement psmt = conn.prepareStatement(insertSQL);
@@ -26,16 +28,15 @@ public class WalletDAO implements DataAccessObject<Wallet> {
             psmt.setString(2, ownerIdString);
             psmt.setLong(3, wallet.getBalance());
             psmt.setLong(4, wallet.getBalanceLocked());
-
             psmt.executeUpdate();
-            System.out.println("Wallet saved successfully");
+            log.info("Lưu thành công ví: " + wallet.getID().toString() + " của userID: " + wallet.getOwnerID().toString() + "|SUCCESS");
         } catch (SQLException e) {
-            System.out.println("Error saving wallet: " + e.getMessage());
+            throw new SQLException(e);
         }
     }
 
     @Override
-    public void update(Wallet wallet) {
+    public void update(Wallet wallet) throws SQLException{
         String updateSQL = "UPDATE wallet SET balance = ?, balance_locked = ? WHERE ID = ?";
         try (Connection conn = databaseCreator.getConnection()) {
             PreparedStatement psmt = conn.prepareStatement(updateSQL);
@@ -47,31 +48,33 @@ public class WalletDAO implements DataAccessObject<Wallet> {
             psmt.setString(3, idString);
 
             psmt.executeUpdate();
-            System.out.println("Wallet updated successfully");
+            log.info("Cập nhập thành công ví: " + wallet.getID().toString() + " của userID: " + wallet.getOwnerID().toString() + "|SUCCESS");
         } catch (SQLException e) {
-            System.out.println("Error updating wallet: " + e.getMessage());
+            throw new SQLException(e);
         }
     }
 
     @Override
-    public Wallet get(UUID ID) {
+    public Wallet get(UUID ID) throws SQLException {
         String querySQL = "SELECT * FROM wallet WHERE ID = ?";
         try (Connection conn = databaseCreator.getConnection()) {
+
             PreparedStatement psmt = conn.prepareStatement(querySQL);
             psmt.setString(1, ID.toString());
 
             ResultSet rs = psmt.executeQuery();
             if (rs.next()) {
+                log.info("Tiến hành lấy thông tin ví có ID: " + ID + "|SUCCESS");
                 return mapResultSetToWallet(rs);
             }
         } catch (SQLException e) {
-            System.out.println("Error getting wallet: " + e.getMessage());
+            throw new SQLException(e);
         }
         return null;
     }
 
     @Override
-    public List<Wallet> getAll() {
+    public List<Wallet> getAll() throws SQLException{
         List<Wallet> wallets = new ArrayList<>();
         String querySQL = "SELECT * FROM wallet";
         try (Connection conn = databaseCreator.getConnection()) {
@@ -79,10 +82,11 @@ public class WalletDAO implements DataAccessObject<Wallet> {
             ResultSet rs = stmt.executeQuery(querySQL);
 
             while (rs.next()) {
+                log.info("Tiến hành lấy thông tin toàn bộ ví hiện có|SUCCESS" );
                 wallets.add(mapResultSetToWallet(rs));
             }
         } catch (SQLException e) {
-            System.out.println("Error getting all wallets: " + e.getMessage());
+            throw new SQLException(e);
         }
         return wallets;
     }
@@ -90,7 +94,7 @@ public class WalletDAO implements DataAccessObject<Wallet> {
     /**
      * Lấy ví của một người dùng theo owner_ID
      */
-    public Wallet getByOwnerID(UUID owner_ID) {
+    public Wallet getByOwnerID(UUID owner_ID) throws SQLException{
         String querySQL = "SELECT * FROM wallet WHERE owner_ID = ?";
         try (Connection conn = databaseCreator.getConnection()) {
             PreparedStatement psmt = conn.prepareStatement(querySQL);
@@ -98,10 +102,11 @@ public class WalletDAO implements DataAccessObject<Wallet> {
 
             ResultSet rs = psmt.executeQuery();
             if (rs.next()) {
+                log.info("Tiến hành lấy thông tin ví của userID: " + owner_ID.toString()+ "|SUCCESS" );
                 return mapResultSetToWallet(rs);
             }
         } catch (SQLException e) {
-            System.out.println("Error getting wallet by owner ID: " + e.getMessage());
+            throw new SQLException(e);
         }
         return null;
     }
@@ -154,8 +159,39 @@ public class WalletDAO implements DataAccessObject<Wallet> {
         long balance = rs.getLong("balance");
         long balanceLocked = rs.getLong("balance_locked");
 
-        Wallet wallet = new Wallet(ownerId, balance,balanceLocked);
+        Wallet wallet = new Wallet(walletId, ownerId, balance,balanceLocked);
         return wallet;
     }
 
+    public boolean isHasID(UUID ID){
+        String SQL = "SELECT EXISTS(SELECT 1 FROM wallets WHERE ID = ?)";
+        try (Connection conn = databaseCreator.getConnection()){
+            PreparedStatement psmt = conn.prepareStatement(SQL);
+            psmt.setString(1, ID.toString());
+            try (ResultSet rs = psmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getBoolean(1);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Lỗi khi kiểm tra tồn tại của ví", e);
+        }
+        return false;
+    }
+
+    public boolean isHasOwnerID(UUID ID){
+        String SQL = "SELECT EXISTS(SELECT 1 FROM users WHERE ID = ?)";
+        try (Connection conn = databaseCreator.getConnection();
+             PreparedStatement psmt = conn.prepareStatement(SQL)) {
+            psmt.setString(1, ID.toString());
+            try (ResultSet rs = psmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getBoolean(1);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Lỗi khi kiểm tra tồn tại của ví", e);
+        }
+        return false;
+    }
 }

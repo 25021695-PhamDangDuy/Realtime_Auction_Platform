@@ -29,8 +29,8 @@ public class Wallet {
         this.balance = amount;
         this.balanceLocked = 0;
     }
-    public Wallet(UUID user,long amount,long unlockMoney){
-        this.ID = UUID.randomUUID();
+    public Wallet(UUID ID, UUID user,long amount,long unlockMoney){
+        this.ID = ID;
         this.ownerID = user;
         this.balance = amount;
         this.balanceLocked = unlockMoney;
@@ -41,26 +41,26 @@ public class Wallet {
     public long getBalanceLocked(){return balanceLocked;}
     public UUID getOwnerID(){return ownerID;}
 
-    public void withdraw(double amount) throws IllegalArgumentException {
+    public void withdraw(long amount) throws IllegalArgumentException {
         if (amount > balance) {
-            throw new IllegalArgumentException("Cannot withdraw bigger now Balance");
+            throw new IllegalArgumentException("Số tiền rút ít hơn số tiền hiện có");
         }
         synchronized (withdrawKey) {
             balance -= amount;
         }
     }
-    public void deposit(double amount) throws IllegalArgumentException{
-        if (amount < 10000) {
-            throw new IllegalArgumentException("too little");
+    public void deposit(long amount) throws IllegalArgumentException{
+        if (amount < 1000) {
+            throw new IllegalArgumentException("Số tiền nạp không thể ít hơn 1000 đồng");
         }
         synchronized (depositKey) {
             balance += amount;
         }
     }
 
-    public void lockMoney(double amount) throws IllegalArgumentException{
+    public void lockMoney(long amount) throws IllegalArgumentException{
         if (amount > balance) {
-            throw new IllegalArgumentException("Cannot lock with larger money");
+            throw new IllegalArgumentException("Không thể khóa số tiền ít hơn số tiền hiện tại");
         }
         synchronized (lockMoneyKey) {
             balance -= amount;
@@ -68,9 +68,9 @@ public class Wallet {
         }
     }
 
-    public void unlockMoney(double amount) throws IllegalArgumentException{
+    public void unlockMoney(long amount) throws IllegalArgumentException{
         if(amount > balanceLocked){
-            throw new IllegalArgumentException("balanceLocked has not enough");
+            throw new IllegalArgumentException("Số tiền bị khóa ít hơn số tiền muốn unlock");
         }
         synchronized (unlockMoneyKey){
             balance += amount;

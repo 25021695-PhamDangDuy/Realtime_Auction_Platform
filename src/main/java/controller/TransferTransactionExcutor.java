@@ -4,12 +4,13 @@ import function.TransactionExcutor;
 import function.TransactionStatus;
 import models.Transaction;
 import models.TransferTransaction;
+
+import java.sql.SQLException;
 import java.util.UUID;
 
 public class TransferTransactionExcutor implements TransactionExcutor {
-
     @Override
-    public void excute(Transaction transaction, WalletManager walletManager) {
+    public void excute(Transaction transaction, WalletManager walletManager) throws IllegalArgumentException, SQLException, NullPointerException {
         if (transaction instanceof TransferTransaction) {
             TransferTransaction transferTransaction = ((TransferTransaction) transaction);
 
@@ -23,7 +24,7 @@ public class TransferTransactionExcutor implements TransactionExcutor {
             transaction.setTransactionStatus(TransactionStatus.SUCCESS);
         } else {
             transaction.setTransactionStatus(TransactionStatus.FAILED);
-            throw new IllegalArgumentException("Transaction is not type available");
+            throw new IllegalArgumentException("Loại giao dịch không phù hợp");
         }
     }
 }

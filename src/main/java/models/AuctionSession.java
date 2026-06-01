@@ -1,6 +1,8 @@
 package models;
 
 import controller.AuctionObserver;
+import controller.BidHistory;
+import database.BidTicketDAO;
 import function.ItemStatus;
 import function.SessionChecker;
 import function.SessionStatus;
@@ -17,7 +19,7 @@ public class AuctionSession {
     private Seller seller;
 
     private long currentPrice;//giá hiện tại
-    private BidHistory bidHistory;
+    private BidTicket topBid;
     private long minIncrement; // bước giá tối thiểu
 
 
@@ -27,6 +29,7 @@ public class AuctionSession {
     private List<AuctionObserver> observers = new ArrayList<>(); //danh sách người theo dõi
 
     private SessionChecker sessionChecker = new SessionChecker();
+    private BidTicketDAO bidTicketDAO = new BidTicketDAO();
 
     //Tạo
     public AuctionSession(Item item,Seller seller,long startPrice,long minIncrement,LocalDateTime endTime,LocalDateTime startTime, SessionStatus status) {
@@ -39,8 +42,6 @@ public class AuctionSession {
         this.startTime = startTime;
         this.status = status;
 
-        //Khởi tạo lịch sử lấy đối tượng hiện tại làm chìa khóa kiểm tra tấm vé
-        bidHistory = new BidHistory(this);
     }
     public AuctionSession(UUID id,Item item,Seller seller,long startPrice,long minIncrement,LocalDateTime endTime,LocalDateTime startTime, SessionStatus status, BidHistory bidHistory) {
         this.ID = id;
@@ -52,8 +53,6 @@ public class AuctionSession {
         this.startTime = startTime;
         this.status = status;
 
-        //Khởi tạo lịch sử lấy đối tượng hiện tại làm chìa khóa kiểm tra tấm vé
-        this.bidHistory = bidHistory;
     }
     //hàm đăng ký theo dõi/ hủy theo dõi phiên đấu giá
     public void attach(AuctionObserver observer){
@@ -89,9 +88,8 @@ public class AuctionSession {
     }
     public long getMinIncrement(){return minIncrement;}
     public Bidder getTopBidder() {
-        BidTicket lastTicket = bidHistory.topLegal();
-        if (lastTicket != null) {
-            Bidder top = lastTicket.getBidder();
+        if (topBid != null) {
+            Bidder top = topBid.getBidder();
             return top;
         }else{
             return null;
@@ -134,7 +132,8 @@ public class AuctionSession {
         // 5. Nếu vượt qua mọi bài kiểm tra -> Cập nhật thành công!
         this.currentPrice = bidAmount;
         BidTicket newTicket = new BidTicket(bidder,this,LocalDateTime.now(),bidAmount,BidStatus.VALID);
-        bidHistory.pushTicket(newTicket);
+        bidTicketDAO.save(newTicket);
+        topBid = newTicket;
     }
 
     public void extendEndTime(LocalDateTime newEndTime) throws NullPointerException{
@@ -158,8 +157,6 @@ public class AuctionSession {
             Bidder winner = this.getTopBidder();
             Item reward = item;
 
-            winner.addItem(reward);
-            reward.setOwner(winner);
             reward.setItemStatus(ItemStatus.SOLD);
         }else{
             throw new IllegalArgumentException("Session is not timeup!");

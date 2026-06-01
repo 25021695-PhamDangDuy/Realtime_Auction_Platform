@@ -2,8 +2,10 @@ package database;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import controller.BidHistory;
 import function.SessionStatus;
 
+import function.SystemLogger;
 import models.*;
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -12,9 +14,10 @@ import java.util.*;
 public class SessionDAO implements DataAccessObject<AuctionSession> {
     protected DatabaseCreator databaseCreator = DatabaseCreator.getInstance();
     protected Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private SystemLogger log = SystemLogger.getInstance();
 
     @Override
-    public void save(AuctionSession session) {
+    public void save(AuctionSession session) throws SQLException {
         String insertSQL = "INSERT INTO sessions(ID, item_ID, seller_ID, currentPrice, minIncrement, startTime, endTime, status) " +
                 "VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = databaseCreator.getConnection()) {
@@ -34,15 +37,14 @@ public class SessionDAO implements DataAccessObject<AuctionSession> {
             psmt.setString(8, session.getStatus().toString());
 
             psmt.executeUpdate();
-            System.out.println("AuctionSession saved successfully");
         } catch (SQLException e) {
-            System.out.println("Error saving auction session: " + e.getMessage());
+            throw new SQLException("Lưu thông tin phiên đấu giá|FAILED|" + e.getMessage());
         }
     }
 
     @Override
-    public void update(AuctionSession session) {
-        String updateSQL = "UPDATE sessions SET currentPrice = ?, status = ?, endTime = ? WHERE ID = ?";
+    public void update(AuctionSession session) throws SQLException{
+        String updateSQL = "UPDATE sessions SET item_ID = ? seller_ID = ?  currentPrice = ?, status = ?, endTime = ? WHERE ID = ?";
         try (Connection conn = databaseCreator.getConnection()) {
             PreparedStatement psmt = conn.prepareStatement(updateSQL);
 
@@ -54,14 +56,13 @@ public class SessionDAO implements DataAccessObject<AuctionSession> {
             psmt.setString(4, idString);
 
             psmt.executeUpdate();
-            System.out.println("AuctionSession updated successfully");
         } catch (SQLException e) {
-            System.out.println("Error updating auction session: " + e.getMessage());
+            throw new SQLException("Cập nhập thông tin phiên đấu giá|FAILED|" + e.getMessage());
         }
     }
 
     @Override
-    public AuctionSession get(UUID ID) {
+    public AuctionSession get(UUID ID) throws SQLException {
         String querySQL = "SELECT * FROM sessions WHERE ID = ?";
         try (Connection conn = databaseCreator.getConnection()) {
             PreparedStatement psmt = conn.prepareStatement(querySQL);
@@ -72,13 +73,13 @@ public class SessionDAO implements DataAccessObject<AuctionSession> {
                 return mapResultSetToSession(rs);
             }
         } catch (SQLException e) {
-            System.out.println("Error getting auction session: " + e.getMessage());
+            throw new SQLException("Lấy thông tin phiên đấu giá|FAILED|" + e.getMessage());
         }
         return null;
     }
 
     @Override
-    public List<AuctionSession> getAll() {
+    public List<AuctionSession> getAll() throws SQLException {
         List<AuctionSession> sessions = new ArrayList<>();
         String querySQL = "SELECT * FROM sessions";
         try (Connection conn = databaseCreator.getConnection()) {
@@ -92,7 +93,7 @@ public class SessionDAO implements DataAccessObject<AuctionSession> {
                 }
             }
         } catch (SQLException e) {
-            System.out.println("Error getting all auction sessions: " + e.getMessage());
+            throw new SQLException("Lấy tất cả thông tin các phiên đấu giá|FAILED|" + e.getMessage());
         }
         return sessions;
     }
@@ -100,7 +101,7 @@ public class SessionDAO implements DataAccessObject<AuctionSession> {
     /**
      * Lấy danh sách người quan sát của một phiên đấu giá
      */
-    public Set<User> getObserver(AuctionSession session) {
+    public Set<User> getObserver(AuctionSession session) throws SQLException{
         Set<User> observers = new HashSet<>();
         String querySQL = "SELECT DISTINCT u.* FROM users u " +
                 "JOIN observers_sessions os ON u.ID = os.user_ID " +
@@ -117,7 +118,8 @@ public class SessionDAO implements DataAccessObject<AuctionSession> {
                 }
             }
         } catch (SQLException e) {
-            System.out.println("Error getting observers: " + e.getMessage());
+            throw new SQLException("Lấy thông tin người theo dõi phiên ID:" + session.getID() + "|FAILED|" + e.getMessage());
+
         }
         return observers;
     }
@@ -125,7 +127,7 @@ public class SessionDAO implements DataAccessObject<AuctionSession> {
     /**
      * Lấy danh sách phiên đấu giá mà một người dùng đang quan sát
      */
-    public List<AuctionSession> getSessionsToWatcher(UUID watcherID) {
+    public List<AuctionSession> getSessionsToWatcher(UUID watcherID) throws SQLException{
         List<AuctionSession> sessions = new ArrayList<>();
         String querySQL = "SELECT DISTINCT s.* FROM sessions s " +
                 "JOIN observers_sessions os ON s.ID = os.sessions_ID " +
@@ -142,7 +144,8 @@ public class SessionDAO implements DataAccessObject<AuctionSession> {
                 }
             }
         } catch (SQLException e) {
-            System.out.println("Error getting sessions for watcher: " + e.getMessage());
+            throw new SQLException("Lấy thông tin phiên đấu giá đang theo dõi của userID: " + watcherID.toString() +"|FAILED|" + e.getMessage());
+
         }
         return sessions;
     }
@@ -150,7 +153,7 @@ public class SessionDAO implements DataAccessObject<AuctionSession> {
     /**
      * Lấy danh sách phiên đấu giá đang hoạt động
      */
-    public List<AuctionSession> getActiveSessions() {
+    public List<AuctionSession> getActiveSessions() throws SQLException{
         List<AuctionSession> sessions = new ArrayList<>();
         String querySQL = "SELECT * FROM sessions WHERE status = 'ACTIVE'";
         try (Connection conn = databaseCreator.getConnection()) {
@@ -164,7 +167,7 @@ public class SessionDAO implements DataAccessObject<AuctionSession> {
                 }
             }
         } catch (SQLException e) {
-            System.out.println("Error getting active sessions: " + e.getMessage());
+            throw new SQLException("Lưu thông tin phiên đấu giá đang hoạt động|FAILED|" + e.getMessage());
         }
         return sessions;
     }
@@ -172,7 +175,7 @@ public class SessionDAO implements DataAccessObject<AuctionSession> {
     /**
      * Lấy danh sách phiên đấu giá của một người bán
      */
-    public List<AuctionSession> getSessionsBySeller(UUID sellerID) {
+    public List<AuctionSession> getSessionsBySeller(UUID sellerID) throws SQLException{
         List<AuctionSession> sessions = new ArrayList<>();
         String querySQL = "SELECT * FROM sessions WHERE seller_ID = ?";
         try (Connection conn = databaseCreator.getConnection()) {
@@ -187,7 +190,7 @@ public class SessionDAO implements DataAccessObject<AuctionSession> {
                 }
             }
         } catch (SQLException e) {
-            System.out.println("Error getting Seller sessions: " + e.getMessage());
+            throw new SQLException("Lấy thông tin phiên đấu giá của sellerID: " + sellerID.toString() +"|FAILED|" + e.getMessage());
         }
         return sessions;
     }
