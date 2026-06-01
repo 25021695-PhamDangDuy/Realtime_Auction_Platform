@@ -24,6 +24,7 @@ public abstract class Item {
         this.condition = condition;
         this.itemStatus = ItemStatus.AVAILABLE;
     }
+
     public UUID getID(){
         return ID;
     }
