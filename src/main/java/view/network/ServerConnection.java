@@ -38,7 +38,7 @@ public class ServerConnection {
         }
     }
 
-    private void listenToServer() {
+    public void listenToServer() {
         try {
             String serverMessage;
             while ((serverMessage = in.readLine()) != null) {
