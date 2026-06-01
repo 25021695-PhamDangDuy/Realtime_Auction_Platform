@@ -27,15 +27,14 @@ public class AddProduct extends Application implements MessageListener {
     @Override
     public void start(Stage stage) throws Exception {
         this.primaryStage = stage;
-        // Đăng ký nhận thông điệp phản hồi từ server cho màn hình này
+
         connection.setMessageListener(this);
-        // 1. Tạo ImageView để hiển thị xem trước ảnh (kích thước vđ: 150x150)
+
         imgPreview = new ImageView();
         imgPreview.setFitWidth(150);
         imgPreview.setFitHeight(150);
-        imgPreview.setPreserveRatio(true); // Giữ nguyên tỷ lệ ảnh, không bị méo
+        imgPreview.setPreserveRatio(true);
 
-// Đặt ảnh mặc định khi chưa chọn
         try {
             Image defaultImg = new Image(getClass().getResourceAsStream("/images/default-product.png"));
             imgPreview.setImage(defaultImg);
@@ -43,7 +42,7 @@ public class AddProduct extends Application implements MessageListener {
             System.out.println("Không tìm thấy ảnh mặc định, bỏ qua.");
         }
 
-// 2. Tạo nút bấm để mở hộp thoại chọn ảnh từ máy tính
+
         Button btnChooseImage = new Button("Chọn ảnh sản phẩm");
         btnChooseImage.setOnAction(event -> {
             FileChooser fileChooser = new FileChooser();
@@ -64,10 +63,10 @@ public class AddProduct extends Application implements MessageListener {
             }
         });
 
-// 3. Đưa nút bấm và khu vực hiển thị ảnh vào Grid của bạn
+
         grid.add(new Label("Hình ảnh:"), 0, 4);
         grid.add(btnChooseImage, 1, 4);
-        grid.add(imgPreview, 1, 5); // Hiển thị ngay phía dưới nút chọn ảnh
+        grid.add(imgPreview, 1, 5);
         TextField txtName = new TextField();
         txtName.setPromptText("Nhập tên sản phẩm...");
 
@@ -141,7 +140,6 @@ public class AddProduct extends Application implements MessageListener {
         });
     }
     public void onMessageReceived(String serverMessage) {
-        // Ép luồng chạy ngầm của mạng quay về xử lý trên luồng giao diện JavaFX
         Platform.runLater(() -> {
             System.out.println("Nhận được phản hồi đăng sản phẩm: " + serverMessage);
 

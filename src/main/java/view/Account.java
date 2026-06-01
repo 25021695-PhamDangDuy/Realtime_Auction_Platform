@@ -13,8 +13,7 @@ import view.network.MessageListener;
 import view.network.ServerConnection;
 
 public class Account extends Application implements MessageListener {
-    // Biến lưu trữ số dư tài khoản mô phỏng
-    private double soDu = 5000000; // 5 triệu VND
+    private double soDu ; // 5 triệu VND
     private Stage primaryStage;
     private javafx.scene.control.Label lblSoDu;
     private ServerConnection connection;
@@ -97,14 +96,12 @@ public class Account extends Application implements MessageListener {
                     return;
                 }
 
-                // CHUẨN HÓA LỆNH: RECHARGE|Số_tiền
                 String command = "RECHARGE|" + amount;
                 connection.sendCommand(command);
 
                 System.out.println("[LOG SENT]: Đã gửi yêu cầu nạp tiền -> " + command);
                 txtAmount.clear();
 
-                // CHÚ Ý: Không cộng số dư ở đây nữa, hãy đợi phản hồi từ server!
 
             } catch (NumberFormatException ex) {
                 showAlert(Alert.AlertType.ERROR, "Lỗi", "Số tiền không hợp lệ.");
@@ -189,16 +186,13 @@ public class Account extends Application implements MessageListener {
                 // Lấy số dư mới do Server tính toán và trả về
                 String newBalanceStr = tokens[1];
 
-                // Cập nhật lại biến số dư ở Local (nếu có dùng)
-                // soDu = Double.parseDouble(newBalanceStr);
 
-                // Cập nhật chuỗi hiển thị lên giao diện
                 lblSoDu.setText("Số dư: " + formatCurrency(Double.parseDouble(newBalanceStr)) + " VND");
 
                 showAlert(Alert.AlertType.INFORMATION, "Thành công", "Tài khoản của bạn đã được cập nhật số dư mới!");
             }
             else if ("WITHDRAW_ERR_INSUFFICIENT".equals(header)) {
-                // Trường hợp Server kiểm tra DB thấy tiền rút lớn hơn số tiền đang có
+
                 showAlert(Alert.AlertType.ERROR, "Thất bại", "Số dư tài khoản không đủ để thực hiện giao dịch này!");
             }
         });

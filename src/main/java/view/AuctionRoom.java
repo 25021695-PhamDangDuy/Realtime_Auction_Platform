@@ -25,11 +25,12 @@ public class AuctionRoom extends Application implements MessageListener {
     private String dateStr;
     private long initPrice ;
     private long currentPrice;
-    private long minStep;
+    private javafx.scene.image.ImageView imgProductView;
     private int timeLeft;
     private Label lblCountdown;
     private Label lblMoneyToWords;
-    private TextField txtBidInput;
+    private javafx.scene.control.TextField txtBidInput;
+
     private Button btnSubmitBid;
     private VBox historyLogBox;
 
@@ -39,11 +40,22 @@ public class AuctionRoom extends Application implements MessageListener {
     private Stage primaryStage;
     // Giả sử bạn có một Label hoặc Text để hiển thị mức giá cao nhất hiện tại
     private javafx.scene.control.Label lblCurrentPrice;
-    private javafx.scene.control.Label lblMessage; // Hiển thị thông báo thành công/thất bại
+    private javafx.scene.control.Label lblName;
+    private javafx.scene.control.Label lblMessage;
 
 
     @Override
-    public void start(Stage primaryStage) {
+    public void start(Stage stage) {
+        this.primaryStage = stage;
+        connection.setMessageListener(this);
+
+        // 2. Khởi tạo ImageView hiển thị ảnh sản phẩm (Kích thước tùy chọn)
+        imgProductView = new javafx.scene.image.ImageView();
+        imgProductView.setFitWidth(250);
+        imgProductView.setFitHeight(250);
+        imgProductView.setPreserveRatio(true);
+
+
         BorderPane root = new BorderPane();
         root.setStyle("-fx-background-color: #f8f9fa;");
 
@@ -373,6 +385,31 @@ public class AuctionRoom extends Application implements MessageListener {
             // Tách chuỗi dữ liệu nhận được bằng dấu gạch đứng
             String[] tokens = serverMessage.split("\\|");
             String header = tokens[0];
+            if ("ROOM_INFO".equals(header)) {
+                String targetRoomId = tokens[1];
+                String productName = tokens[2];
+                String currentPrice = tokens[3];
+                String imageBase64 = tokens[4]; // Chuỗi ảnh Base64 lấy từ DB của server
+
+                this.roomId = targetRoomId;
+                lblName.setText("Sản phẩm: " + productName);
+                lblCurrentPrice.setText("Giá hiện tại: " + currentPrice + " VND");
+
+                // Xử lý nạp ảnh Base64 lên ImageView sản phẩm
+                if (!"NO_IMAGE".equals(imageBase64) && !imageBase64.isEmpty()) {
+                    try {
+                        byte[] imageBytes = java.util.Base64.getDecoder().decode(imageBase64);
+                        java.io.ByteArrayInputStream bis = new java.io.ByteArrayInputStream(imageBytes);
+                        javafx.scene.image.Image image = new javafx.scene.image.Image(bis);
+                        imgProductView.setImage(image);
+                    } catch (Exception ex) {
+                        System.out.println("Lỗi nạp ảnh sản phẩm từ Server!");
+                        ex.printStackTrace();
+                    }
+                }
+            }
+
+
 
             if ("BID_UPDATE".equals(header)) {
                 // // tokens là roomId, tokens là giá mới, tokens là tên người đặt
