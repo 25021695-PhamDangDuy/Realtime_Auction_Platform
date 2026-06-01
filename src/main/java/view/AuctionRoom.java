@@ -302,6 +302,20 @@ public class AuctionRoom extends Application implements MessageListener {
         btnHome.setStyle("-fx-background-color: transparent; -fx-text-fill: #bdc3c7;");
         btnRoom.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-font-weight: bold;");
         btnNoti.setStyle("-fx-background-color: transparent; -fx-text-fill: #bdc3c7;");
+        btnHome.setOnAction(event -> {
+            try {
+                // 1. Khởi tạo thực thể của màn hình HomeScreen
+                AuctionHomeScreen homeScreen = new AuctionHomeScreen();
+
+                // 2. Gọi hàm start và truyền cửa sổ chính primaryStage vào
+                homeScreen.start(primaryStage);
+
+                System.out.println("[NAVIGATION]: Đã chuyển về giao diện HomeScreen.");
+            } catch (Exception ex) {
+                System.err.println("[ERROR]: Không thể chuyển sang HomeScreen: " + ex.getMessage());
+                ex.printStackTrace();
+            }
+        });
 
         taskbar.getChildren().addAll(btnHome, btnRoom, btnNoti);
         return taskbar;

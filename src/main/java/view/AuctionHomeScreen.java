@@ -177,9 +177,9 @@ public class AuctionHomeScreen extends Application {
         taskbar.setAlignment(Pos.CENTER);
 
         Button btnHome = createNavButton("🏠 Trang chủ", true);
-        Button btnRoom = createNavButton("🔨 Phòng đấu giá", false);
+        Button btnRoom = createNavButton("🔨 Phòng đấu giá", true);
         Button btnNoti = createNavButton("🔔 Thông báo", false);
-        Button btnProfile = createNavButton("👤 Tài khoản", false);
+        Button btnProfile = createNavButton("👤 Tài khoản", true);
         btnRoom.setOnAction( event ->  {
             try {
                 Stage currentStage = (Stage) btnRoom.getScene().getWindow();
