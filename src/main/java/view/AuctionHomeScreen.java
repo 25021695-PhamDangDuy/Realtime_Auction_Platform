@@ -177,9 +177,10 @@ public class AuctionHomeScreen extends Application {
         taskbar.setAlignment(Pos.CENTER);
 
         Button btnHome = createNavButton("🏠 Trang chủ", true);
-        Button btnRoom = createNavButton("🔨 Phòng đấu giá", false);
+        Button btnRoom = createNavButton("🔨 Phòng đấu giá", true);
         Button btnNoti = createNavButton("🔔 Thông báo", false);
         Button btnProfile = createNavButton("👤 Tài khoản", false);
+        Button addProduct = createNavButton("Thêm sản phẩm",true);
         btnRoom.setOnAction( event ->  {
             try {
                 Stage currentStage = (Stage) btnRoom.getScene().getWindow();
@@ -191,6 +192,22 @@ public class AuctionHomeScreen extends Application {
             } catch (Exception e) {
                 System.err.println("[LOG ERROR]: Không thể chuyển cảnh sang phòng đấu giá: " + e.getMessage());
                 e.printStackTrace();
+            }
+        });
+        addProduct.setOnAction(event -> {
+            try {
+                Stage currentStage = (Stage) addProduct.getScene().getWindow();
+                AddProduct room = new AddProduct();
+                Stage roomStage = new Stage();
+                try {
+                    room.start(roomStage);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+                currentStage.close();
+
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
         });
         taskbar.getChildren().addAll(btnHome, btnRoom, btnNoti, btnProfile);
@@ -206,6 +223,7 @@ public class AuctionHomeScreen extends Application {
         }
         return btn;
     }
+
 
 
 

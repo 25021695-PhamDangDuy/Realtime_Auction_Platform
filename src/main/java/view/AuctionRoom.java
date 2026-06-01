@@ -34,6 +34,7 @@ public class AuctionRoom extends Application {
     private Button btnSubmitBid;
     private VBox historyLogBox;
 
+
     private final NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
     private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
     private ServerConnection connection = new ServerConnection();
