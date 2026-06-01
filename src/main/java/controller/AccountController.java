@@ -76,5 +76,5 @@ public class AccountController{
 
     }
 
-//    public void UpdateInfor(String name, )
+    //    public void UpdateInfor(String name, )
 }
