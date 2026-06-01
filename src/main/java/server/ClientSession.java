@@ -2,6 +2,8 @@ package server;
 
 import java.io.PrintWriter;
 import models.User;
+import models.Wallet;
+
 import java.util.UUID;
 
 public class ClientSession {
