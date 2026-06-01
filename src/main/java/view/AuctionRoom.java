@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import view.network.MessageListener;
 import view.network.ServerConnection;
 
 import java.text.NumberFormat;
@@ -15,7 +16,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class AuctionRoom extends Application {
+public class AuctionRoom extends Application implements MessageListener {
+    private String roomId = "";
 
     // Thông tin phiên đấu giá hiện tại
     private String itemName;
@@ -25,9 +27,6 @@ public class AuctionRoom extends Application {
     private long currentPrice;
     private long minStep;
     private int timeLeft;
-
-
-    private Label lblCurrentPrice;
     private Label lblCountdown;
     private Label lblMoneyToWords;
     private TextField txtBidInput;
@@ -37,6 +36,11 @@ public class AuctionRoom extends Application {
     private final NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
     private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
     private ServerConnection connection = new ServerConnection();
+    private Stage primaryStage;
+    // Giả sử bạn có một Label hoặc Text để hiển thị mức giá cao nhất hiện tại
+    private javafx.scene.control.Label lblCurrentPrice;
+    private javafx.scene.control.Label lblMessage; // Hiển thị thông báo thành công/thất bại
+
 
     @Override
     public void start(Stage primaryStage) {
@@ -206,8 +210,8 @@ public class AuctionRoom extends Application {
             String bidAmountStr = txtBidInput.getText().trim();
             if (bidAmountStr.isEmpty()) {
                 System.out.println("Vui lòng nhập số tiền muốn đặt!");
-                // Nếu có biến message hiển thị lỗi, bạn cập nhật tại đây:
-                // message.setText("Vui lòng nhập số tiền muốn đặt!");
+                System.out.println("Vui lòng nhập số tiền muốn đặt!");
+                lblMessage.setText("Vui lòng nhập số tiền muốn đặt!");
                 return;
             }
 
@@ -216,21 +220,22 @@ public class AuctionRoom extends Application {
                 long bidAmount = Long.parseLong(bidAmountStr);
                 if (bidAmount <= 0) {
                     System.out.println("Số tiền đặt giá phải lớn hơn 0!");
+                    System.out.println("Số tiền đặt giá phải lớn hơn 0!");
+                    lblMessage.setText("Số tiền đặt giá phải lớn hơn 0!");
                     return;
                 }
 
-                // ---- BƯỚC 2: Ghép chuỗi theo cú pháp phân tách bằng dấu gạch đứng (|) ----
-                // Lệnh khởi động viết hoa theo quy chuẩn hệ thống của bạn (Ví dụ: BID)
-                // Cú pháp mẫu: BID|<số_tiền_đặt>
-                // (Nếu cần gửi kèm mã phòng/mã phiên, bạn có thể ghép: "BID|" + auctionId + "|" + bidAmount)
+
                 String command = "BID|" + bidAmount;
 
                 // ---- BƯỚC 3: Gọi hàm gửi lệnh đi tới server ----
                 connection.sendCommand(command);
                 System.out.println("[LOG SENT]: Đã gửi yêu cầu đặt giá -> " + command);
-
                 // Xóa trống ô nhập sau khi bấm đặt để tiện cho lần nhập sau
                 txtBidInput.clear();
+                lblMessage.setText("Đang gửi yêu cầu đặt giá...");
+                lblMessage.setTextFill(javafx.scene.paint.Color.BLUE);
+
 
             } catch (NumberFormatException ex) {
                 System.err.println("[LOG ERROR]: Số tiền nhập vào không hợp lệ!");
@@ -361,6 +366,34 @@ public class AuctionRoom extends Application {
         }
         return res.toString().replaceAll("\\s+", " ").trim();
     }
+    public void onMessageReceived(String serverMessage) {
+        javafx.application.Platform.runLater(() -> {
+            System.out.println("Nhận được dữ liệu phòng đấu giá: " + serverMessage);
+
+            // Tách chuỗi dữ liệu nhận được bằng dấu gạch đứng
+            String[] tokens = serverMessage.split("\\|");
+            String header = tokens[0];
+
+            if ("BID_UPDATE".equals(header)) {
+                // // tokens là roomId, tokens là giá mới, tokens là tên người đặt
+
+                // 3. SỬA CHUẨN: Lấy index 1 và index 2 (Đã xóa bỏ hoàn toàn dấu phẩy thừa)
+                String targetRoomId = tokens[1];
+                String newPrice = tokens[2];
+                // Kiểm tra xem có đúng là gói tin của phòng hiện tại không
+                if (this.roomId.equals(targetRoomId)) {
+                    lblCurrentPrice.setText("Giá hiện tại: " + newPrice + " VND");
+                    lblMessage.setText("Có người vừa đặt giá mới!");
+                    lblMessage.setTextFill(javafx.scene.paint.Color.GREEN);
+                }
+            } else if ("BID_ERR_LOW".equals(header)) {
+                // Trường hợp bạn đặt giá thấp hơn giá hiện tại của phòng và bị server từ chối
+                lblMessage.setText("Giá bạn đặt thấp hơn giá hiện tại của phòng!");
+                lblMessage.setTextFill(javafx.scene.paint.Color.FIREBRICK);
+            }
+        });
+    }
+
 
     public static void main(String[] args) {
         launch(args);
