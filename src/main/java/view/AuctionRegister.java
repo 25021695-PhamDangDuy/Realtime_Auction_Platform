@@ -13,8 +13,13 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import view.network.ServerConnection;
+
+
 
 public class AuctionRegister extends Application {
+    private ServerConnection connection = new ServerConnection();
+
     public void start(Stage primaryStage){
         primaryStage.setTitle("Đăng ký tài khoản đấu giá");
         GridPane grid = new GridPane();
@@ -52,12 +57,55 @@ public class AuctionRegister extends Application {
         btnRegister.setStyle("-fx-background-color: #27ae60; -fx-text-fill: white;");
         btnRegister.setPrefWidth(200);
         grid.add(btnRegister, 1, 5);
-
         Text message = new Text();
         grid.add(message, 1, 6);
+        btnRegister.setOnAction(event -> {
+            String username = userField.getText().trim();
+            String password = pwField.getText().trim();
+            String confirmpw = confirmPwField.getText().trim();
+
+            if (username.isEmpty() || password.isEmpty() || confirmpw.isEmpty()) {
+                System.out.println("Vui lòng điền đầy đủ thông tin!");
+                message.setFill(javafx.scene.paint.Color.FIREBRICK);
+                return;
+            }
+
+
+            message.setText("Đăng ký thành công! Đang chuyển cảnh...");
+            message.setFill(javafx.scene.paint.Color.GREEN);
+            try {
+                // Cách 1: Nếu AuctionLogin cũng là một Application độc lập, gọi start() của nó
+                AuctionLogin login = new AuctionLogin();
+                login.start(primaryStage); // Dùng lại chính cửa sổ hiện tại để chuyển giao diện
+
+            } catch (Exception ex) {
+                message.setText("Lỗi hệ thống khi chuyển cảnh đăng nhập!");
+                message.setFill(javafx.scene.paint.Color.RED);
+                ex.printStackTrace();
+            }
 
 
 
+
+            String command = "REGISTER| " + username + "|" + password + "|" + confirmpw;
+            try {
+                connection.sendCommand(command);
+                System.out.println("[LOG SENT]: Đã gửi yêu cầu đăng ký -> " + command);
+
+                message.setFill(javafx.scene.paint.Color.BLUE);
+                message.setText("Đang gửi yêu cầu đăng ký...");
+            } catch (Exception e) {
+                System.err.println("[LOG ERROR]: Lỗi: " + e.getMessage());
+                message.setFill(javafx.scene.paint.Color.FIREBRICK);
+                message.setText("Lỗi kết nối mạng!");
+            }
+            try{
+                AuctionLogin loginApp = new AuctionLogin();
+                loginApp.start(primaryStage);
+            } catch (Exception ex){
+                ex.printStackTrace();
+            }
+        });
         Scene scene = new Scene(grid, 450, 400);
         primaryStage.setScene(scene);
         primaryStage.show();
