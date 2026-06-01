@@ -2,6 +2,7 @@ package database;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import controller.AuctionObserver;
 import controller.BidHistory;
 import function.SessionStatus;
 
@@ -119,7 +120,6 @@ public class SessionDAO implements DataAccessObject<AuctionSession> {
             }
         } catch (SQLException e) {
             throw new SQLException("Lấy thông tin người theo dõi phiên ID:" + session.getID() + "|FAILED|" + e.getMessage());
-
         }
         return observers;
     }
@@ -168,6 +168,24 @@ public class SessionDAO implements DataAccessObject<AuctionSession> {
             }
         } catch (SQLException e) {
             throw new SQLException("Lưu thông tin phiên đấu giá đang hoạt động|FAILED|" + e.getMessage());
+        }
+        return sessions;
+    }
+    public List<AuctionSession> getStartingSession() throws SQLException {
+        List<AuctionSession> sessions = new ArrayList<>();
+        String querySQL = "SELECT * FROM sessions WHERE status = 'UPCOMING'";
+        try (Connection conn = databaseCreator.getConnection()) {
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(querySQL);
+
+            while (rs.next()) {
+                AuctionSession session = mapResultSetToSession(rs);
+                if (session != null) {
+                    sessions.add(session);
+                }
+            }
+        } catch (SQLException e) {
+            throw new SQLException("Lưu thông tin phiên đấu giá sắp mở|FAILED|" + e.getMessage());
         }
         return sessions;
     }

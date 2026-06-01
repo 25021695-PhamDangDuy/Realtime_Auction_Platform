@@ -1,78 +1,77 @@
 package controller;
 
-import database.BidderDAOImpl;
+import database.*;
 import function.*;
 
 import models.Bidder;
 import models.User;
+
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 
 //Class kiểm soát đăng nhập và tài khoản người dùng
 public class AccountController{
-    //Map người dùng được lưu dưới dạng User - username(String)
+    private static AccountController instance = null;
+
     private BidderDAOImpl bidderDAO = new BidderDAOImpl();
     private SystemLogger log = SystemLogger.getInstance();
-    //Setting bộ quy tắc cho việc setName
-    List<StrongRule> ruleName;
-    //Setting bộ quy tắc cho PW
-    List<StrongRule> rulePW;
+    private getUserDAO getUserDAO = new getUserDAO();
+    private WalletManager walletManager = WalletManager.getInstance();
 
-    public AccountController(){
+    //Validator
+    private PasswordValidator passwordValidator;
+    private UserNameValidator userNameValidator;
 
-        //Tùy chỉnh cho quy tắc mật khẩu
-        rulePW.add(new LengthRule(6));
-        rulePW.add(new DiversityRule());
-        //Tùy chỉnh cho quy tắc đặt tên
-        ruleName.add(new LengthRule(3));
-//        ruleName.add(new ExistRule(userList.keySet()));
-
+    private AccountController(){
+        passwordValidator = new PasswordValidator();
+        userNameValidator = new UserNameValidator();
     }
 
-    //Kiểm tra mật khẩu:
-    public boolean checkPassword(User b, String pw){
-        return b.getPassword().equals(pw);
-    }
-
-    //Kiểm tra mật khẩu có đủ mạnh không
-    public boolean isPWValidStrong(String pw) {
-        for(StrongRule pr : rulePW){
-            if(!pr.validate(pw)){
-                return false;
+    public static AccountController getInstance() {
+        if(instance == null){
+            synchronized (AuctionController.class){
+                if(instance == null ){
+                    instance = new AccountController();
+                    return  instance;
+                }
             }
         }
-        return true;
+        return instance;
     }
-    //Kiểm tra tên đặt có chuẩn không
-    public boolean isNameValidStrong(String pw) {
-        for(StrongRule pr : ruleName){
-            if(!pr.validate(pw)){
-                return false;
-            }
+
+    public void Register(String name, String pw, String idPW) throws SQLException {
+      if(!passwordValidator.valid(pw)){
+          throw new IllegalArgumentException("Mật khẩu không đủ mạnh");
+      }
+      if(!userNameValidator.valid(name)){
+          throw new IllegalArgumentException("Tên không đủ mạnh");
+      }
+      if (getUserDAO.getbyUsername(name) != null){
+          throw new IllegalArgumentException("Tên đã được sử dụng");
+      }
+      Bidder newBidder = new Bidder(name,pw);
+
+      bidderDAO.save(newBidder);
+      walletManager.createWallet(newBidder.getID(),0);
+      log.info("Tài khoản ID:" + newBidder.getID().toString() + " tạo thành công");
+
+    }
+
+    public User Login(String name, String pw) throws SQLException, IllegalArgumentException {
+        User user = getUserDAO.getbyUsername(name);
+
+        if(user == null){
+            throw new IllegalArgumentException("Tài khoản này chưa tồn tại");
         }
-        return true;
-    }
 
-    public void Register(String name, String pw, String idPW) {
-        if (this.isPWValidStrong(pw) && this.isNameValidStrong(name) && pw.equals(idPW)) {
-            Bidder bidder = new Bidder(name,pw);
-
-            bidderDAO.save(bidder);
-            log.info("Tài khoản ID:" + bidder.getID().toString() + " tạo thành công");
-        } else if (!pw.equals(idPW)) {
-            System.out.println("MK không trùng nhau");
-        }else{
-            System.out.println("MK không đủ mạnh");
+        if(!passwordValidator.checkEquals(user.getPassword(), pw)){
+            throw new IllegalArgumentException("Mật khẩu không chính xác");
         }
+
+        return user;
+
     }
 
-//    public void Login(String name, String pw){
-//        if (userList.containsKey(name) && (userList.get(name).getPassword()).equals(pw)){
-//            System.out.println("Login thành công");
-//        }else{
-//            System.out.println("Login không thành công");
-//        }
-//    }
-
-
+//    public void UpdateInfor(String name, )
 }

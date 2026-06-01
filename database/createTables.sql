@@ -1,28 +1,29 @@
 CREATE TABLE IF NOT EXISTS users(
     ID TEXT PRIMARY KEY,
-    Username TEXT NOT NULL,
-    Password TEXT NOT NULL
+    Username TEXT NOT NULL UNIQUE ,
+    Password TEXT NOT NULL,
+    role TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS wallets(
                                       ID TEXT PRIMARY KEY ,
-                                      owner_ID TEXT NOT NULL ,
+                                      owner_ID TEXT NOT NULL UNIQUE ,
                                       Balance REAL DEFAULT 0.0 CHECK ( Balance >= 0.0 ),
                                       BalanceLocked REAL DEFAULT 0.0 CHECK ( BalanceLocked >= 0.0 ),
-                                      FOREIGN KEY (owner_ID) REFERENCES users(ID),
-    PRIMARY KEY (ID,owner_ID)
+                                      FOREIGN KEY (owner_ID) REFERENCES users(ID)
+
 );
 
 CREATE TABLE IF NOT EXISTS items(
                                     ID TEXT PRIMARY KEY ,
-                                    owner_ID TEXT NOT NULL ,
+                                    owner_ID TEXT NOT NULL UNIQUE ,
                                     Name TEXT NOT NULL ,
                                     Price REAL NOT NULL CHECK ( Price >= 0 ),
                                     Condition TEXT,
                                     Status TEXT NOT NULL ,
 
-                                    FOREIGN KEY (owner_ID) REFERENCES users(ID),
-    PRIMARY KEY (ID,owner_ID)
+                                    FOREIGN KEY (owner_ID) REFERENCES users(ID)
+
 );
 
 CREATE TABLE IF NOT EXISTS bidTickets(
@@ -86,4 +87,3 @@ CREATE TABLE IF NOT EXISTS electronic_item(
     FOREIGN KEY (ID) REFERENCES  items(ID)
 );
 
-ALTER TABLE users ADD COLUMN role TEXT NOT NULL;

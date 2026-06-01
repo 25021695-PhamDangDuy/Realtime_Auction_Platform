@@ -14,6 +14,7 @@ public class getUserDAO extends UserDAOImpl<User> {
     public List<User> getAll() {
         return List.of();
     }
+
     // Method để lấy user theo ID và tự động convert về đúng type
     public User get(UUID userId) {
         String selectSQL = "SELECT * FROM users WHERE ID = ?";
@@ -36,5 +37,27 @@ public class getUserDAO extends UserDAOImpl<User> {
             System.out.println("Lỗi get(userId): " + e.getMessage());
         }
         return null;
+    }
+
+    public User getbyUsername(String name) throws SQLException{
+        String SQLquery = "SELECT ID, Username, Password, role FROM users WHERE Username = ?";
+        try(Connection conn = databaseCreator.getConnection()){
+            PreparedStatement preparedStatement = conn.prepareStatement(SQLquery);
+
+            preparedStatement.setString(1, name);
+
+            ResultSet rs = preparedStatement.executeQuery();
+            if(rs == null){
+                throw new NullPointerException("Không tìm thấy ID user");
+            }
+            String ID = rs.getString("ID");
+            String Name = rs.getString("Username");
+            String Pw = rs.getString("Password");
+            String role = rs.getString("role");
+
+            return createUserByRole(UUID.fromString(ID),Name,Pw,role);
+        }catch (SQLException e){
+            throw new SQLException(e);
+        }
     }
 }

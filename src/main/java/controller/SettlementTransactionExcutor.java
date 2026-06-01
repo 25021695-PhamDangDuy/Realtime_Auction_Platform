@@ -4,11 +4,13 @@ import function.TransactionExcutor;
 import function.TransactionStatus;
 import models.SettlementTransaction;
 import models.Transaction;
+
+import java.sql.SQLException;
 import java.util.UUID;
 
 public class SettlementTransactionExcutor implements TransactionExcutor {
     @Override
-    public void excute(Transaction transaction, WalletManager walletManager) throws IllegalArgumentException {
+    public void excute(Transaction transaction, WalletManager walletManager) throws IllegalArgumentException, SQLException {
         if (transaction instanceof SettlementTransaction) {
             SettlementTransaction settlementTransaction = ((SettlementTransaction) transaction);
             UUID walletID1 = settlementTransaction.getSenderWalletID();

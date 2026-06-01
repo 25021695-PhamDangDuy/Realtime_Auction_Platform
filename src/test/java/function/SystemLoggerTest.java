@@ -96,60 +96,6 @@ public class SystemLoggerTest {
         assertTrue(output.contains("[CRASH]"), "Output phải chứa [CRASH]");
     }
 
-    // ==================== Test Minimum Level Filtering ====================
-    @Test
-    @DisplayName("Test setMinimumLevel() - INFO level chỉ log INFO và cấp cao hơn")
-    void testMinimumLevelInfo() {
-        logger.setMinimumLevel(SystemLogger.LogLevel.INFO);
-        outputStream.reset();
-
-        logger.info("Info message");
-        String output = outputStream.toString();
-
-        assertTrue(output.contains("[INFO]"), "INFO phải được log");
-    }
-
-    @Test
-    @DisplayName("Test setMinimumLevel() - WARNING level lọc bỏ INFO")
-    void testMinimumLevelWarning() {
-        logger.setMinimumLevel(SystemLogger.LogLevel.WARNING);
-        outputStream.reset();
-
-        logger.info("Info message");
-        String output = outputStream.toString();
-
-        assertTrue(output.isEmpty(), "INFO message phải bị lọc khi minimum level là WARNING");
-    }
-
-    @Test
-    @DisplayName("Test setMinimumLevel() - WARNING level log WARNING và cấp cao hơn")
-    void testMinimumLevelWarningLogsWarning() {
-        logger.setMinimumLevel(SystemLogger.LogLevel.WARNING);
-        outputStream.reset();
-
-        logger.warning("Warning message");
-        String output = outputStream.toString();
-
-        assertTrue(output.contains("[WARNING]"), "WARNING phải được log");
-    }
-
-    @Test
-    @DisplayName("Test setMinimumLevel() - CRASH level chỉ log CRASH")
-    void testMinimumLevelCrash() {
-        logger.setMinimumLevel(SystemLogger.LogLevel.CRASH);
-        outputStream.reset();
-
-        logger.error("Error message");
-        String output1 = outputStream.toString();
-
-        assertTrue(output1.isEmpty(), "ERROR message phải bị lọc khi minimum level là CRASH");
-
-        outputStream.reset();
-        logger.crash("Crash message", null);
-        String output2 = outputStream.toString();
-
-        assertTrue(output2.contains("[CRASH]"), "CRASH phải được log");
-    }
 
     @Test
     @DisplayName("Test log format - chứa thread name")

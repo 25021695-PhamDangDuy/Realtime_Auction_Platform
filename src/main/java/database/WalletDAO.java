@@ -17,7 +17,7 @@ public class WalletDAO implements DataAccessObject<Wallet> {
 
     @Override
     public void save(Wallet wallet) throws SQLException {
-        String insertSQL = "INSERT INTO wallet(ID, owner_ID, balance, balance_locked) VALUES(?, ?, ?, ?)";
+        String insertSQL = "INSERT INTO wallets(ID, owner_ID, Balance, BalanceLocked) VALUES(?, ?, ?, ?)";
         try (Connection conn = databaseCreator.getConnection()) {
             PreparedStatement psmt = conn.prepareStatement(insertSQL);
 
@@ -37,7 +37,7 @@ public class WalletDAO implements DataAccessObject<Wallet> {
 
     @Override
     public void update(Wallet wallet) throws SQLException{
-        String updateSQL = "UPDATE wallet SET balance = ?, balance_locked = ? WHERE ID = ?";
+        String updateSQL = "UPDATE wallets SET Balance = ?, BalanceLocked = ? WHERE ID = ?";
         try (Connection conn = databaseCreator.getConnection()) {
             PreparedStatement psmt = conn.prepareStatement(updateSQL);
 
@@ -56,7 +56,7 @@ public class WalletDAO implements DataAccessObject<Wallet> {
 
     @Override
     public Wallet get(UUID ID) throws SQLException {
-        String querySQL = "SELECT * FROM wallet WHERE ID = ?";
+        String querySQL = "SELECT * FROM wallets WHERE ID = ?";
         try (Connection conn = databaseCreator.getConnection()) {
 
             PreparedStatement psmt = conn.prepareStatement(querySQL);
@@ -76,7 +76,7 @@ public class WalletDAO implements DataAccessObject<Wallet> {
     @Override
     public List<Wallet> getAll() throws SQLException{
         List<Wallet> wallets = new ArrayList<>();
-        String querySQL = "SELECT * FROM wallet";
+        String querySQL = "SELECT * FROM wallets";
         try (Connection conn = databaseCreator.getConnection()) {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(querySQL);
@@ -95,7 +95,7 @@ public class WalletDAO implements DataAccessObject<Wallet> {
      * Lấy ví của một người dùng theo owner_ID
      */
     public Wallet getByOwnerID(UUID owner_ID) throws SQLException{
-        String querySQL = "SELECT * FROM wallet WHERE owner_ID = ?";
+        String querySQL = "SELECT * FROM wallets WHERE owner_ID = ?";
         try (Connection conn = databaseCreator.getConnection()) {
             PreparedStatement psmt = conn.prepareStatement(querySQL);
             psmt.setString(1, owner_ID.toString());
@@ -116,7 +116,7 @@ public class WalletDAO implements DataAccessObject<Wallet> {
      */
     public List<Wallet> getWalletsByMinimumBalance(long minBalance) {
         List<Wallet> wallets = new ArrayList<>();
-        String querySQL = "SELECT * FROM wallet WHERE balance >= ?";
+        String querySQL = "SELECT * FROM wallets WHERE Balance >= ?";
         try (Connection conn = databaseCreator.getConnection()) {
             PreparedStatement psmt = conn.prepareStatement(querySQL);
             psmt.setLong(1, minBalance);
@@ -136,7 +136,7 @@ public class WalletDAO implements DataAccessObject<Wallet> {
      */
     public List<Wallet> getWalletsWithLockedBalance() {
         List<Wallet> wallets = new ArrayList<>();
-        String querySQL = "SELECT * FROM wallet WHERE balance_locked > 0";
+        String querySQL = "SELECT * FROM wallets WHERE BalanceLocked > 0";
         try (Connection conn = databaseCreator.getConnection()) {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(querySQL);
@@ -156,8 +156,8 @@ public class WalletDAO implements DataAccessObject<Wallet> {
     private Wallet mapResultSetToWallet(ResultSet rs) throws SQLException {
         UUID walletId = UUID.fromString(rs.getString("ID"));
         UUID ownerId = UUID.fromString(rs.getString("owner_ID"));
-        long balance = rs.getLong("balance");
-        long balanceLocked = rs.getLong("balance_locked");
+        long balance = rs.getLong("Balance");
+        long balanceLocked = rs.getLong("BalanceLocked");
 
         Wallet wallet = new Wallet(walletId, ownerId, balance,balanceLocked);
         return wallet;
@@ -181,8 +181,8 @@ public class WalletDAO implements DataAccessObject<Wallet> {
 
     public boolean isHasOwnerID(UUID ID){
         String SQL = "SELECT EXISTS(SELECT 1 FROM users WHERE ID = ?)";
-        try (Connection conn = databaseCreator.getConnection();
-             PreparedStatement psmt = conn.prepareStatement(SQL)) {
+        try (Connection conn = databaseCreator.getConnection()){
+            PreparedStatement psmt = conn.prepareStatement(SQL);
             psmt.setString(1, ID.toString());
             try (ResultSet rs = psmt.executeQuery()) {
                 if (rs.next()) {

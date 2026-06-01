@@ -84,7 +84,7 @@ public class AuctionManager {
 
     public List<AuctionSession> getSessionsAll() throws SQLException{
         List<AuctionSession> list = sessionDAO.getAll();
-        if(list.size() == 0){
+        if(list.isEmpty()){
             throw new NullPointerException("Không tồn tại phiên đấu giá");
         }
         return list;
@@ -176,6 +176,14 @@ public class AuctionManager {
         List<AuctionSession> list = sessionDAO.getActiveSessions();
         if (list == null){
             throw new NullPointerException("Không còn phiên đang hoạt động");
+        }
+        return list;
+    }
+
+    public List<AuctionSession> getSessionUpcoming() throws SQLException{
+        List<AuctionSession> list = sessionDAO.getStartingSession();
+        if(list == null){
+            throw new NullPointerException("Không còn phiên sắp mở");
         }
         return list;
     }

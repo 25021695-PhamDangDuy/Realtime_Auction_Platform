@@ -1,10 +1,13 @@
 package models;
 
+import server.Role;
+
 import java.util.UUID;
 
 public abstract class User {
     private UUID ID;
     private String  Name, Password;
+    private Role role;
 
     public User(String Name,String Password) {
         this.ID = UUID.randomUUID();
@@ -20,11 +23,13 @@ public abstract class User {
     public String getName(){return Name;}
     public UUID getID(){return ID;}
     public String getPassword(){return Password;}
+    public abstract Role getRole();
     //Setter
     protected void setName(String name) {
         Name = name;
     }
     public void setPassword(String newPW){Password = newPW; }
+    protected void setRole(Role role){this.role = role;}
 
 }
 

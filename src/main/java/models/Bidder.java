@@ -3,6 +3,7 @@ package models;
 
 import controller.AuctionObserver;
 import function.ItemStatus;
+import server.Role;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +48,7 @@ public class Bidder extends User implements AuctionObserver {
     public String getName() {
         return super.getName();
     }
+    public Role getRole(){return Role.BIDDER;}
 
     @Override
     public void update(String message){
