@@ -43,7 +43,7 @@ public class AuctionSession {
         this.status = status;
 
     }
-    public AuctionSession(UUID id, Item item, Seller seller, long startPrice, long minIncrement, LocalDateTime endTime, LocalDateTime startTime, SessionStatus status, BidHistory bidHistory) {
+    public AuctionSession(UUID id, Item item, Seller seller, Double startPrice, long minIncrement, LocalDateTime endTime, LocalDateTime startTime, SessionStatus status, BidHistory bidHistory) {
         this.ID = id;
         this.item=item;
         this.seller=seller;
@@ -101,7 +101,7 @@ public class AuctionSession {
     public Seller getSeller() {
         return seller;
     }
-    public long getCurrentPrice(){return currentPrice;}
+    public Double getCurrentPrice(){return currentPrice;}
 
     public void setStatus(SessionStatus status) throws NullPointerException {
         if(status == null){
