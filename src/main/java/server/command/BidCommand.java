@@ -1,4 +1,58 @@
 package server.command;
 
-public class BidCommand implements Command{
+import controller.AuctionManager;
+import models.AuctionSession;
+import models.Bidder;
+import server.ClientManager;
+import server.ClientSession;
+import server.Role;
+import server.command.Command;
+
+import java.sql.SQLException;
+import java.util.Set;
+import java.util.UUID;
+
+public class BidCommand implements Command {
+    @Override
+    public Set<Role> getAllowedRoles() {
+        return Set.of(Role.BIDDER, Role.SELLER);
+    }
+
+    @Override
+    public void execute(ClientSession session, String[] args) {
+        // Cú pháp từ Client: BID|ProductId|SốTiền
+        if (args.length < 3) {
+            session.sendMessage("ERROR|Thiếu tham số đặt giá.");
+            return;
+        }
+
+        UUID productId = UUID.fromString(args[1]);
+        try {
+            long amount = Long.parseLong(args[2]);
+            AuctionManager manager = AuctionManager.getInstance();
+            try {
+                AuctionSession room = manager.getSession(productId);
+
+                // Ép kiểu User trong Session thành Bidder (Vì Role đã chặn GUEST rồi nên an toàn)
+                Bidder bidder = (Bidder) session.getCurrentUser();
+
+                // Gọi Core Logic của nhóm bạn
+                manager.placeBid(room, bidder, amount);
+            } catch (SQLException sqlException){}
+
+            // Báo thành công cho người đặt
+            session.sendMessage("SUCCESS|Đã đặt giá " + amount + " cho " + productId);
+
+            // Lưu ý: Vì Bidder của bạn có hàm update() chỉ in ra System.out,
+            // nên ta vẫn dùng ClientManager để bắn thông báo về qua mạng Socket.
+            String alertMsg = "ROOM_ALERT|" + productId + "|" + amount;
+            ClientManager.broadcastMessage(alertMsg); // Phát thanh toàn server
+
+        } catch (NumberFormatException e) {
+            session.sendMessage("ERROR|Số tiền không hợp lệ.");
+        } catch (NullPointerException | IllegalArgumentException e) {
+            // Bắt trọn các lỗi nghiệp vụ do Core Logic của bạn ném ra (VD: "Không tìm thấy session", "Người bán không thể tự đấu giá")
+            session.sendMessage("ERROR|" + e.getMessage());
+        }
+    }
 }

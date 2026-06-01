@@ -7,9 +7,11 @@ import models.Bidder;
 import models.User;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 //Class kiểm soát đăng nhập và tài khoản người dùng
 public class AccountController{
+    private static AccountController instance=null;
     //Map người dùng được lưu dưới dạng User - username(String)
     private BidderDAOImpl bidderDAO = new BidderDAOImpl();
     private SystemLogger log = SystemLogger.getInstance();
@@ -66,14 +68,28 @@ public class AccountController{
             System.out.println("MK không đủ mạnh");
         }
     }
-
-//    public void Login(String name, String pw){
-//        if (userList.containsKey(name) && (userList.get(name).getPassword()).equals(pw)){
-//            System.out.println("Login thành công");
-//        }else{
-//            System.out.println("Login không thành công");
-//        }
-//    }
-
+    public static AccountController getInstance(){
+        if (instance==null){
+            synchronized (AccountController.class){
+                if(instance == null){
+                    instance = new AccountController();
+                    return instance;
+                }
+            }
+        }
+        return instance;
+    }
+    //Goij ham tam de khong loi
+    public User Login(String name, String pw){
+        return new Bidder("Tesst","123");
+    }
+    /*{
+        if (userList.containsKey(name) && (userList.get(name).getPassword()).equals(pw)){
+           System.out.println("Login thành công");
+       }else{
+           System.out.println("Login không thành công");
+       }
+    }
+*/
 
 }
