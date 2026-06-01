@@ -9,6 +9,7 @@ import models.Seller;
 import models.User;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 
@@ -34,7 +35,7 @@ public abstract class UserDAOImpl<T extends User> implements UserDAO<T>{
             preparedStatement.setString(4, role);
 
             preparedStatement.executeUpdate();
-            System.out.println("Save thành công với role: " + role);
+            System.out.println("Save thành công ID: " +  idString + " với role: " + role);
         }catch (SQLException e){
             System.out.println("Lỗi save(User): " + e.getMessage());
         }

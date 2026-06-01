@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public class SettlementTransactionExcutor implements TransactionExcutor {
     @Override
-    public void excute(Transaction transaction, WalletManager walletManager) throws IllegalArgumentException, SQLException,NullPointerException {
+    public void excute(Transaction transaction, WalletManager walletManager) throws IllegalArgumentException, SQLException {
         if (transaction instanceof SettlementTransaction) {
             SettlementTransaction settlementTransaction = ((SettlementTransaction) transaction);
             UUID walletID1 = settlementTransaction.getSenderWalletID();

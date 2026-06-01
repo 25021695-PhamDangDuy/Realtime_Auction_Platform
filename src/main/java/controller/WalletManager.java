@@ -43,6 +43,32 @@ public class WalletManager {
         }
         return rs;
     }
+    public Wallet getWalletbyOwnerID(UUID ownerID) throws SQLException, NullPointerException,IllegalArgumentException{
+        if ( ownerID == null ) {
+            throw new NullPointerException("ownerID là null");
+        }
+        Wallet rs = null;
+        try{
+            rs = walletDAO.getByOwnerID(ownerID);
+        } catch (SQLException e) {
+            log.crash("Lỗi SQL khi thực thi lấy thông tin ví theo ID user: " + ownerID.toString(), e);
+            throw new SQLException(e);
+        }
+        if(rs == null){
+            log.warning("ID: " + ownerID.toString() + " ví chưa tồn tại");
+            throw new IllegalArgumentException("ví chưa tồn tại: " + ownerID.toString());
+        }
+        return rs;
+    }
+
+    public long getBalancebyOwnerID(UUID ownerID) throws SQLException,NullPointerException,IllegalArgumentException {
+        Wallet wallet = getWalletbyOwnerID(ownerID);
+        return wallet.getBalance();
+    }
+    public long getBalanceLockedbyOwnerID(UUID ownerID) throws SQLException,NullPointerException,IllegalArgumentException {
+        Wallet wallet = getWalletbyOwnerID(ownerID);
+        return wallet.getBalanceLocked();
+    }
 
     public void createWallet(UUID ownerID, long amount) throws IllegalArgumentException, SQLException{
         UUID walletID = UUID.randomUUID();
