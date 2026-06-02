@@ -9,6 +9,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import view.network.ServerConnection;
 
 import java.text.NumberFormat;
 import java.time.LocalDateTime;
@@ -20,6 +21,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+
 public class AuctionHomeScreen extends Application {
 
     private String username;
@@ -29,6 +31,15 @@ public class AuctionHomeScreen extends Application {
     private final NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
     private final List<AuctionSession> sessionList = new ArrayList<>();
     private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+    private ServerConnection connection;
+    private Stage primaryStage;
+    public AuctionHomeScreen(ServerConnection connection, Stage primaryStage) {
+        this.connection = connection;
+        this.primaryStage = primaryStage;
+    }
+
+    public AuctionHomeScreen() {
+    }
 
     @Override
     public void start(Stage primaryStage) {
@@ -52,6 +63,7 @@ public class AuctionHomeScreen extends Application {
         Label lblTitle = new Label("Danh sách các phiên đấu giá tài sản");
         lblTitle.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
 
+
         // Lưới hiển thị danh sách các phiên (GridPane)
         GridPane sessionGrid = new GridPane();
         sessionGrid.setHgap(20);
@@ -68,6 +80,41 @@ public class AuctionHomeScreen extends Application {
 
         // [BOTTOM] - Taskbar (Thanh điều hướng) theo yêu cầu
         HBox taskbar = createTaskbar();
+        Button btnAddProduct = new Button("➕ Thêm sản phẩm");
+        btnAddProduct.setStyle("-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;");
+
+        Button btnBackToLogin = new Button("← Quay lại đăng nhập");
+        btnBackToLogin.setStyle("-fx-background-color: transparent; -fx-text-fill: #7f8c8d; -fx-underline: true; -fx-cursor: hand;");
+
+
+        btnAddProduct.setOnAction(event -> {
+            try {
+                AddProduct addProduct = new AddProduct();
+                Stage currentStage = (Stage) btnAddProduct.getScene().getWindow();
+                addProduct.start(currentStage);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
+
+        btnBackToLogin.setOnAction(event -> {
+            try {
+                AuctionLogin loginView = new AuctionLogin();
+                Stage currentStage = (Stage) btnBackToLogin.getScene().getWindow();
+                loginView.start(currentStage);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
+
+        taskbar.getChildren().addAll(btnAddProduct, btnBackToLogin);
+        taskbar.setSpacing(15);
+
+
+        root.setBottom(taskbar);
+
         root.setBottom(taskbar);
 
         // Kích hoạt luồng cập nhật thời gian thực
@@ -162,11 +209,16 @@ public class AuctionHomeScreen extends Application {
         // Sự kiện khi nhấn nút (Sẽ code chuyển Scene sang phòng đấu ở đây)
         btnView.setOnAction(e -> {
             System.out.println("Chuyển hướng người dùng sang phòng đấu của: " + session.itemName);
-            AuctionRoom room = new AuctionRoom();
+            AuctionRoom room = new AuctionRoom(connection,new Stage());
         });
 
         card.getChildren().addAll(topRow, imgBox, lblName, lblPrice, btnView);
         return card;
+
+
+
+
+
     }
 
     private HBox createTaskbar() {
@@ -176,14 +228,28 @@ public class AuctionHomeScreen extends Application {
         taskbar.setStyle("-fx-background-color: #2c3e50;");
         taskbar.setAlignment(Pos.CENTER);
 
-        Button btnHome = createNavButton("🏠 Trang chủ", true);
+        Button btnDashboard = createNavButton("🏠 Các sản phẩm", true);
         Button btnRoom = createNavButton("🔨 Phòng đấu giá", true);
-        Button btnNoti = createNavButton("🔔 Thông báo", false);
+        Button btnNoti = createNavButton("🔔 Thông báo", true);
         Button btnProfile = createNavButton("👤 Tài khoản", true);
+        btnDashboard.setOnAction(event -> {
+            try {
+                Stage currentStage = (Stage) btnDashboard.getScene().getWindow();
+                AuctionDashBoard DashBoard = new AuctionDashBoard();
+                Stage DashBoardStage  = new Stage();
+                DashBoard.start(DashBoardStage);
+                currentStage.close();
+                System.out.println("[LOG NAVIGATION]: Đã chuyển từ Trang chủ sang giao diện sản phẩm thành công.");
+            } catch (Exception e) {
+                System.err.println("[LOG ERROR]: Không thể chuyển cảnh sang giao diện sản phẩm: " + e.getMessage());
+                e.printStackTrace();
+            }
+
+        });
         btnRoom.setOnAction( event ->  {
             try {
                 Stage currentStage = (Stage) btnRoom.getScene().getWindow();
-                AuctionRoom room = new AuctionRoom();
+                AuctionRoom room = new AuctionRoom(connection,new Stage());
                 Stage roomStage = new Stage();
                 room.start(roomStage);
                 currentStage.close();
@@ -206,7 +272,20 @@ public class AuctionHomeScreen extends Application {
                 e.printStackTrace();
             }
         });
-        taskbar.getChildren().addAll(btnHome, btnRoom, btnNoti, btnProfile);
+        btnNoti.setOnAction(event -> {
+            try{
+                Stage currentStage = (Stage) btnNoti.getScene().getWindow();
+                AuctionNotificationView account = new AuctionNotificationView();
+                Stage accountStage = new Stage();
+                account.start(accountStage);
+                currentStage.close();
+                System.out.println("[LOG NAVIGATION]: Chuyển cửa sổ sang thông báo thành công.");
+            } catch (Exception e) {
+                System.err.println("[LOG ERROR]: Không thể chuyển cảnh tài khoản: " + e.getMessage());
+                e.printStackTrace();
+            }
+        });
+        taskbar.getChildren().addAll(btnDashboard, btnRoom, btnNoti, btnProfile);
         return taskbar;
     }
     private Button createNavButton(String text, boolean isActive) {
@@ -227,6 +306,22 @@ public class AuctionHomeScreen extends Application {
             lblSystemTime.setText("⏱ Hệ thống: " + now.format(formatter));
         }), 0, 1, TimeUnit.SECONDS);
     }
+    public void initializeData() {
+        if (connection != null && connection.connect("localhost",8000)) {
+            // 1. Nếu có kết nối mạng: Gửi lệnh lên server để lấy dữ liệu thật từ DB
+            connection.sendCommand("FETCH_AUCTION_DATA");
+        } else {
+            // 2. Nếu chạy local một mình để test UI: Mới gọi mockData
+            loadMockData();
+        }
+    }
+    private void loadMockData() {
+        // Nơi bạn add các dữ liệu giả lập để test giao diện
+        sessionList.add(new AuctionSession("NEW","03/06/2026","IPhone 15",15000000));
+        sessionList.add(new AuctionSession("OLD","03/06/2026","Bình gốm cổ",1000000));
+    }
+
+
 
 
     public static void main(String[] args) {
@@ -248,3 +343,9 @@ public class AuctionHomeScreen extends Application {
         }
     }
 }
+
+
+
+
+
+

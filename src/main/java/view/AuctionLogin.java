@@ -22,7 +22,18 @@ import view.network.ServerConnection;
 public class AuctionLogin extends Application implements MessageListener {
     private ServerConnection connection;
     private Stage primaryStage;
+    private Text actiontarget;
+    public AuctionLogin() {}
+    public AuctionLogin(ServerConnection connection) {
+        this.connection = connection;
+    }
+    public AuctionLogin(ServerConnection connection, Stage primaryStage) {
+        this.connection = connection;
+        this.primaryStage = primaryStage;
+    }
     public void start(Stage primaryStage) {
+        this.connection = new ServerConnection();
+        this.connection.setMessageListener(this);
         primaryStage.setTitle("Hệ thống đấu giá online");
         GridPane grid = new GridPane();// căn chỉnh các ô nhập
         grid.setAlignment(Pos.CENTER);
@@ -56,7 +67,7 @@ public class AuctionLogin extends Application implements MessageListener {
         hbBtn.setAlignment(Pos.BOTTOM_RIGHT);
         hbBtn.getChildren().add(btn);
         grid.add(hbBtn, 1, 4);
-        final Text actiontarget = new Text(); // Nơi hiện thông báo lỗi/thành công
+        actiontarget = new Text(); // Nơi hiện thông báo lỗi/thành công
         grid.add(actiontarget, 1, 6);
         connection.setMessageListener(this);
         btn.setOnAction(event -> {
@@ -65,6 +76,7 @@ public class AuctionLogin extends Application implements MessageListener {
             String command = "LOGIN|" + username.trim() + "|" + password.trim();
             try {
                 connection.sendCommand(command);
+                System.out.println("[LOG SENT]: Đã gửi yêu cầu đăng nhập -> " + command);
             } catch (Exception e) {
                 actiontarget.setText("Không thể gửi lệnh đến Server!");
                 e.printStackTrace();
@@ -76,7 +88,7 @@ public class AuctionLogin extends Application implements MessageListener {
         btnGoToRegister.setOnAction(e -> {
             try {
                 // Khởi tạo màn hình đăng ký tài khoản
-                AuctionRegister registerApp = new AuctionRegister();
+                AuctionRegister registerApp = new AuctionRegister(connection,primaryStage);
 
                 // Truyền chính primaryStage hiện tại sang để đổi giao diện trên cùng 1 cửa sổ
                 registerApp.start(primaryStage);
@@ -95,22 +107,24 @@ public class AuctionLogin extends Application implements MessageListener {
     @Override
     public void onMessageReceived(String serverMessage) {
         // Code xử lý khi server trả về kết quả (đọc từ dòng in.readLine() của ServerConnection)
-        System.out.println("Nhận được từ server: " + serverMessage);
-
-        // Ví dụ xử lý chuyển màn hình:
-        if ("LOGIN_SUCCESS".equals(serverMessage)) {
-            javafx.application.Platform.runLater(() -> {
-                try {
-                    AuctionHomeScreen homeScreen = new AuctionHomeScreen();
-                    homeScreen.start(primaryStage); // Đảm bảo bạn đã lưu primaryStage thành biến toàn cục
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            });
-        }
-
+        Platform.runLater(() -> {
+            if (serverMessage.startsWith("LOGIN_SUCCESS")) {
+                actiontarget.setText("Đăng nhập thành công!");
+                AuctionHomeScreen homeScreen = new AuctionHomeScreen(connection,new Stage());
+                homeScreen.start(primaryStage);
+            } else {
+                actiontarget.setText("Sai tài khoản hoặc mật khẩu!");
+            }
+        });
     }
+
     public static void main(String[] args) {
         launch(args);
     }
 }
+
+
+
+
+
+

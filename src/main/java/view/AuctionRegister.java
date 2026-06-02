@@ -19,10 +19,15 @@ import view.network.ServerConnection;
 
 
 public class AuctionRegister extends Application implements MessageListener {
-    private ServerConnection connection = new ServerConnection();
+    private ServerConnection connection;
     private Stage primaryStage;
     private javafx.scene.text.Text message;
+    
 
+    public AuctionRegister(ServerConnection connection, Stage primaryStage) {
+        this.connection = connection;
+        this.primaryStage = primaryStage;
+    }
 
     public void start(Stage stage){
         this.primaryStage = stage;
@@ -82,7 +87,7 @@ public class AuctionRegister extends Application implements MessageListener {
                 message.setFill(javafx.scene.paint.Color.FIREBRICK);
                 return;
             }
-            String command = "REGISTER| " + username + "|" + password + "|" + confirmpw;
+            String command = "REGISTER|" + username.trim() + "|" + password.trim() + "|" + confirmpw.trim();
             try {
                 connection.sendCommand(command);
                 System.out.println("[LOG SENT]: Đã gửi yêu cầu đăng ký -> " + command);
@@ -95,10 +100,27 @@ public class AuctionRegister extends Application implements MessageListener {
                 message.setText("Lỗi kết nối mạng!");
             }
             try{
-                AuctionLogin loginApp = new AuctionLogin();
+                AuctionLogin loginApp = new AuctionLogin(connection);
                 loginApp.start(primaryStage);
             } catch (Exception ex){
                 ex.printStackTrace();
+            }
+        });
+        //NÚT QUAY LẠI ĐĂNG NHẬP
+        Button btnBackToLogin = new Button("← Quay lại đăng nhập");
+        btnBackToLogin.setStyle("-fx-background-color: transparent; -fx-text-fill: #1a88e5; -fx-underline: true; -fx-cursor: hand; -fx-font-weight: bold;");
+        grid.add(btnBackToLogin, 1, 8);
+        btnBackToLogin.setOnAction(event -> {
+            try {
+                AuctionLogin loginView = new AuctionLogin();
+                // 2. Lấy Stage hiện tại một cách an toàn từ chính nút bấm này
+                Stage currentStage = (Stage) btnBackToLogin.getScene().getWindow();
+
+                // 3. Gọi hàm start và truyền stage hiện tại vào để quay về màn hình cũ
+                loginView.start(currentStage);
+
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
         Scene scene = new Scene(grid, 450, 400);
@@ -117,7 +139,7 @@ public class AuctionRegister extends Application implements MessageListener {
 
                 try {
                     // Đăng ký thành công thì chuyển về màn hình Login cho user nhập lại
-                    AuctionLogin loginApp = new AuctionLogin();
+                    AuctionLogin loginApp = new AuctionLogin(connection);
                     loginApp.start(primaryStage);
                 } catch (Exception ex) {
                     ex.printStackTrace();

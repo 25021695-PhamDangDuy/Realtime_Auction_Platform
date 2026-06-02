@@ -42,6 +42,10 @@ public class AuctionRoom extends Application implements MessageListener {
     private javafx.scene.control.Label lblCurrentPrice;
     private javafx.scene.control.Label lblName;
     private javafx.scene.control.Label lblMessage;
+    public AuctionRoom(ServerConnection connection, Stage primaryStage) {
+        this.connection = connection;
+        this.primaryStage = primaryStage;
+    }
 
 
     @Override
@@ -305,7 +309,7 @@ public class AuctionRoom extends Application implements MessageListener {
         btnHome.setOnAction(event -> {
             try {
                 // 1. Khởi tạo thực thể của màn hình HomeScreen
-                AuctionHomeScreen homeScreen = new AuctionHomeScreen();
+                AuctionHomeScreen homeScreen = new AuctionHomeScreen(connection,new Stage());
 
                 // 2. Gọi hàm start và truyền cửa sổ chính primaryStage vào
                 homeScreen.start(primaryStage);
@@ -450,4 +454,9 @@ public class AuctionRoom extends Application implements MessageListener {
         launch(args);
     }
 }
+
+
+
+
+
 
