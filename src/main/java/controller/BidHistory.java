@@ -7,8 +7,10 @@ import models.BidTicket;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.atomic.AtomicInteger;
+
 
 /*
 Lớp quản lí BidTicket bằng việc lưu trữ thông qua ConcurrentDeque,Why?
@@ -42,8 +44,12 @@ public class BidHistory {
             //Logic kiểm tra bidTicket
             bidTicketDAO.save(bidTicket);
             size.getAndIncrement();
+
         }
     }
+    public static List<BidTicket> getAllBidTicket(UUID sessioniD){
+        return null;
+    };
 
     /*
     -------------------------------

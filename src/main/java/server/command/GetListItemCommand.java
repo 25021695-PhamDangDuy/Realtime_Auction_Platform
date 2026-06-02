@@ -3,6 +3,7 @@ package server.command;
 import controller.ItemController.ItemController;
 import models.Item;
 import server.ClientSession;
+import server.GsonUtil;
 import server.Role;
 
 import java.sql.SQLException;
@@ -54,24 +55,24 @@ public class GetListItemCommand implements Command {
                     return;
             }
 
-            // Xử lý nếu kho rỗng
+            // Xử lý nếu kho rỗng (Giữ nguyên đoạn này của bạn)
             if (myItems == null || myItems.isEmpty()) {
                 session.sendMessage("SUCCESS_MY_ITEMS|EMPTY");
                 return;
             }
 
-            // Gói ghém dữ liệu (ID, Tên, Giá)
-            StringBuilder response = new StringBuilder("SUCCESS_MY_ITEMS");
-            for (Item item : myItems) {
-                response.append("|")
-                        .append(item.getID()).append(",")
-                        .append(item.getName()).append(",")
-                        .append(item.getPrice());
-            }
+            // ========================================================
+            // GÓI GHÉM DỮ LIỆU BẰNG GSON (ĐA HÌNH CHO CẢ DANH SÁCH)
+            // ========================================================
+            // Thay vì chỉ lấy ID, Tên, Giá, GSON sẽ tự động quét cả mảng
+            // và nén toàn bộ thông tin (kể cả thuộc tính riêng của Xe, Tranh...)
 
-            // Gửi trả kết quả cho Client
-            session.sendMessage(response.toString());
-            System.out.println("[Command] Đã gửi danh sách " + status + " cho Seller: " + ownerName);
+            String jsonList = GsonUtil.gson.toJson(myItems);
+
+            String response = "SUCCESS_MY_ITEMS|" + jsonList;
+            session.sendMessage(response);
+
+            System.out.println("[Command] Đã gửi danh sách Item bằng GSON cho Seller: " + ownerName);
 
         } catch (SQLException e) {
             // Bắt lỗi Database riêng biệt do DAO ném ra

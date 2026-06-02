@@ -198,6 +198,16 @@ public class AuctionSession {
             throw new IllegalArgumentException("Session is not upcoming");
 
     }
+
+    }
+    public BidTicket getTopbid(){return topBid;}
+    // Gửi thông báo cho toàn bộ khán giả trong phòng
+    public void notifyBidObservers(String message) {
+        // Lặp qua danh sách (List) những người đang theo dõi
+        for (AuctionObserver observer : observers) {
+            // Gọi cái "tai" của từng người để nhét tin nhắn vào
+            observer.update(message);
+        }
     }
 }
 

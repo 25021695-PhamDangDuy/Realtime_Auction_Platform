@@ -46,6 +46,7 @@ public class AuctionHomeScreen extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        connection.sendCommand("GetAuctionSession|ACTIVE");
         // ROOT LAYOUT
         BorderPane root = new BorderPane();
         root.setStyle("-fx-background-color: #f8f9fa;");
