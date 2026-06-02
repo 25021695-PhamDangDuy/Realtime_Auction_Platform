@@ -18,19 +18,30 @@ public class Account extends Application implements MessageListener {
     private javafx.scene.control.Label lblSoDu;
     private ServerConnection connection;
 
-    public Account() {
-    }
-
-    public Account(ServerConnection connection) {
+    public Account(Stage primaryStage, ServerConnection connection) {
+        this.primaryStage = primaryStage;
         this.connection = connection;
     }
 
+    public Account() {
+    }
+
+
     @Override
     public void start(Stage stage) {
-        this.primaryStage = stage;
-        this.connection = new ServerConnection();
+        if (this.primaryStage == null) {
+            this.primaryStage = stage;
+        }
+
+        // 2. Đồng bộ lại connection lấy trực tiếp từ lớp App (Sử dụng tính năng static từ App.java)
+        if (this.connection == null) {
+            this.connection = view.App.connection;
+        }
+
+        // 3. Bây giờ connection chắc chắn đã có dữ liệu, gọi an toàn không lo crash
         this.connection.setMessageListener(this);
-        primaryStage.setTitle("Hệ thống Đấu giá - Tài khoản Người dùng");
+
+        this.primaryStage.setTitle("Hệ thống Đấu giá - Tài khoản Người dùng");
 
         // 1. Tiêu đề giao diện
         Label lblTitle = new Label("QUẢN LÝ TÀI KHOẢN ĐẤU GIÁ");
