@@ -23,7 +23,7 @@ public class WithdrawTransactionDAO implements TransactionDAO<WithdrawTransactio
         try (Connection conn = databaseCreator.getConnection()) {
             PreparedStatement psmt = conn.prepareStatement(querySQL);
             psmt.setString(1, senderID.toString());
-            psmt.setString(2, TransactionType.WITHDRAW_WALLET.toString());
+            psmt.setString(2, TransactionType.WITHDRAW_WALLET.name());
 
             ResultSet rs = psmt.executeQuery();
             if (rs.next()) {
@@ -42,9 +42,9 @@ public class WithdrawTransactionDAO implements TransactionDAO<WithdrawTransactio
             PreparedStatement psmt = conn.prepareStatement(updateSQL);
             psmt.setLong(1, withdrawTransaction.getAmount());
             psmt.setString(2, gson.toJson(withdrawTransaction.getTimestamp()));
-            psmt.setString(3, withdrawTransaction.getTransactionStatus().toString());
+            psmt.setString(3, withdrawTransaction.getTransactionStatus().name());
             psmt.setString(4, withdrawTransaction.getID().toString());
-            psmt.setString(5, TransactionType.WITHDRAW_WALLET.toString());
+            psmt.setString(5, TransactionType.WITHDRAW_WALLET.name());
 
             psmt.executeUpdate();
             System.out.println("WithdrawTransaction updated successfully");
@@ -65,8 +65,8 @@ public class WithdrawTransactionDAO implements TransactionDAO<WithdrawTransactio
             psmt.setNull(4, Types.VARCHAR);
             psmt.setLong(5, withdrawTransaction.getAmount());
             psmt.setString(6, gson.toJson(withdrawTransaction.getTimestamp()));
-            psmt.setString(7, TransactionType.WITHDRAW_WALLET.toString());
-            psmt.setString(8, withdrawTransaction.getTransactionStatus().toString());
+            psmt.setString(7, TransactionType.WITHDRAW_WALLET.name());
+            psmt.setString(8, withdrawTransaction.getTransactionStatus().name());
 
             psmt.executeUpdate();
             System.out.println("WithdrawTransaction saved successfully");
@@ -81,7 +81,7 @@ public class WithdrawTransactionDAO implements TransactionDAO<WithdrawTransactio
         try (Connection conn = databaseCreator.getConnection()) {
             PreparedStatement psmt = conn.prepareStatement(querySQL);
             psmt.setString(1, ID.toString());
-            psmt.setString(2, TransactionType.WITHDRAW_WALLET.toString());
+            psmt.setString(2, TransactionType.WITHDRAW_WALLET.name());
 
             ResultSet rs = psmt.executeQuery();
             if (rs.next()) {
@@ -99,7 +99,7 @@ public class WithdrawTransactionDAO implements TransactionDAO<WithdrawTransactio
         String querySQL = "SELECT * FROM transactions WHERE type = ?";
         try (Connection conn = databaseCreator.getConnection()) {
             PreparedStatement psmt = conn.prepareStatement(querySQL);
-            psmt.setString(1, TransactionType.WITHDRAW_WALLET.toString());
+            psmt.setString(1, TransactionType.WITHDRAW_WALLET.name());
 
             ResultSet rs = psmt.executeQuery();
             while (rs.next()) {

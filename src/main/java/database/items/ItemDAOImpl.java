@@ -18,20 +18,19 @@ public abstract class ItemDAOImpl<T extends Item> implements ItemDAO<T> {
     protected Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     @Override
-    public void save(T item) {
+    public void save(T item) throws SQLException{
         String insertSQL = "INSERT INTO items(ID, owner_ID, Name, Price, Condition, Status) VALUES(?, ?, ?, ?, ?, ?)";
         try (Connection conn = databaseCreator.getConnection()) {
             PreparedStatement psmt = conn.prepareStatement(insertSQL);
 
-            String idGson = gson.toJson(item.getID());
-            String ownerIdGson = gson.toJson(item.getOwner().getID());
+            String status = gson.toJson(item.getItemStatus());
 
-            psmt.setString(1, idGson);
-            psmt.setString(2, ownerIdGson);
+            psmt.setString(1, item.getID().toString());
+            psmt.setString(2, item.getOwner().getID().toString());
             psmt.setString(3, item.getName());
             psmt.setLong(4, item.getPrice());
             psmt.setString(5, item.getCondition());
-            psmt.setString(6, item.getItemStatus().toString());
+            psmt.setString(6, status);
 
             psmt.executeUpdate();
             System.out.println("Item saved successfully");
@@ -41,20 +40,19 @@ public abstract class ItemDAOImpl<T extends Item> implements ItemDAO<T> {
     }
 
     @Override
-    public void update(T item) {
+    public void update(T item) throws SQLException {
         String updateSQL = "UPDATE items SET Name = ?, Price = ?, Condition = ?, Status = ?, owner_ID = ? WHERE ID = ?";
         try (Connection conn = databaseCreator.getConnection()) {
             PreparedStatement psmt = conn.prepareStatement(updateSQL);
 
-            String idGson = gson.toJson(item.getID());
-            String ownerIdGson = gson.toJson(item.getOwner().getID());
+            String status = gson.toJson(item.getItemStatus());
 
-            psmt.setString(1, item.getName());
             psmt.setLong(2, item.getPrice());
+            psmt.setString(1, item.getName());
             psmt.setString(3, item.getCondition());
-            psmt.setString(4, item.getItemStatus().toString());
-            psmt.setString(5, ownerIdGson);
-            psmt.setString(6, idGson);
+            psmt.setString(4, status);
+            psmt.setString(5, item.getOwner().getID().toString());
+            psmt.setString(6, item.getID().toString());
 
             psmt.executeUpdate();
             System.out.println("Item updated successfully");
@@ -68,7 +66,7 @@ public abstract class ItemDAOImpl<T extends Item> implements ItemDAO<T> {
         String querySQL = "SELECT * FROM items WHERE ID = ?";
         try (Connection conn = databaseCreator.getConnection()) {
             PreparedStatement psmt = conn.prepareStatement(querySQL);
-            psmt.setString(1, gson.toJson(ID));
+            psmt.setString(1, ID.toString());
 
             ResultSet rs = psmt.executeQuery();
             if (rs.next()) {
@@ -103,7 +101,7 @@ public abstract class ItemDAOImpl<T extends Item> implements ItemDAO<T> {
         String querySQL = "SELECT * FROM items WHERE owner_ID = ?";
         try (Connection conn = databaseCreator.getConnection()) {
             PreparedStatement psmt = conn.prepareStatement(querySQL);
-            psmt.setString(1, gson.toJson(owner_ID));
+            psmt.setString(1, owner_ID.toString());
 
             ResultSet rs = psmt.executeQuery();
             while (rs.next()) {
@@ -115,15 +113,15 @@ public abstract class ItemDAOImpl<T extends Item> implements ItemDAO<T> {
         return items;
     }
     public T getbySessionID(UUID session_ID){
-        String querySQL = "SELECT item_ID FROM session WHERE ID = ?";
+        String querySQL = "SELECT item_ID FROM sessions WHERE ID = ?";
         try (Connection conn = databaseCreator.getConnection()) {
             PreparedStatement psmt = conn.prepareStatement(querySQL);
             psmt.setString(1, session_ID.toString());
 
             ResultSet rs = psmt.executeQuery();
             if (rs.next()) {
-                T item = mapResultSetToItem(rs);
-                return item;
+                UUID ID =  UUID.fromString(rs.getString("item_ID"));
+                return get(ID);
             }
         } catch (SQLException e) {
             System.out.println("Error getting items by owner: " + e.getMessage());
@@ -137,7 +135,7 @@ public abstract class ItemDAOImpl<T extends Item> implements ItemDAO<T> {
         String querySQL = "SELECT * FROM items WHERE Status = ?";
         try (Connection conn = databaseCreator.getConnection()) {
             PreparedStatement psmt = conn.prepareStatement(querySQL);
-            psmt.setString(1, status.toString());
+            psmt.setString(1, gson.toJson(status));
 
             ResultSet rs = psmt.executeQuery();
             while (rs.next()) {
@@ -151,12 +149,12 @@ public abstract class ItemDAOImpl<T extends Item> implements ItemDAO<T> {
 
     public List<T> getItembyStatusOwner(UUID ownerID, ItemStatus itemStatus){
         List<T> items = new ArrayList<>();
-        String querySQL = "SELECT * FROM items WHERE owner_ID = ? Status = ?";
+        String querySQL = "SELECT * FROM items WHERE owner_ID = ? AND  Status = ?";
         try (Connection conn = databaseCreator.getConnection()) {
             PreparedStatement psmt = conn.prepareStatement(querySQL);
 
             psmt.setString(1, ownerID.toString());
-            psmt.setString(2,itemStatus.toString());
+            psmt.setString(2, gson.toJson(itemStatus));
 
             ResultSet rs = psmt.executeQuery();
             while (rs.next()) {

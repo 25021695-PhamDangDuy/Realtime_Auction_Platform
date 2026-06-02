@@ -7,7 +7,7 @@ import function.SessionChecker;
 import function.SessionStatus;
 import function.SystemLogger;
 import models.*;
-
+import database.items.getItemDao;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -21,7 +21,7 @@ public class AuctionManager {
     private CopyOnWriteArrayList<AuctionSession> finishedSessions = new CopyOnWriteArrayList<>();
     private SessionChecker sessionChecker = new SessionChecker();
     private SessionDAO sessionDAO = new SessionDAO();
-    private ItemDAOImpl itemDAO;
+    private getItemDao itemDAO = new getItemDao();
     private SystemLogger log = SystemLogger.getInstance();
     private PaymentManager paymentManager = PaymentManager.getInstance();
     //Contructor
@@ -44,6 +44,11 @@ public class AuctionManager {
     public void createSession(Item item, Seller seller, long startPrice, long minIncrement, LocalDateTime endtime) {
         try{
             LocalDateTime now = LocalDateTime.now();
+
+            // DEBUG
+            System.out.println("Now: " + now);
+            System.out.println("EndTime: " + endtime);
+            System.out.println("EndTime > Now? " + endtime.isAfter(now));
             if(sessionChecker.durationTime(now,endtime,1,43200) && sessionChecker.isItemAvailable(item)){
                 AuctionSession session = new AuctionSession(item,seller,startPrice,minIncrement,endtime,now,SessionStatus.RUNNING);
                 item.setItemStatus(ItemStatus.AUCTIONING);
@@ -82,15 +87,6 @@ public class AuctionManager {
             return re;
         }
     }
-
-    public List<AuctionSession> getSessionsAll() throws SQLException{
-        List<AuctionSession> list = sessionDAO.getAll();
-        if(list.isEmpty()){
-            throw new NullPointerException("Không tồn tại phiên đấu giá");
-        }
-        return list;
-    }
-
 
 
     public void placeBid(AuctionSession auctionSession, Bidder bidder, long amount) throws IllegalArgumentException,NullPointerException, SQLException {
@@ -189,4 +185,11 @@ public class AuctionManager {
         return list;
     }
 
+    public List<AuctionSession> getSessionsAll() throws SQLException{
+        List<AuctionSession> list = sessionDAO.getAll();
+        if(list.isEmpty()){
+            throw new NullPointerException("Không tồn tại phiên đấu giá");
+        }
+        return list;
+    }
 }

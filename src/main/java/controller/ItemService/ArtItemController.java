@@ -1,11 +1,10 @@
-package controller.ItemController;
+package controller.ItemService;
 
 import database.getUserDAO;
 import database.items.ArtDAO;
 import function.ItemStatus;
 import models.Art;
 
-import models.Art;
 import models.Item;
 import models.User;
 
@@ -20,30 +19,27 @@ public class ArtItemController extends ItemController {
         return new Art(owner, name, price, condition, author, material);
     }
 
-    public static void saveItem(Item item) {
+    public static void saveItem(Item item) throws SQLException {
         artDAO.save((Art)item);
     }
     public static List<Art> get_SOLD_ByOwnername(String name) throws SQLException {
-        List<Art> list = new ArrayList<>();
         User u = getUserDAO.getbyUsername(name);
 
         List<Art> setlist = artDAO.getItembyStatusOwner(u.getID(), ItemStatus.SOLD);
-        list.addAll(setlist);
+        List<Art> list = new ArrayList<>(setlist);
         return list;
     }
     public static List<Art> get_AVAILABLE_ByOwnername(String name) throws SQLException {
-        List<Art> list = new ArrayList<>();
         User u = getUserDAO.getbyUsername(name);
 
         List<Art> setlist = artDAO.getItembyStatusOwner(u.getID(), ItemStatus.AVAILABLE);
-        list.addAll(setlist);
+        List<Art> list = new ArrayList<>(setlist);
         return list;
     }
     public static List<Art> getByOwnername(String name) throws SQLException {
-        List<Art> list = new ArrayList<>();
         User u = getUserDAO.getbyUsername(name);
         List<Art> setlist = artDAO.getbyOwnerID(u.getID());
-        list.addAll(setlist);
+        List<Art> list = new ArrayList<>(setlist);
         return list;
     }
 

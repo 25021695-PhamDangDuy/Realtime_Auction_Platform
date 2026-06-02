@@ -35,7 +35,7 @@ public class SessionDAO implements DataAccessObject<AuctionSession> {
             psmt.setLong(5, session.getMinIncrement());
             psmt.setString(6, gson.toJson(session.getStartTime()));
             psmt.setString(7, gson.toJson(session.getEndTime()));
-            psmt.setString(8, session.getStatus().toString());
+            psmt.setString(8, session.getStatus().name());
 
             psmt.executeUpdate();
         } catch (SQLException e) {
@@ -45,16 +45,18 @@ public class SessionDAO implements DataAccessObject<AuctionSession> {
 
     @Override
     public void update(AuctionSession session) throws SQLException{
-        String updateSQL = "UPDATE sessions SET item_ID = ? seller_ID = ?  currentPrice = ?, status = ?, endTime = ? WHERE ID = ?";
+        String updateSQL = "UPDATE sessions SET item_ID = ?, seller_ID = ?, currentPrice = ?, status = ?, endTime = ? WHERE ID = ?";
         try (Connection conn = databaseCreator.getConnection()) {
             PreparedStatement psmt = conn.prepareStatement(updateSQL);
 
             String idString = session.getID().toString();
 
-            psmt.setLong(1, session.getCurrentPrice());
-            psmt.setString(2, session.getStatus().toString());
-            psmt.setString(3, gson.toJson(session.getEndTime()));
-            psmt.setString(4, idString);
+            psmt.setString(1, session.getItem().getID().toString());
+            psmt.setString(2, session.getSeller().getID().toString());
+            psmt.setLong(3, session.getCurrentPrice());
+            psmt.setString(4, session.getStatus().name());
+            psmt.setString(5, gson.toJson(session.getEndTime()));
+            psmt.setString(6, idString);
 
             psmt.executeUpdate();
         } catch (SQLException e) {
@@ -154,29 +156,54 @@ public class SessionDAO implements DataAccessObject<AuctionSession> {
      * Lấy danh sách phiên đấu giá đang hoạt động
      */
     public List<AuctionSession> getActiveSessions() throws SQLException{
+        String status = SessionStatus.RUNNING.name();
         List<AuctionSession> sessions = new ArrayList<>();
-        String querySQL = "SELECT * FROM sessions WHERE status = 'ACTIVE'";
-        try (Connection conn = databaseCreator.getConnection()) {
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(querySQL);
+        String querySQL = "SELECT * FROM sessions WHERE status = ?";
 
-            while (rs.next()) {
-                AuctionSession session = mapResultSetToSession(rs);
-                if (session != null) {
-                    sessions.add(session);
+        // 🔍 DEBUG
+        System.out.println("DEBUG - Searching for status: [" + status + "]");
+        System.out.println("DEBUG - SessionStatus.RUNNING enum: " + SessionStatus.RUNNING);
+
+        try (Connection conn = databaseCreator.getConnection()) {
+            PreparedStatement stmt = conn.prepareStatement(querySQL);
+            stmt.setString(1, status);
+            ResultSet rs = stmt.executeQuery();
+
+            // 🔍 Debug - kiểm tra xem có kết quả không
+            if (!rs.next()) {
+                System.out.println("DEBUG - No results found!");
+                // Kiểm tra xem có bản ghi nào trong sessions không
+                Statement testStmt = conn.createStatement();
+                ResultSet testRs = testStmt.executeQuery("SELECT status FROM sessions LIMIT 5");
+                System.out.println("DEBUG - Actual statuses in DB:");
+                while (testRs.next()) {
+                    System.out.println("  - [" + testRs.getString("status") + "]");
                 }
+            } else {
+                // Nếu có kết quả, process bình thường
+                do {
+                    AuctionSession session = mapResultSetToSession(rs);
+                    if (session != null) {
+                        sessions.add(session);
+                    }
+                } while (rs.next());
             }
         } catch (SQLException e) {
             throw new SQLException("Lưu thông tin phiên đấu giá đang hoạt động|FAILED|" + e.getMessage());
         }
+
+        System.out.println("DEBUG - Found " + sessions.size() + " active sessions");
         return sessions;
     }
     public List<AuctionSession> getStartingSession() throws SQLException {
+        String status = SessionStatus.UPCOMING.name();
         List<AuctionSession> sessions = new ArrayList<>();
-        String querySQL = "SELECT * FROM sessions WHERE status = 'UPCOMING'";
+        String querySQL = "SELECT * FROM sessions WHERE status = ?";
         try (Connection conn = databaseCreator.getConnection()) {
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(querySQL);
+            PreparedStatement stmt = conn.prepareStatement(querySQL);
+
+            stmt.setString(1,status);
+            ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
                 AuctionSession session = mapResultSetToSession(rs);
@@ -224,7 +251,8 @@ public class SessionDAO implements DataAccessObject<AuctionSession> {
         long minIncrement = rs.getLong("minIncrement");
         LocalDateTime startTime = gson.fromJson(rs.getString("startTime"), LocalDateTime.class);
         LocalDateTime endTime = gson.fromJson(rs.getString("endTime"), LocalDateTime.class);
-        SessionStatus status = gson.fromJson(rs.getString("status"),SessionStatus.class);
+        SessionStatus status = SessionStatus.valueOf(rs.getString("status"));
+
 
         // Lấy Seller object
         SellerDAOImpl sellerDAO = new SellerDAOImpl();
@@ -233,11 +261,8 @@ public class SessionDAO implements DataAccessObject<AuctionSession> {
         getItemDao getItemDAO = new getItemDao();
         Item item = getItemDAO.get(itemId);
 
-        if (seller != null) {
-            BidTicketDAO dao = new BidTicketDAO();
-            List<BidTicket> bidTickets = dao.getBySession(sessionId);
-            BidHistory bidHistory = new BidHistory(bidTickets);
-            return new AuctionSession(sessionId, item, seller, currentPrice, minIncrement, startTime, endTime, status, bidHistory);
+        if (seller != null && item != null) {
+            return new AuctionSession(sessionId, item, seller, currentPrice, minIncrement, endTime, startTime, status, null);
         }
         return null;
     }

@@ -1,22 +1,27 @@
 package Application;
 
+import controller.ItemService.ArtItemController;
+import controller.ItemService.ElectronicItemController;
+import controller.ItemService.ItemController;
+import controller.ItemService.VehicleItemController;
 import controller.brain.AccountController;
-import function.DiversityRule;
-import database.items.*;
+import controller.brain.AuctionManager;
+import database.SellerDAOImpl;
+import database.SessionDAO;
 import database.getUserDAO;
-import models.Art;
-import models.Seller;
-import models.User;
-
+import database.items.ArtDAO;
+import function.ItemStatus;
+import models.*;
+import database.items.getItemDao;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws SQLException {
-        AccountController accountController = AccountController.getInstance();
-        ArtDAO artDAO = new ArtDAO();
-        getUserDAO getUserDAO = new getUserDAO();
+        AuctionManager auctionManager = AuctionManager.getInstance();
 
-        User u = accountController.getInfor("Linh");
-        System.out.println(u);
+        System.out.println(auctionManager.getSessionsAll());
+        System.out.println(auctionManager.getSessionActive());
     }
 }

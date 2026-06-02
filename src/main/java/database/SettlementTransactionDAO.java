@@ -29,7 +29,7 @@ public class SettlementTransactionDAO implements TransactionDAO<SettlementTransa
         try (Connection conn = databaseCreator.getConnection()) {
             PreparedStatement psmt = conn.prepareStatement(querySQL);
             psmt.setString(1, senderID.toString());
-            psmt.setString(2, TransactionType.AUCTION_SETTLEMENT.toString());
+            psmt.setString(2, TransactionType.AUCTION_SETTLEMENT.name());
 
             ResultSet rs = psmt.executeQuery();
             if (rs.next()) {
@@ -46,7 +46,7 @@ public class SettlementTransactionDAO implements TransactionDAO<SettlementTransa
         try (Connection conn = databaseCreator.getConnection()) {
             PreparedStatement psmt = conn.prepareStatement(querySQL);
             psmt.setString(1, receiverID.toString());
-            psmt.setString(2, TransactionType.AUCTION_SETTLEMENT.toString());
+            psmt.setString(2, TransactionType.AUCTION_SETTLEMENT.name());
 
             ResultSet rs = psmt.executeQuery();
             if (rs.next()) {
@@ -65,9 +65,9 @@ public class SettlementTransactionDAO implements TransactionDAO<SettlementTransa
             PreparedStatement psmt = conn.prepareStatement(updateSQL);
             psmt.setLong(1, settlementTransaction.getAmount());
             psmt.setString(2, gson.toJson(settlementTransaction.getTimestamp()));
-            psmt.setString(3, settlementTransaction.getTransactionStatus().toString());
+            psmt.setString(3, settlementTransaction.getTransactionStatus().name());
             psmt.setString(4, settlementTransaction.getID().toString());
-            psmt.setString(5, TransactionType.AUCTION_SETTLEMENT.toString());
+            psmt.setString(5, TransactionType.AUCTION_SETTLEMENT.name());
 
             psmt.executeUpdate();
             System.out.println("SettlementTransaction updated successfully");
@@ -88,8 +88,8 @@ public class SettlementTransactionDAO implements TransactionDAO<SettlementTransa
             psmt.setString(4, settlementTransaction.getSession().getID().toString());
             psmt.setLong(5, settlementTransaction.getAmount());
             psmt.setString(6, gson.toJson(settlementTransaction.getTimestamp()));
-            psmt.setString(7, TransactionType.AUCTION_SETTLEMENT.toString());
-            psmt.setString(8, settlementTransaction.getTransactionStatus().toString());
+            psmt.setString(7, TransactionType.AUCTION_SETTLEMENT.name());
+            psmt.setString(8, settlementTransaction.getTransactionStatus().name());
 
             psmt.executeUpdate();
             System.out.println("SettlementTransaction saved successfully");
@@ -104,7 +104,7 @@ public class SettlementTransactionDAO implements TransactionDAO<SettlementTransa
         try (Connection conn = databaseCreator.getConnection()) {
             PreparedStatement psmt = conn.prepareStatement(querySQL);
             psmt.setString(1, ID.toString());
-            psmt.setString(2, TransactionType.AUCTION_SETTLEMENT.toString());
+            psmt.setString(2, TransactionType.AUCTION_SETTLEMENT.name());
 
             ResultSet rs = psmt.executeQuery();
             if (rs.next()) {
@@ -122,7 +122,7 @@ public class SettlementTransactionDAO implements TransactionDAO<SettlementTransa
         String querySQL = "SELECT * FROM transactions WHERE type = ?";
         try (Connection conn = databaseCreator.getConnection()) {
             PreparedStatement psmt = conn.prepareStatement(querySQL);
-            psmt.setString(1, TransactionType.AUCTION_SETTLEMENT.toString());
+            psmt.setString(1, TransactionType.AUCTION_SETTLEMENT.name());
 
             ResultSet rs = psmt.executeQuery();
             while (rs.next()) {

@@ -1,7 +1,9 @@
 package database.items;
 
 import database.getUserDAO;
+import function.ItemStatus;
 import models.Electronics;
+import models.Item;
 import models.User;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -17,7 +19,7 @@ public class ElectronicDAO extends ItemDAOImpl<Electronics> {
         String name = rs.getString("Name");
         String condition = rs.getString("Condition");
         long price = rs.getLong("Price");
-
+        ItemStatus status = gson.fromJson(rs.getString("Status"),ItemStatus.class);
         // Lấy owner từ owner_ID
         UUID ownerId = UUID.fromString(rs.getString("owner_ID"));
         getUserDAO a = new getUserDAO();
@@ -28,18 +30,18 @@ public class ElectronicDAO extends ItemDAOImpl<Electronics> {
         String electronicQuerySQL = "SELECT HSD FROM electronic_item WHERE ID = ?";
         try (Connection conn = databaseCreator.getConnection()) {
             PreparedStatement psmt = conn.prepareStatement(electronicQuerySQL);
-            psmt.setString(1, gson.toJson(itemId));
+            psmt.setString(1, itemId.toString());
             ResultSet elecRs = psmt.executeQuery();
             if (elecRs.next()) {
                 monthWarranty = elecRs.getInt("HSD");
             }
         }
 
-        return new Electronics(owner, name, price, condition, monthWarranty);
+        return new Electronics(itemId,owner, name, price, condition, monthWarranty,status);
     }
 
     @Override
-    public void save(Electronics electronics) {
+    public void save(Electronics electronics) throws SQLException {
         // Save vào bảng items trước
         super.save(electronics);
 
@@ -60,7 +62,7 @@ public class ElectronicDAO extends ItemDAOImpl<Electronics> {
     }
 
     @Override
-    public void update(Electronics electronics) {
+    public void update(Electronics electronics) throws SQLException {
         // Update items table
         super.update(electronics);
 
@@ -70,8 +72,8 @@ public class ElectronicDAO extends ItemDAOImpl<Electronics> {
             PreparedStatement psmt = conn.prepareStatement(updateElecSQL);
 
             String idGson = electronics.getID().toString();
-            psmt.setString(1, idGson);
-            psmt.setInt(2, electronics.getMonthofWarranty());
+            psmt.setString(2, idGson);
+            psmt.setInt(1, electronics.getMonthofWarranty());
 
             psmt.executeUpdate();
             System.out.println("Electronics updated successfully");

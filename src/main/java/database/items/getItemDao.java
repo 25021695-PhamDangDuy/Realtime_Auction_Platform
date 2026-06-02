@@ -1,6 +1,10 @@
 package database.items;
 
+import function.ItemStatus;
+import models.Art;
+import models.Electronics;
 import models.Item;
+import models.Vehicle;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -15,12 +19,11 @@ public class getItemDao extends ItemDAOImpl<Item>{
         String name = rs.getString("Name");
         String condition = rs.getString("Condition");
         long price = rs.getLong("Price");
+        ItemStatus status = gson.fromJson(rs.getString("Status"),ItemStatus.class);
 
         ItemDAOImpl<? extends Item> itemDAO = determine(itemId);
 
-        Item item = itemDAO.get(itemId);
-
-        return item;
+        return itemDAO.get(itemId);
     }
 
 
@@ -33,21 +36,37 @@ public class getItemDao extends ItemDAOImpl<Item>{
             PreparedStatement psmt1 = conn.prepareStatement(eSQL);
             PreparedStatement psmt2 = conn.prepareStatement(aSQL);
 
-            psmt1.setString(1, gson.toJson(ID));
-            psmt2.setString(1,gson.toJson(ID));
+            psmt1.setString(1, ID.toString());
+            psmt2.setString(1,ID.toString());
 
             ResultSet elecRs = psmt1.executeQuery();
             ResultSet artRs = psmt2.executeQuery();
 
-            if(elecRs.getBoolean(1)){
-                return new VehicleDAO();
+            if( elecRs.next() && elecRs.getBoolean(1)){
+                return new ElectronicDAO();
             }
-            if(artRs.getBoolean(1)){
+            if( artRs.next() && artRs.getBoolean(1)){
                 return new ArtDAO();
             }
             return new VehicleDAO();
         }
     }
 
+    @Override
+    public void update(Item item) throws SQLException {
+        UUID ID = item.getID();
 
+        if(item instanceof Art){
+            ArtDAO itemDAO = new ArtDAO();
+            itemDAO.update((Art) item);
+        }else if(item instanceof Electronics){
+            ElectronicDAO electronicDAO = new ElectronicDAO();
+            electronicDAO.update((Electronics) item);
+        }else if(item instanceof Vehicle){
+            VehicleDAO vehicleDAO = new VehicleDAO();
+            vehicleDAO.update((Vehicle) item);
+        }else {
+            throw new IllegalArgumentException("Update không thành công");
+        }
+    }
 }

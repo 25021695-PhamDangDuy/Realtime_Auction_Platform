@@ -23,6 +23,14 @@ public abstract class Item {
         this.price = price;
         this.condition = condition;
         this.itemStatus = ItemStatus.AVAILABLE;
+    }public Item(UUID ID,User user,String name,String condition,long price, ItemStatus status){
+        this.owner = user;
+        this.ID = ID;
+        this.name = name;
+        this.price = price;
+        this.condition = condition;
+        this.itemStatus = ItemStatus.AVAILABLE;
+        this.itemStatus = status;
     }
     public String toNetworkString() {
         return this.ID + "|" + this.name + "|" + this.price + "|"

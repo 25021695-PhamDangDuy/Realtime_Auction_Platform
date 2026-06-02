@@ -1,5 +1,6 @@
 package database;
 
+import function.SessionStatus;
 import models.Seller;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,17 +14,18 @@ public class SellerDAOImpl extends UserDAOImpl<Seller>{
 
     @Override
     public Seller get(UUID ID) {
-        String retrieveSQL = "SELECT * FROM users WHERE ID = ?";
+        String retrieveSQL = "SELECT * FROM users WHERE ID = ? AND role = 'SELLER' ";
         Seller seller = null;
         try(Connection conn = databaseCreator.getConnection()){
             PreparedStatement prsmt = conn.prepareStatement(retrieveSQL);
 
-            String id_Gson = gson.toJson(ID);
+            String id_Gson = ID.toString();
+            prsmt.setString(1,id_Gson);
             ResultSet rs = prsmt.executeQuery();
 
             if(rs.next()){
                 UUID id = UUID.fromString(rs.getString("ID"));
-                String name = rs.getString("Name");
+                String name = rs.getString("Username");
                 String pw = rs.getString("Password");
 
                 seller = new Seller(id,name,pw);
@@ -36,7 +38,7 @@ public class SellerDAOImpl extends UserDAOImpl<Seller>{
 
     @Override
     public List<Seller> getAll() {
-        String retrieveSQL = "SELECT * FROM users";
+        String retrieveSQL = "SELECT * FROM users WHERE role = 'SELLER' ";
         List<Seller> userList = new ArrayList<>();
         try(Connection conn = databaseCreator.getConnection()){
             PreparedStatement prsmt = conn.prepareStatement(retrieveSQL);
@@ -45,7 +47,7 @@ public class SellerDAOImpl extends UserDAOImpl<Seller>{
 
             while(rs.next()){
                 UUID id = UUID.fromString(rs.getString("ID"));
-                String name = rs.getString("Name");
+                String name = rs.getString("Username");
                 String pw = rs.getString("Password");
 
                 Seller bidder = new Seller(id,name,pw);

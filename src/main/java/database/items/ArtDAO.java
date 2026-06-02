@@ -1,6 +1,7 @@
 package database.items;
 
 import database.getUserDAO;
+import function.ItemStatus;
 import models.Art;
 import models.User;
 import java.sql.Connection;
@@ -13,11 +14,11 @@ public class ArtDAO extends ItemDAOImpl<Art> {
 
     @Override
     protected Art mapResultSetToItem(ResultSet rs) throws SQLException {
-        UUID itemId = UUID.fromString(rs.getString("ID").replaceAll("\"", ""));
+        UUID itemId = UUID.fromString(rs.getString("ID"));
         String name = rs.getString("Name");
         String condition = rs.getString("Condition");
         long price = rs.getLong("Price");
-    
+        ItemStatus status = gson.fromJson(rs.getString("Status"),ItemStatus.class);
         // Lấy owner từ owner_ID
         UUID ownerId = UUID.fromString(rs.getString("owner_ID"));
         getUserDAO a = new getUserDAO();
@@ -29,7 +30,7 @@ public class ArtDAO extends ItemDAOImpl<Art> {
         String artQuerySQL = "SELECT author, material FROM art_item WHERE ID = ?";
         try (Connection conn = databaseCreator.getConnection()) {
             PreparedStatement psmt = conn.prepareStatement(artQuerySQL);
-            psmt.setString(1, gson.toJson(itemId));
+            psmt.setString(1, itemId.toString());
             ResultSet artRs = psmt.executeQuery();
             if (artRs.next()) {
                 author = artRs.getString("author");
@@ -37,11 +38,11 @@ public class ArtDAO extends ItemDAOImpl<Art> {
             }
         }
 
-        return new Art(owner, name, price, condition, author, material);
+        return new Art(itemId,owner, name, price, condition, author, material,status);
     }
 
     @Override
-    public void save(Art art) {
+    public void save(Art art) throws SQLException {
         // Save vào bảng items trước
         super.save(art);
 
@@ -63,7 +64,7 @@ public class ArtDAO extends ItemDAOImpl<Art> {
     }
 
     @Override
-    public void update(Art art) {
+    public void update(Art art) throws SQLException {
         // Update items table
         super.update(art);
 
