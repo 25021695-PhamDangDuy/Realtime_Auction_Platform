@@ -6,9 +6,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import server.command.BidCommand;
-import server.command.Command;
-import server.command.LoginCommand;
+
+import server.command.*;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -24,6 +24,13 @@ public class ClientHandler implements Runnable {
     static {
         commandRegistry.put("LOGIN", new LoginCommand());
         commandRegistry.put("BID", new BidCommand());
+        commandRegistry.put("REGISTER",new RegisterCommand());
+        commandRegistry.put("DEPOSIT",new DepositCommand());
+        commandRegistry.put("WITHDRAW",new WithdrawCommand());
+        commandRegistry.put("CREAT_ITEM",new CreateItemCommand());
+        commandRegistry.put("LOGOUT",new LogoutCommand());
+        commandRegistry.put("GetAuctionSession", new GetAuctionSessionCommand());
+
     }
 
     public ClientHandler(Socket socket) { this.socket = socket; }

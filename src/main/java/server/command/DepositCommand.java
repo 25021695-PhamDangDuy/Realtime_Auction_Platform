@@ -1,5 +1,8 @@
 package server.command;
 
+
+import controller.brain.WalletManager;
+import models.Wallet;
 import server.ClientSession;
 import server.Role;
 
@@ -17,7 +20,7 @@ public class DepositCommand implements Command {
     public void execute(ClientSession session, String[] args) {
         // Cú pháp mới: DEPOSIT | số_tiền
         if (args.length < 2) {
-            session.sendMessage("ERROR|Thiếu thông tin nạp tiền. Cú pháp: DEPOSIT|Số_tiền");
+            session.sendMessage("ERROR|Thiếu thông tin nạp tiền. ");
             return;
         }
 
@@ -30,17 +33,17 @@ public class DepositCommand implements Command {
                 return;
             }
 
-            // BƯỚC MỚI: Tự động tìm ID ví của ông khách này trong Database
-            // (Giả sử bạn có hàm getWalletIdByOwnerId trong WalletDAO hoặc WalletController)
-            //UUID walletID = WalletManager.getInstance().getWalletIdByOwnerId(ownerID);
+            //BƯỚC MỚI: Tự động tìm ID ví của ông khách này trong Database
+            Wallet wallet = WalletManager.getInstance().getWallet(ownerID);
+            UUID walletID= wallet.getID();
 
-           // if (walletID == null) {
-             //   session.sendMessage("ERROR|Tài khoản của bạn chưa được khởi tạo ví!");
-            //    return;
-           // }
+            if (walletID == null) {
+               session.sendMessage("ERROR|Tài khoản của bạn chưa được khởi tạo ví!");
+                return;
+            }
 
-            // Đầy đủ 3 tham số rồi, gọi hàm của Duy thôi!
-           // WalletManager.getInstance().depositWallet(walletID, ownerID, amount);
+            // Đầy đủ 3 tham số rồi, gọi hàm
+           WalletManager.getInstance().depositWallet(walletID, ownerID, amount);
 
             session.sendMessage("SUCCESS_DEPOSIT|Yêu cầu nạp " + amount + " VNĐ đã được xử lý thành công!");
 

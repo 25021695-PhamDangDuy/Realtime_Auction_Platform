@@ -20,4 +20,16 @@ public class Electronics extends Item{
     public String toString(){
         return "Electronics{" + "id=" + getID() + ", name=" + getName() + ", warranty=" + getMonthofWarranty() + " months}";
     }
+
+    @Override
+    protected String getItemType() {
+        return "ELECTRONIC"; // Báo cho Client biết đây là đồ công nghệ
+    }
+
+    @Override
+    protected String getSpecificDetails() {
+        // Nối các thông tin đặc thù của Đồ điện tử
+        Integer month = getMonthofWarranty();
+        return String.valueOf(month);
+    }
 }

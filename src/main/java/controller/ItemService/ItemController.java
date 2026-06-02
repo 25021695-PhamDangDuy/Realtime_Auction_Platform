@@ -43,6 +43,10 @@ public class ItemController {
 
         return item;
     }
+    public static Item getByUUID(UUID uuid) throws SQLException {
+        Item item= getItemDao.get(uuid);
+        return item;
+    }
 
     public static void updateItem(Item item) throws SQLException {
         getItemDao.update(item);

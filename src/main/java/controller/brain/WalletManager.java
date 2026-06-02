@@ -26,7 +26,7 @@ public class WalletManager {
         return instance;
     }
 
-    private Wallet getWallet(UUID ID) throws IllegalArgumentException, NullPointerException, SQLException{
+    public Wallet getWallet(UUID ID) throws IllegalArgumentException, NullPointerException, SQLException{
         if(ID == null){
             throw new NullPointerException("ID is null");
         }

@@ -47,6 +47,8 @@ public class AuctionRoom extends Application implements MessageListener {
         this.primaryStage = primaryStage;
     }
 
+    public AuctionRoom() {
+    }
 
     @Override
     public void start(Stage stage) {
