@@ -122,3 +122,9 @@ public class AuctionLogin extends Application implements MessageListener {
         launch(args);
     }
 }
+
+
+
+
+
+
