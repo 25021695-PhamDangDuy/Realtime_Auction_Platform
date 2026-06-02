@@ -1,8 +1,9 @@
-package database;
+package database.items;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import database.getUserDAO;
 import models.User;
 import models.Vehicle;
 import java.sql.ResultSet;

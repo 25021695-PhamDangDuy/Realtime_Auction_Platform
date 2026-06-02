@@ -1,13 +1,109 @@
-C:\Users\DUONG KHANH HOAN\IdeaProjects\Realtime_Auction_Platform\src\main\java\myWeb\controller\AuctionManager.java
-C:\Users\DUONG KHANH HOAN\IdeaProjects\Realtime_Auction_Platform\src\main\java\myWeb\DataBase\Storage\json.java
-C:\Users\DUONG KHANH HOAN\IdeaProjects\Realtime_Auction_Platform\src\main\java\myWeb\function\balanceSkills\balanceModifiable.java
-C:\Users\DUONG KHANH HOAN\IdeaProjects\Realtime_Auction_Platform\src\main\java\myWeb\function\balanceSkills\balanceModifier.java
-C:\Users\DUONG KHANH HOAN\IdeaProjects\Realtime_Auction_Platform\src\main\java\myWeb\function\sellerSetTime.java
-C:\Users\DUONG KHANH HOAN\IdeaProjects\Realtime_Auction_Platform\src\main\java\myWeb\Main.java
-C:\Users\DUONG KHANH HOAN\IdeaProjects\Realtime_Auction_Platform\src\main\java\myWeb\models\Art.java
-C:\Users\DUONG KHANH HOAN\IdeaProjects\Realtime_Auction_Platform\src\main\java\myWeb\models\Bidder.java
-C:\Users\DUONG KHANH HOAN\IdeaProjects\Realtime_Auction_Platform\src\main\java\myWeb\models\Electronics.java
-C:\Users\DUONG KHANH HOAN\IdeaProjects\Realtime_Auction_Platform\src\main\java\myWeb\models\Item.java
-C:\Users\DUONG KHANH HOAN\IdeaProjects\Realtime_Auction_Platform\src\main\java\myWeb\models\Seller.java
-C:\Users\DUONG KHANH HOAN\IdeaProjects\Realtime_Auction_Platform\src\main\java\myWeb\models\User.java
-C:\Users\DUONG KHANH HOAN\IdeaProjects\Realtime_Auction_Platform\src\main\java\myWeb\models\Vehicle.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\Application\Main.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\controller\AuctionController.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\controller\AuctionObserver.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\controller\AuctionSessionUpcomingWatcher.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\controller\AuctionSessionWatcher.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\controller\BidHistory.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\controller\brain\AccountController.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\controller\brain\AuctionManager.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\controller\brain\PaymentManager.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\controller\brain\WalletManager.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\controller\DepositTransactionExcutor.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\controller\ItemController\ArtItemController.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\controller\ItemController\ElectronicItemController.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\controller\ItemController\ItemController.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\controller\ItemController\VehicleItemController.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\controller\SettlementTransactionExcutor.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\controller\TransferTransactionExcutor.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\controller\WithdrawTransactionExcutor.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\database\BidderDAOImpl.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\database\BidTicketDAO.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\database\DataAccessObject.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\database\DatabaseCreator.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\database\DepositTransactionDAO.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\database\getUserDAO.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\database\items\ArtDAO.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\database\items\ElectronicDAO.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\database\items\getItemDao.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\database\items\ItemDAO.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\database\items\ItemDAOImpl.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\database\items\VehicleDAO.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\database\SellerDAOImpl.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\database\SessionDAO.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\database\SettlementTransactionDAO.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\database\TransactionDAO.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\database\UserDAO.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\database\UserDAOImpl.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\database\WalletDAO.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\database\WithdrawTransactionDAO.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\function\BidStatus.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\function\Const.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\function\DiversityRule.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\function\ExistRule.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\function\ItemStatus.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\function\LengthRule.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\function\LogLevel.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\function\PasswordValidator.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\function\SessionChecker.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\function\SessionStatus.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\function\StrongRule.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\function\SystemLogger.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\function\TransactionCreator.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\function\TransactionExcutor.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\function\TransactionStatus.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\function\TransactionType.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\function\UserNameValidator.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\function\Validator.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\models\Admin.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\models\Art.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\models\AuctionSession.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\models\Bidder.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\models\BidTicket.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\models\DepositTransaction.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\models\Electronics.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\models\Item.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\models\Seller.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\models\SettlementTransaction.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\models\Transaction.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\models\TransactionDetails.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\models\TransferTransaction.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\models\User.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\models\Vehicle.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\models\Wallet.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\models\WithdrawTransaction.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\module-info.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\server\AuctionServer.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\server\ClientHandler.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\server\ClientManager.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\server\ClientSession.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\server\command\BidCommand.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\server\command\Command.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\server\command\CreaeRoomCommand.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\server\command\CreateItemCommand.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\server\command\CreatRoomCommand.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\server\command\DepositCommand.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\server\command\GetRoomsCommand.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\server\command\ItemFactory\ArtCreatorCommand.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\server\command\ItemFactory\ElectronicCreatorCommand.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\server\command\ItemFactory\ItemCreator.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\server\command\ItemFactory\VehicleCreatorCommand.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\server\command\LoginCommand.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\server\command\LogoutCommand.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\server\command\RegisterCommand.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\server\command\ViewHistoryCommand.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\server\Role.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\view\Account.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\view\AddProduct.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\view\AuctionDashBoard.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\view\AuctionGridCard.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\view\AuctionHomeScreen.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\view\AuctionLogin.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\view\AuctionMarketplace.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\view\AuctionObserverCard.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\view\AuctionObserverView.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\view\AuctionRegister.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\view\AuctionRoom.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\view\AuctionWatchList.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\view\NavigationManager.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\view\network\MessageListener.java
+E:\Workspace\BaiTap-Excercise-QH2025\LTNC\Realtime_Auction_Platform\src\main\java\view\network\ServerConnection.java

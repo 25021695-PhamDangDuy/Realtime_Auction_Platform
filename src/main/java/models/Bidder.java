@@ -27,11 +27,11 @@ public class Bidder extends User implements AuctionObserver {
     //Constructor
     public Bidder(String name,String password){
         super(name,password);
-        this.itemList = new ArrayList<>();
+
     }
     public Bidder(UUID id, String name, String pw){
         super(id,name,pw);
-        this.itemList = new ArrayList<>();
+
     }
 
     //Getter

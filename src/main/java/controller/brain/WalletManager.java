@@ -1,17 +1,17 @@
-package controller;
+package controller.brain;
 
 import database.WalletDAO;
 import function.SystemLogger;
 import models.Wallet;
-
+import database.getUserDAO;
 import java.sql.SQLException;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class WalletManager {
     private WalletDAO walletDAO;
     private static WalletManager instance;  //Singleton
     private SystemLogger log = SystemLogger.getInstance();
+    private getUserDAO getUserDAO = new getUserDAO();
 
     private WalletManager(){
         walletDAO = new WalletDAO();
@@ -34,39 +34,40 @@ public class WalletManager {
         try{
             rs = walletDAO.get(ID);
         } catch (SQLException e) {
-            log.crash("Lỗi SQL khi thực thi lấy thông tin ví theo ID ví: " + ID.toString(), e);
+            log.crash("Lỗi SQL khi thực thi lấy thông tin ví theo : " + ID, e);
             throw new SQLException(e);
         }
         if(rs == null){
-            log.warning("ID: " + ID.toString() + " ví chưa tồn tại");
-            throw new IllegalArgumentException("ví chưa tồn tại: " + ID.toString());
+            log.warning("ID ví: " + ID + " ví chưa tồn tại");
+            throw new IllegalArgumentException("ví chưa tồn tại: " + ID);
         }
         return rs;
     }
-    public Wallet getWalletbyOwnerID(UUID ownerID) throws SQLException, NullPointerException,IllegalArgumentException{
-        if ( ownerID == null ) {
-            throw new NullPointerException("ownerID là null");
+    public Wallet getWalletbyOwner(String name) throws SQLException, NullPointerException,IllegalArgumentException{
+        if ( name == null ) {
+            throw new NullPointerException("owner là null");
         }
         Wallet rs = null;
         try{
-            rs = walletDAO.getByOwnerID(ownerID);
+            UUID ID = getUserDAO.getbyUsername(name).getID();
+            rs = walletDAO.getByOwnerID(ID);
         } catch (SQLException e) {
-            log.crash("Lỗi SQL khi thực thi lấy thông tin ví theo ID user: " + ownerID.toString(), e);
+            log.crash("Lỗi SQL khi thực thi lấy thông tin ví theo ID user: " + name, e);
             throw new SQLException(e);
         }
         if(rs == null){
-            log.warning("ID: " + ownerID.toString() + " ví chưa tồn tại");
-            throw new IllegalArgumentException("ví chưa tồn tại: " + ownerID.toString());
+            log.warning("ID: " + name.toString() + " ví chưa tồn tại");
+            throw new IllegalArgumentException("ví chưa tồn tại: " + name.toString());
         }
         return rs;
     }
 
-    public long getBalancebyOwnerID(UUID ownerID) throws SQLException,NullPointerException,IllegalArgumentException {
-        Wallet wallet = getWalletbyOwnerID(ownerID);
+    public long getBalancebyOwnerID(String name) throws SQLException,NullPointerException,IllegalArgumentException {
+        Wallet wallet = getWalletbyOwner(name);
         return wallet.getBalance();
     }
-    public long getBalanceLockedbyOwnerID(UUID ownerID) throws SQLException,NullPointerException,IllegalArgumentException {
-        Wallet wallet = getWalletbyOwnerID(ownerID);
+    public long getBalanceLockedbyOwnerID(String name) throws SQLException,NullPointerException,IllegalArgumentException {
+        Wallet wallet = getWalletbyOwner(name);
         return wallet.getBalanceLocked();
     }
 
@@ -77,8 +78,8 @@ public class WalletManager {
             throw new IllegalArgumentException("userID: " + ownerID.toString() + " đã có tồn tại ví tiền");
         }
         //Logic amount
-        if(amount < 1000){
-            throw new IllegalArgumentException("Không thể tạo số tiền nhỏ hơn 1000 đồng");
+        if(amount < 0){
+            throw new IllegalArgumentException("Không thể tạo số tiền nhỏ hơn 0 đồng");
         }
         Wallet newWallet = new Wallet(walletID,ownerID,amount,0);
         walletDAO.save(newWallet);

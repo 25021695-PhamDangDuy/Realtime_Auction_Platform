@@ -1,5 +1,6 @@
-package database;
+package database.items;
 
+import database.getUserDAO;
 import models.Electronics;
 import models.User;
 import java.sql.Connection;

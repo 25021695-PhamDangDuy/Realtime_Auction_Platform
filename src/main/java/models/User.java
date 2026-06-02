@@ -16,8 +16,8 @@ public abstract class User {
     }
     public User(UUID ID, String name, String pw){
         this.ID = ID;
-        this.Name = Name;
-        this.Password = Password;
+        this.Name = name;
+        this.Password = pw;
     }
     //Getter
     public String getName(){return Name;}

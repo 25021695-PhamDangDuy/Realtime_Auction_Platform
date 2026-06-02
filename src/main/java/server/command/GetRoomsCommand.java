@@ -1,11 +1,8 @@
 package server.command;
 
-import controller.AuctionManager;
-import models.AuctionSession;
 import server.ClientSession;
 import server.Role;
 
-import java.util.List;
 import java.util.Set;
 
 public class GetRoomsCommand implements Command {

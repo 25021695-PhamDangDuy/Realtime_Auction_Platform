@@ -1,19 +1,26 @@
-package controller;
+package controller.brain;
 
+import controller.AuctionController;
 import database.*;
+import database.items.ArtDAO;
+import database.items.ElectronicDAO;
+import database.items.VehicleDAO;
 import function.*;
 
-import models.Bidder;
-import models.User;
+import models.*;
 
 import java.sql.SQLException;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 //Class kiểm soát đăng nhập và tài khoản người dùng
 public class AccountController{
     private static AccountController instance = null;
 
+    private VehicleDAO vehicleDAO = new VehicleDAO();
+    private ElectronicDAO electronicDAO = new ElectronicDAO();
+    private ArtDAO artDAO = new ArtDAO();
     private BidderDAOImpl bidderDAO = new BidderDAOImpl();
     private SystemLogger log = SystemLogger.getInstance();
     private getUserDAO getUserDAO = new getUserDAO();
@@ -47,7 +54,7 @@ public class AccountController{
       if(!userNameValidator.valid(name)){
           throw new IllegalArgumentException("Tên không đủ mạnh");
       }
-      if (getUserDAO.getbyUsername(name) != null){
+      if (getUserDAO.isUsername(name)){
           throw new IllegalArgumentException("Tên đã được sử dụng");
       }
       if (!passwordValidator.checkEquals(pw,idPW)){
@@ -76,5 +83,12 @@ public class AccountController{
 
     }
 
-    //    public void UpdateInfor(String name, )
+    /*
+    Tập methods lấy thông tin từ db của User sang server
+     */
+    public User getInfor(String name) throws SQLException {
+        User user = getUserDAO.getbyUsername(name);
+        return user;
+    }
+
 }

@@ -3,10 +3,13 @@ package database;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import function.SystemLogger;
 import models.Admin;
 import models.Bidder;
 import models.Seller;
 import models.User;
+import server.Role;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -17,6 +20,7 @@ import java.util.UUID;
 public abstract class UserDAOImpl<T extends User> implements UserDAO<T>{
     protected DatabaseCreator databaseCreator = DatabaseCreator.getInstance();
     protected Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private SystemLogger log = SystemLogger.getInstance();
     //Lớp phục vụ việc truy xuất thông tin của user
 
     public void save(T user){
@@ -75,10 +79,12 @@ public abstract class UserDAOImpl<T extends User> implements UserDAO<T>{
 
 
     // Helper method: Tạo User object tương ứng dựa trên role
-    protected User createUserByRole(UUID id, String username, String password, String role) {
-        switch (role.toUpperCase()) {
+    public User createUserByRole(UUID id, String username, String password, String role) {
+
+        switch(role.toUpperCase().trim()) {  // ← Chuyển thành UPPERCASE
             case "BIDDER":
-                return new Bidder(id, username, password);
+                Bidder b = new Bidder(id, username, password);
+                return b;
             case "SELLER":
                 return new Seller(id, username, password);
             case "ADMIN":
@@ -87,6 +93,5 @@ public abstract class UserDAOImpl<T extends User> implements UserDAO<T>{
                 return null;
         }
     }
-
 
 }
