@@ -1,12 +1,14 @@
 package controller;
 
 import database.BidTicketDAO;
+import database.SessionDAO;
 import function.BidStatus;
 import models.AuctionSession;
 import models.BidTicket;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -18,31 +20,9 @@ Vì là Deque nên bản thân nó là một Queue hai đầu, nó có thể rem
 Điều này cực tiện cho việc truy xuất và tối ưu bộ nhớ khi một phiên có quá nhiều lượt đặt BidTicket
  */
 public class BidHistory {
-    private BidTicketDAO bidTicketDAO = new BidTicketDAO();
-    private AuctionSession session;
-    private AtomicInteger size;  //An toàn đa luồng trong việc cộng số lượng
-
-    public BidHistory(AuctionSession session){
-        this.session = session;
-        size = new AtomicInteger(0);
-    }
-
-    public BidHistory(List<BidTicket> list){
-        AuctionSession session = list.get(0).getSession();
-        size.set(list.size());
-        list.forEach(b -> bidTicketDAO.save(b));
-    }
-
-    /*
-    Đẩy BidTicket vào lịch sử
-     */
-    private Object pushKey = new Object();
-    public void pushTicket(BidTicket bidTicket){
-        synchronized (pushKey){
-            //Logic kiểm tra bidTicket
-            bidTicketDAO.save(bidTicket);
-            size.getAndIncrement();
-        }
+    private static BidTicketDAO bidTicketDAO = new BidTicketDAO();
+    private static SessionDAO sessionDAO = new SessionDAO();
+    public BidHistory(){
     }
 
     /*
@@ -50,66 +30,38 @@ public class BidHistory {
     Tập các method mà Logic chủ yếu là return và không xóa các phần tử
     -------------------------------
      */
-    //==========================Đang FIX============================//
+    //==========================[Getter]============================//
 
-//    public BidTicket topAcctually(){
-//        /*
-//        Trả về BidTicket cuối
-//         */
-//        return history.peekFirst();
-//    }
-
-//    public BidTicket topLegal(){
-//        /*
-//        Trả về BidTicket cuối cùng mà BidTicket đó là hợp lệ giao dịch - Tức là status : FINISHED
-//        nếu duyệt không có -> trả về null
-//         */
-//        if(history.isEmpty()){
-//            return null;
-//        }
-//        for(BidTicket bidTicket: history){
-//            if(bidTicket.getStatus() == BidStatus.VALID){
-//                return bidTicket;
-//            }
-//        }
-//        return null;
-//    }
-
-//    public BidTicket topSecondAcctually(){
-//        Iterator<BidTicket> iterator = history.iterator();
-//        int i = 0;
-//        BidTicket result = null;
-//        while(iterator.hasNext() && i < 2){
-//            result = iterator.next();
-//            i++;
-//        }
-//        if(i == 2){
-//            return result;
-//        }else {
-//            return null;
-//        }
-//    }
-//
-//    public BidTicket topSecondLegal(){
-//        Iterator<BidTicket> iterator = history.iterator();
-//        int n = 2;
-//        while(iterator.hasNext()){
-//                BidTicket now = iterator.next();
-//                if(now.getStatus() == BidStatus.VALID){
-//                    n -= 1;
-//                    if(n == 0){
-//                        return now;
-//                    }
-//                }
-//        }
-//        return null;
-//    }
+    //Lấy 1 topBid hợp lệ
+    public static BidTicket getTopAcctuallyBySessionID(UUID sessionID){
+        return bidTicketDAO.getTopBySession(sessionID);
+    }
+    //Lấy 1 topBid : tức là có thể topBid của spam
+    public static BidTicket getTopBySessionID(UUID sessionID){
+        return bidTicketDAO.getTopBySession(sessionID);
+    }
+    //Lấy danh sách bid hợp lệ: 0 -> n với 0 là bid mới nhất
+    public static List<BidTicket> getLegalBySessionID(UUID sessionID){
+        return bidTicketDAO.getLegalBySession(sessionID);
+    }
+    //Lấy danh sách bid
+    public static List<BidTicket> getBySessionID(UUID sessionID){
+        return bidTicketDAO.getBySession(sessionID);
+    }
+    public static BidTicket getSecondBySessionID(UUID sessionID){
+        List<BidTicket> list = bidTicketDAO.getBySession(sessionID);
+        if(list.size() < 2){
+            return null;
+        }
+        return list.get(1);
+    }
 
     /*
     Về cơ bản, class này sẽ không cho phép việc thay đổi Hitory, hay nói cách khác là Lịch sử thì vĩnh viễn không đổi
     class này sẽ kết nối với database để phục vụ cho việc lưu trữ history lớn, và class này đóng vai trò là bộ nhớ đệm để truy xuất nhanh
     Những method dưới đây sẽ tập trung vào xóa và chuyển dữ liệu sang db
      */
+
 //    public void removeLast() throws IllegalArgumentException{
 //        if(history.isEmpty()){
 //            throw new IllegalArgumentException("History is empty");
@@ -131,12 +83,5 @@ public class BidHistory {
 
     /*
     Dưới đây là những method giúp tính toán kích cỡ size history hiện tại để dễ dàng quản lí
-     */
-    public int size(){
-        return size.get();
-    }
-
-    /*
-
      */
 }

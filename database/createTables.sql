@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS bidTickets(
 );
 
 CREATE TABLE IF NOT EXISTS sessions(
-                                       ID           TEXT PRIMARY KEY,
+                                       ID    TEXT PRIMARY KEY,
                                        item_ID    TEXT NOT NULL,
                                        seller_ID   TEXT NOT NULL,
     topBidTicketID TEXT,

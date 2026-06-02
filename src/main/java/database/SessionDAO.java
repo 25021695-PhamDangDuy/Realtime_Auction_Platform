@@ -45,7 +45,7 @@ public class SessionDAO implements DataAccessObject<AuctionSession> {
 
     @Override
     public void update(AuctionSession session) throws SQLException{
-        String updateSQL = "UPDATE sessions SET item_ID = ?, seller_ID = ?, currentPrice = ?, status = ?, endTime = ? WHERE ID = ?";
+        String updateSQL = "UPDATE sessions SET item_ID = ?, seller_ID = ?, currentPrice = ?, status = ?, endTime = ?, topBidTicketID = ? WHERE ID = ?";
         try (Connection conn = databaseCreator.getConnection()) {
             PreparedStatement psmt = conn.prepareStatement(updateSQL);
 
@@ -56,6 +56,7 @@ public class SessionDAO implements DataAccessObject<AuctionSession> {
             psmt.setLong(3, session.getCurrentPrice());
             psmt.setString(4, session.getStatus().name());
             psmt.setString(5, gson.toJson(session.getEndTime()));
+            psmt.setString(6,session.getTopBid().toString());
             psmt.setString(6, idString);
 
             psmt.executeUpdate();

@@ -72,4 +72,25 @@ public class SessionChecker {
         }
     }
 
+    //Logic - Nếu thời gian đặt Bid nằm trong khoảng 2p kể từ thời gian đặt đến lúc endTime -> tự động gia hạn thêm 10p;
+    public boolean isExtendTime(AuctionSession session, LocalDateTime timeCheck){
+        LocalDateTime endTime = session.getEndTime();
+        Duration duration = Duration.between(timeCheck,endTime);
+
+        if(duration.toMinutes() < 0){
+            return false;
+        }
+        if(duration.toMinutes() > 2){
+            return false;
+        }
+        return true;
+    }
+
+    public boolean isRunSession(AuctionSession session, LocalDateTime timeCheck){
+        LocalDateTime startTime = session.getStartTime();
+        if(Duration.between(timeCheck,startTime).toSeconds() <= 2){
+            return true;
+        }
+        return false;
+    }
 }

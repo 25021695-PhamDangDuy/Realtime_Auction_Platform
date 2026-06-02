@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import function.BidStatus;
+import function.SessionStatus;
 import models.AuctionSession;
 import models.BidTicket;
 import models.Bidder;
@@ -26,7 +27,7 @@ public class BidTicketDAO implements DataAccessObject<BidTicket> {
             String idString = bidTicket.getID().toString();
 
             psmt.setLong(1, bidTicket.getAmount());
-            psmt.setString(2, gson.toJson(bidTicket.getStatus()));
+            psmt.setString(2, bidTicket.getStatus().name());
             psmt.setString(3, gson.toJson(bidTicket.getTimeBid()));
             psmt.setString(4, idString);
 
@@ -52,7 +53,7 @@ public class BidTicketDAO implements DataAccessObject<BidTicket> {
             psmt.setString(3, sessionIdString);
             psmt.setString(4, gson.toJson(bidTicket.getTimeBid()));
             psmt.setLong(5, bidTicket.getAmount());
-            psmt.setString(6, gson.toJson(bidTicket.getStatus()));
+            psmt.setString(6, bidTicket.getStatus().name());
 
             psmt.executeUpdate();
             System.out.println("BidTicket saved successfully");
@@ -63,7 +64,7 @@ public class BidTicketDAO implements DataAccessObject<BidTicket> {
 
     @Override
     public BidTicket get(UUID ID) {
-        String querySQL = "SELECT * FROM bidTickets WHERE ID = ?";
+        String querySQL = "SELECT * FROM bidTickets WHERE ID = ? ORDER BY timestamp DESC LIMIT 1";
         try (Connection conn = databaseCreator.getConnection()) {
             PreparedStatement psmt = conn.prepareStatement(querySQL);
             psmt.setString(1, ID.toString());
@@ -81,7 +82,7 @@ public class BidTicketDAO implements DataAccessObject<BidTicket> {
     @Override
     public List<BidTicket> getAll() {
         List<BidTicket> bidTickets = new ArrayList<>();
-        String querySQL = "SELECT * FROM bidTickets";
+        String querySQL = "SELECT * FROM bidTickets ORDER BY timestamp DESC ";
         try (Connection conn = databaseCreator.getConnection()) {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(querySQL);
@@ -97,14 +98,18 @@ public class BidTicketDAO implements DataAccessObject<BidTicket> {
 
     public List<BidTicket> getByUser(UUID userID) {
         List<BidTicket> bidTickets = new ArrayList<>();
-        String querySQL = "SELECT * FROM bidTickets WHERE user_ID = ?";
+        String querySQL = "SELECT * FROM bidTickets WHERE user_ID = ? ORDER BY timestamp DESC";
         try (Connection conn = databaseCreator.getConnection()) {
             PreparedStatement psmt = conn.prepareStatement(querySQL);
             psmt.setString(1, userID.toString());
 
-            ResultSet rs = psmt.executeQuery();
-            while (rs.next()) {
-                bidTickets.add(mapResultSetToBidTicket(rs));
+            try (ResultSet rs = psmt.executeQuery()) {
+                while (rs.next()) {
+                    BidTicket ticket = mapResultSetToBidTicket(rs);
+                    if (ticket != null) { // Kiểm tra phòng trường hợp map lỗi ra null
+                        bidTickets.add(ticket);
+                    }
+                }
             }
         } catch (SQLException e) {
             System.out.println("Error getting bid tickets by user: " + e.getMessage());
@@ -115,19 +120,85 @@ public class BidTicketDAO implements DataAccessObject<BidTicket> {
 
     public List<BidTicket> getBySession(UUID sessionID) {
         List<BidTicket> bidTickets = new ArrayList<>();
-        String querySQL = "SELECT * FROM bidTickets WHERE session_ID = ?";
+        String querySQL = "SELECT * FROM bidTickets WHERE session_ID = ? ORDER BY timestamp DESC";
         try (Connection conn = databaseCreator.getConnection()) {
             PreparedStatement psmt = conn.prepareStatement(querySQL);
             psmt.setString(1, sessionID.toString());
 
-            ResultSet rs = psmt.executeQuery();
-            while (rs.next()) {
-                bidTickets.add(mapResultSetToBidTicket(rs));
+            try (ResultSet rs = psmt.executeQuery()) {
+                while (rs.next()) {
+                    BidTicket ticket = mapResultSetToBidTicket(rs);
+                    if (ticket != null) { // Kiểm tra phòng trường hợp map lỗi ra null
+                        bidTickets.add(ticket);
+                    }
+                }
             }
         } catch (SQLException e) {
             System.out.println("Error getting bid tickets by session: " + e.getMessage());
         }
         return bidTickets;
+    }
+    public List<BidTicket> getLegalBySession(UUID sessionID) {
+        List<BidTicket> bidTickets = new ArrayList<>();
+        String querySQL = "SELECT * FROM bidTickets WHERE session_ID = ? AND status = ? ORDER BY timestamp DESC";
+        try (Connection conn = databaseCreator.getConnection()) {
+            PreparedStatement psmt = conn.prepareStatement(querySQL);
+            psmt.setString(1, sessionID.toString());
+            psmt.setString(2,BidStatus.VALID.name());
+
+            try (ResultSet rs = psmt.executeQuery()) {
+                while (rs.next()) {
+                    BidTicket ticket = mapResultSetToBidTicket(rs);
+                    if (ticket != null) { // Kiểm tra phòng trường hợp map lỗi ra null
+                        bidTickets.add(ticket);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error getting bid tickets by session: " + e.getMessage());
+        }
+        return bidTickets;
+    }
+    public BidTicket getTopBySession(UUID sessionID) {
+        BidTicket bidTicket = null;
+        String querySQL = "SELECT * FROM bidTickets WHERE session_ID = ? ORDER BY timestamp DESC LIMIT 1";
+        try (Connection conn = databaseCreator.getConnection()) {
+            PreparedStatement psmt = conn.prepareStatement(querySQL);
+            psmt.setString(1, sessionID.toString());
+
+            try (ResultSet rs = psmt.executeQuery()) {
+                if (rs.next()) {
+                    BidTicket ticket = mapResultSetToBidTicket(rs);
+                    if (ticket != null) { // Kiểm tra phòng trường hợp map lỗi ra null
+                        bidTicket = ticket;
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error getting bid tickets by session: " + e.getMessage());
+        }
+        return bidTicket;
+    }
+
+    public BidTicket getTopLegalBySession(UUID sessionID){BidTicket bidTicket = null;
+        String querySQL = "SELECT * FROM bidTickets WHERE session_ID = ? AND status = ? ORDER BY timestamp DESC LIMIT 1";
+        try (Connection conn = databaseCreator.getConnection()) {
+            PreparedStatement psmt = conn.prepareStatement(querySQL);
+            psmt.setString(1, sessionID.toString());
+            psmt.setString(2, BidStatus.VALID.name());
+
+            try (ResultSet rs = psmt.executeQuery()) {
+                if (rs.next()) {
+                    BidTicket ticket = mapResultSetToBidTicket(rs);
+                    if (ticket != null) { // Kiểm tra phòng trường hợp map lỗi ra null
+                        bidTicket = ticket;
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error getting bid tickets by session: " + e.getMessage());
+        }
+        return bidTicket;
     }
 
     // Helper method: Convert ResultSet to BidTicket
@@ -137,7 +208,7 @@ public class BidTicketDAO implements DataAccessObject<BidTicket> {
         UUID sessionId = UUID.fromString(rs.getString("session_ID"));
         LocalDateTime timestamp = gson.fromJson(rs.getString("timestamp"),LocalDateTime.class);
         long amount = rs.getLong("amount");
-        BidStatus status = gson.fromJson(rs.getString("status"), BidStatus.class);
+        BidStatus status = BidStatus.valueOf(rs.getString("status"));
 
         // Lấy User object
         BidderDAOImpl bidderDAO = new BidderDAOImpl();

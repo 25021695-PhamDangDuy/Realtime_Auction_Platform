@@ -6,8 +6,11 @@ import database.BidTicketDAO;
 import function.ItemStatus;
 import function.SessionChecker;
 import function.SessionStatus;
+import database.items.getItemDao;
 
 import function.BidStatus;
+
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +46,7 @@ public class AuctionSession {
         this.status = status;
 
     }
-    public AuctionSession(UUID id,Item item,Seller seller,long startPrice,long minIncrement,LocalDateTime endTime,LocalDateTime startTime, SessionStatus status, BidHistory bidHistory) {
+    public AuctionSession(UUID id,Item item,Seller seller,long startPrice,long minIncrement,LocalDateTime endTime,LocalDateTime startTime, SessionStatus status, BidTicket bidTicket) {
         this.ID = id;
         this.item=item;
         this.seller=seller;
@@ -52,7 +55,7 @@ public class AuctionSession {
         this.endTime=endTime;
         this.startTime = startTime;
         this.status = status;
-
+        this.topBid = bidTicket;
     }
     //hàm đăng ký theo dõi/ hủy theo dõi phiên đấu giá
     public void attach(AuctionObserver observer){
@@ -102,6 +105,7 @@ public class AuctionSession {
         return seller;
     }
     public long getCurrentPrice(){return currentPrice;}
+    public BidTicket getTopBid(){return topBid;}
 
     public void setStatus(SessionStatus status) throws NullPointerException {
         if(status == null){
@@ -112,14 +116,13 @@ public class AuctionSession {
 
     public synchronized void placeBid(Bidder bidder, long bidAmount) throws IllegalArgumentException{
         // 1. Kiểm tra thời gian & trạng thái
-        if (!status.equals(SessionStatus.RUNNING)) {
+        if ( sessionChecker.isAuctioning(this) & !status.equals(SessionStatus.RUNNING)) {
             throw new IllegalArgumentException(status.getDescription());
         }
         // 2. Chống gian lận: Người bán tự đẩy giá (Shill Bidding)
         if (bidder.getID().equals(seller.getID())) {
             throw new IllegalArgumentException("Người bán không thể tự đấu giá món đồ của mình!");
         }
-
         // 3. Tránh tự "đấu" chính mình
         if (this.getTopBidder() != null && bidder.getID().equals(this.getTopBidder().getID())) {
             throw new IllegalArgumentException("Bạn đang là người giữ giá cao nhất rồi!");
@@ -130,10 +133,16 @@ public class AuctionSession {
             throw new IllegalArgumentException("Giá thầu phải từ " + requiredMinBid + " trở lên!");
         }
         // 5. Nếu vượt qua mọi bài kiểm tra -> Cập nhật thành công!
+        LocalDateTime time = LocalDateTime.now();
         this.currentPrice = bidAmount;
-        BidTicket newTicket = new BidTicket(bidder,this,LocalDateTime.now(),bidAmount,BidStatus.VALID);
+        BidTicket newTicket = new BidTicket(bidder,this,time,bidAmount,BidStatus.VALID);
         bidTicketDAO.save(newTicket);
         topBid = newTicket;
+
+        if(sessionChecker.isExtendTime(this,time)){
+            endTime.plusMinutes(10);
+            extendEndTime(endTime);
+        }
     }
 
     public void extendEndTime(LocalDateTime newEndTime) throws NullPointerException{
@@ -150,14 +159,14 @@ public class AuctionSession {
             endTime = newEndTime;
         }
     }
-    public void finishSession() throws IllegalArgumentException{
+    public void finishSession() throws IllegalArgumentException, SQLException {
         if(sessionChecker.isSessionTimeUp(this)){
             status = SessionStatus.FINISHED;
             item.setItemStatus(ItemStatus.SOLD);
-            Bidder winner = this.getTopBidder();
-            Item reward = item;
 
-            reward.setItemStatus(ItemStatus.SOLD);
+            Bidder winner = this.getTopBidder();
+            item.setOwner(winner);
+
         }else{
             throw new IllegalArgumentException("Session is not timeup!");
         }
@@ -192,12 +201,11 @@ public class AuctionSession {
     }
 
     public void runSession() throws IllegalArgumentException {
-        if(sessionChecker.isUpComing(this)){
+        if(sessionChecker.isUpComing(this) && sessionChecker.isRunSession(this,LocalDateTime.now())){
             status = SessionStatus.RUNNING;
         } else {
             throw new IllegalArgumentException("Session is not upcoming");
-
-    }
+        }
     }
 }
 

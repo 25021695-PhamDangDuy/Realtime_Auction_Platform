@@ -22,6 +22,7 @@ public class WithdrawTransactionExcutor implements TransactionExcutor {
 
             transaction.setTransactionStatus(TransactionStatus.SUCCESS);
             walletManager.withdrawWallet(walletID,senderID,amount);
+
             transactionDAO.update(transaction);
         }else{
             throw new IllegalArgumentException("Loại giao dịch không phù hợp");        }

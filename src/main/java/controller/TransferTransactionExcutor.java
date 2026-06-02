@@ -12,8 +12,7 @@ import java.util.UUID;
 public class TransferTransactionExcutor implements TransactionExcutor {
     @Override
     public void excute(Transaction transaction, WalletManager walletManager) throws IllegalArgumentException, SQLException, NullPointerException {
-        if (transaction instanceof TransferTransaction) {
-            TransferTransaction transferTransaction = ((TransferTransaction) transaction);
+        if (transaction instanceof TransferTransaction transferTransaction) {
 
             UUID walletID1 = transferTransaction.getSenderWalletID();
             UUID walletID2 = transferTransaction.getReceiverWalletID();

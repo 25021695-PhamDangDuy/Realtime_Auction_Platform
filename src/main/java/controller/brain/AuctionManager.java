@@ -1,5 +1,6 @@
 package controller.brain;
 
+import controller.BidHistory;
 import database.items.ItemDAOImpl;
 import database.SessionDAO;
 import function.ItemStatus;
@@ -23,6 +24,7 @@ public class AuctionManager {
     private SessionDAO sessionDAO = new SessionDAO();
     private getItemDao itemDAO = new getItemDao();
     private SystemLogger log = SystemLogger.getInstance();
+    private WalletManager walletManager = WalletManager.getInstance();
     private PaymentManager paymentManager = PaymentManager.getInstance();
     //Contructor
     private AuctionManager(){}
@@ -94,11 +96,28 @@ public class AuctionManager {
 
         //Logic kiểm tra phiên có trong db chưa?
         //Cơ chế extend thời gian
+        synchronized (AuctionManager.class) {
+            if(auctionSession.getTopBid() == null) {
+                auctionSession.placeBid(bidder, amount);
+                sessionDAO.update(auctionSession);
+                walletManager.lockMoney(bidder.getWalletID(), bidder.getID(), amount);
 
-        auctionSession.placeBid(bidder, amount);
-        sessionDAO.update(auctionSession);
-        log.info("Đặt giá thầu thành công: " + amount);
+            }else {
+                auctionSession.placeBid(bidder,amount);
+                sessionDAO.update(auctionSession);
 
+                BidTicket second = BidHistory.getSecondBySessionID(auctionSession.getID());
+                Bidder secondBidder = second.getBidder();
+                UUID secondWallet = secondBidder.getWalletID();
+                long money = second.getAmount();
+
+                walletManager.unlockMoney(secondWallet,secondBidder.getID(),money);
+                walletManager.lockMoney(bidder.getWalletID(), bidder.getID(), amount);
+
+
+            }
+            log.info("Đặt giá thầu thành công: " + amount);
+        }
     }
 
     public void finishSession(AuctionSession session) throws Exception,NullPointerException,IllegalArgumentException{
@@ -113,7 +132,7 @@ public class AuctionManager {
         session.finishSession();
         sessionDAO.update(session);
         paymentManager.executeTransaction(settlementTransaction);
-        itemDAO.update(session.getItem());   //Chưa tin nó lưu được vào item table
+        itemDAO.update(session.getItem());
         log.info("Phiên đấu giá ID:" + session.getID().toString() + " đã kết thúc");
 
     }
