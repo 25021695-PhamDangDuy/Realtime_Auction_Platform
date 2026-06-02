@@ -24,11 +24,27 @@ public class AddProduct extends Application implements MessageListener {
     private GridPane grid;
     private File selectedImageFile; // Lưu file ảnh người dùng chọn
     private ImageView imgPreview;
+
+    public AddProduct() {
+    }
+
+    public AddProduct(ServerConnection connection) {
+        this.connection = connection;
+    }
+
     @Override
     public void start(Stage stage) throws Exception {
+        this.grid = new GridPane();
+        this.grid.setAlignment(javafx.geometry.Pos.CENTER);
+        this.grid.setHgap(10);
+        this.grid.setVgap(10);
+        this.grid.setPadding(new javafx.geometry.Insets(25, 25, 25, 25));
+
+
+        this.connection = new ServerConnection();
         this.primaryStage = stage;
 
-        connection.setMessageListener(this);
+        this.connection.setMessageListener(this);
 
         imgPreview = new ImageView();
         imgPreview.setFitWidth(150);
@@ -36,10 +52,17 @@ public class AddProduct extends Application implements MessageListener {
         imgPreview.setPreserveRatio(true);
 
         try {
-            Image defaultImg = new Image(getClass().getResourceAsStream("/images/default-product.png"));
-            imgPreview.setImage(defaultImg);
+            var inputStream = getClass().getResourceAsStream("/images/default-product.png");
+
+            if (inputStream != null) {
+                Image defaultImg = new Image(inputStream);
+                imgPreview.setImage(defaultImg);
+            } else {
+                System.out.println("⚠️ Không tìm thấy file tại: resources/images/default-product.png");
+                // Bạn có thể không làm gì cả, hoặc set một ảnh trống/màu nền cho imgPreview ở đây
+            }
         } catch (Exception e) {
-            System.out.println("Không tìm thấy ảnh mặc định, bỏ qua.");
+            System.out.println("Lỗi xử lý ảnh: " + e.getMessage());
         }
 
 

@@ -18,11 +18,18 @@ public class Account extends Application implements MessageListener {
     private javafx.scene.control.Label lblSoDu;
     private ServerConnection connection;
 
+    public Account() {
+    }
+
+    public Account(ServerConnection connection) {
+        this.connection = connection;
+    }
 
     @Override
     public void start(Stage stage) {
         this.primaryStage = stage;
-        connection.setMessageListener(this);
+        this.connection = new ServerConnection();
+        this.connection.setMessageListener(this);
         primaryStage.setTitle("Hệ thống Đấu giá - Tài khoản Người dùng");
 
         // 1. Tiêu đề giao diện
