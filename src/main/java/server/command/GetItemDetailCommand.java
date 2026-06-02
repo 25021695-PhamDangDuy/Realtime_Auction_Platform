@@ -1,7 +1,7 @@
 package server.command;
 
 
-import controller.ItemController.ItemController;
+import controller.ItemService.ItemController;
 import models.Item;
 import server.ClientSession;
 import server.GsonUtil;
