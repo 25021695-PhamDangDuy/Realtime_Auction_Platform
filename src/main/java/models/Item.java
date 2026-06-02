@@ -24,6 +24,15 @@ public abstract class Item {
         this.condition = condition;
         this.itemStatus = ItemStatus.AVAILABLE;
     }
+    public String toNetworkString() {
+        return this.ID + "|" + this.name + "|" + this.price + "|"
+                + this.getItemType() + "|" + this.getSpecificDetails();
+    }
+
+    // 2 hàm abstract ép các lớp con phải tự khai báo
+    protected abstract String getItemType();
+    protected abstract String getSpecificDetails();
+
 
     public UUID getID(){
         return ID;

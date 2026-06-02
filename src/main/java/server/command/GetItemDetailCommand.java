@@ -1,0 +1,77 @@
+package server.command;
+
+
+import models.Item;
+import server.ClientSession;
+import server.Role;
+
+import java.util.Set;
+import java.util.UUID;
+
+public class GetItemDetailCommand implements Command {
+
+    @Override
+    public Set<Role> getAllowedRoles() {
+        // Lệnh này xài chung cho toàn bộ hệ thống
+        return Set.of(Role.BIDDER, Role.SELLER, Role.ADMIN);
+    }
+
+    @Override
+    public void execute(ClientSession session, String[] args) {
+        // Cú pháp: GET_ITEM_DETAIL | MODE | ID
+        if (args.length < 3) {
+            session.sendMessage("ERROR|Thiếu tham số để lấy chi tiết sản phẩm.");
+            return;
+        }
+
+        try {
+            String mode = args[1].toUpperCase(); // "BY_ITEM_ID" hoặc "BY_SESSION_ID"
+            String targetId = args[2];
+
+            Item targetItem = null;
+
+            // ========================================================
+            // ĐỊNH TUYẾN THEO CÁCH TÌM KIẾM
+            // ========================================================
+            switch (mode) {
+                case "BY_ITEM_ID":
+                    // Chuyển targetId thành UUID nếu Database của bạn dùng UUID
+                    // UUID itemId = UUID.fromString(targetId);
+
+                    // targetItem = ItemController.getItemById(targetId);
+                    break;
+
+                case "BY_SESSION_ID":
+                    // Bạn nói đã có hàm gọi Item theo Session rồi, gọi nó ở đây
+                    // targetItem = SessionController.getItemBySessionId(targetId);
+                    break;
+
+                default:
+                    session.sendMessage("ERROR|Phương thức tìm kiếm không hợp lệ: " + mode);
+                    return;
+            }
+
+            // Kiểm tra xem món hàng có tồn tại không
+            if (targetItem == null) {
+                session.sendMessage("ERROR|Sản phẩm không tồn tại hoặc đã bị xóa.");
+                return;
+            }
+
+            // ========================================================
+            // GÓI GHÉM THÔNG TIN (DÙNG ĐA HÌNH NHƯ ĐÃ BÀN)
+            // ========================================================
+            // Giả sử class Item của bạn đã có hàm toNetworkString()
+            // chứa chuỗi: ID | Tên | Giá | [Chi tiết riêng của từng loại]
+
+            String response = "SUCCESS_ITEM_DETAIL|" + targetItem.toNetworkString();
+
+            session.sendMessage(response);
+            System.out.println("[Command] Đã gửi chi tiết sản phẩm cho: " + session.getCurrentUser().getName());
+
+        } catch (Exception e) {
+            session.sendMessage("ERROR|Lỗi hệ thống khi tải chi tiết sản phẩm.");
+            System.err.println("[ERROR] Lỗi GetItemDetail: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+}

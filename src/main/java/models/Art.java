@@ -19,4 +19,14 @@ public class Art extends Item{
         return "Arts:" + "id=" + getID() + ", name=" + getName() + "Author:" + getAuthor() + "Material:" + getMaterial();
 
     }
+    @Override
+    protected String getItemType() {
+        return "ART"; // Báo cho Client biết đây là đồ nghệ thuật
+    }
+
+    @Override
+    protected String getSpecificDetails() {
+        // Nối các thông tin đặc thù của Tranh
+        return this.author + "|" + this.material;
+    }
 }

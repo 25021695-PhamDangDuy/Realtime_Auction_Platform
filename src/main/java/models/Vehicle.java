@@ -7,4 +7,14 @@ public class Vehicle extends Item{
     public String toString(){
         return "Vehicles: " + "id=" + getID() + ", name= " + getName() + "Owner: " + this.getOwner();
     }
+    @Override
+    protected String getItemType() {
+        return "VEHICLE"; // Báo cho Client biết đây là Xe cộ
+    }
+
+    @Override
+    protected String getSpecificDetails() {
+        // Nối các thông tin đặc thù của Xe
+        return null;
+    }
 }
