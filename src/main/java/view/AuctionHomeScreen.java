@@ -33,6 +33,9 @@ public class AuctionHomeScreen extends Application {
     private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
     private ServerConnection connection;
     private Stage primaryStage;
+    private FlowPane listContainer;
+
+
     public AuctionHomeScreen(ServerConnection connection, Stage primaryStage) {
         this.connection = connection;
         this.primaryStage = primaryStage;
@@ -43,23 +46,23 @@ public class AuctionHomeScreen extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-
         // ROOT LAYOUT
         BorderPane root = new BorderPane();
         root.setStyle("-fx-background-color: #f8f9fa;");
-
+        listContainer = new FlowPane();
+        listContainer.setHgap(15); // Khoảng cách ngang giữa các card
+        listContainer.setVgap(15); // Khoảng cách dọc giữa các card
+        listContainer.setStyle("-fx-padding: 20;");
+        // Bọc listContainer vào ScrollPane để cuộn được khi có nhiều sản phẩm
+        ScrollPane scrollPane = new ScrollPane(listContainer);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setStyle("-fx-background-color: transparent; -fx-background-insets: 0;");
+        root.setCenter(scrollPane);
         // [HEADER] - Hiển thị Tên user, Số dư tài khoản và Thời gian hệ thống
         HBox header = createHeader();
         root.setTop(header);
-
-        // [CENTER] - Danh sách các phiên đấu giá
-        ScrollPane scrollPane = new ScrollPane();
-        scrollPane.setFitToWidth(true);
-        scrollPane.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
-
         VBox mainContainer = new VBox(20);
         mainContainer.setPadding(new Insets(25));
-
         Label lblTitle = new Label("Danh sách các phiên đấu giá tài sản");
         lblTitle.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
 
@@ -205,22 +208,22 @@ public class AuctionHomeScreen extends Application {
             btnView.setStyle("-fx-background-color: #eaeded; -fx-text-fill: #7f8c8d; -fx-cursor: hand;");
         }
         btnView.setMaxWidth(Double.MAX_VALUE);
-
         // Sự kiện khi nhấn nút (Sẽ code chuyển Scene sang phòng đấu ở đây)
         btnView.setOnAction(e -> {
-            System.out.println("Chuyển hướng người dùng sang phòng đấu của: " + session.itemName);
-            AuctionRoom room = new AuctionRoom(connection,new Stage());
-        });
+            String command = "JOIN_ROOM|" + session.sessionId;
 
+            try {
+                // Gửi lệnh qua server xử lý tập trung
+                connection.sendCommand(command);
+                System.out.println("[LOG SENT]: Đã gửi yêu cầu tham gia phòng -> " + command);
+            } catch (Exception ex) {
+                System.err.println("Lỗi gửi yêu cầu vào phòng: " + ex.getMessage());
+            }
+
+        });
         card.getChildren().addAll(topRow, imgBox, lblName, lblPrice, btnView);
         return card;
-
-
-
-
-
     }
-
     private HBox createTaskbar() {
         // Thanh điều hướng (Taskbar) dưới đáy màn hình
         HBox taskbar = new HBox();
@@ -317,26 +320,41 @@ public class AuctionHomeScreen extends Application {
     }
     private void loadMockData() {
         // Nơi bạn add các dữ liệu giả lập để test giao diện
-        sessionList.add(new AuctionSession("NEW","03/06/2026","IPhone 15",15000000));
-        sessionList.add(new AuctionSession("OLD","03/06/2026","Bình gốm cổ",1000000));
+        sessionList.add(new AuctionSession("A01","NEW","03/06/2026","IPhone 15",15000000));
+        sessionList.add(new AuctionSession("A02","OLD","03/06/2026","Bình gốm cổ",1000000));
     }
+    // Trong hàm xử lý tin nhắn nhận từ server của bạn:
+    public void onMessageReceived(List<AuctionSession> sessionsFromServer) {
 
+        // THIẾU CÁI NÀY LÀ CARD SẼ KHÔNG BAO GIỜ HIỆN LÊN GIAO DIỆN:
+        Platform.runLater(() -> {
+            // Giả sử listContainer là FlowPane/VBox hiển thị chính trên giao diện của bạn
+            listContainer.getChildren().clear();
 
+            for (AuctionSession session : sessionsFromServer) {
+                // Gọi hàm tạo card của bạn
+                VBox card = createSessionCard(session);
 
-
+                // Thêm card vào container chính
+                listContainer.getChildren().add(card);
+            }
+        });
+    }
     public static void main(String[] args) {
         launch(args);
     }
 
     // --- LỚP QUẢN LÝ THÔNG TIN PHIÊN ĐẤU GIÁ ---
     static class AuctionSession {
+        String sessionId;
         String status;   // Chưa bắt đầu, Đang diễn ra, Đã kết thúc
         String dateStr;  // dd/mm/yyyy
         String itemName; // Tên tài sản đấu giá
         long price;      // Giá khởi điểm
 
-        public AuctionSession(String status, String dateStr, String itemName, long price) {
+        public AuctionSession(String sessionId,String status, String dateStr, String itemName, long price) {
             this.status = status;
+            this.sessionId = sessionId;
             this.dateStr = dateStr;
             this.itemName = itemName;
             this.price = price;

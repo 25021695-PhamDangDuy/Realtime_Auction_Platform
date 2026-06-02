@@ -88,10 +88,10 @@ public class AuctionLogin extends Application implements MessageListener {
         btnGoToRegister.setOnAction(e -> {
             try {
                 // Khởi tạo màn hình đăng ký tài khoản
-                AuctionRegister registerApp = new AuctionRegister(connection,primaryStage);
+                AuctionRegister registerApp = new AuctionRegister(this.connection,this.primaryStage);
 
                 // Truyền chính primaryStage hiện tại sang để đổi giao diện trên cùng 1 cửa sổ
-                registerApp.start(primaryStage);
+                registerApp.start(this.primaryStage);
 
             } catch (Exception ex) {
                 actiontarget.setText("Không thể chuyển sang màn hình đăng ký!");
@@ -108,10 +108,20 @@ public class AuctionLogin extends Application implements MessageListener {
     public void onMessageReceived(String serverMessage) {
         // Code xử lý khi server trả về kết quả (đọc từ dòng in.readLine() của ServerConnection)
         Platform.runLater(() -> {
-            if (serverMessage.startsWith("LOGIN_SUCCESS")) {
+            if (serverMessage.startsWith("SUCCESS")) {
                 actiontarget.setText("Đăng nhập thành công!");
-                AuctionHomeScreen homeScreen = new AuctionHomeScreen(connection,new Stage());
-                homeScreen.start(primaryStage);
+                actiontarget.setStyle("-fx-fill: #2ecc71; -fx-font-weight: bold;");
+                javafx.animation.PauseTransition delay = new javafx.animation.PauseTransition(javafx.util.Duration.seconds(2));
+                delay.setOnFinished(event -> {
+                    try {
+                        // Khởi tạo màn hình trang chủ mới và truyền connection sang
+                        AuctionHomeScreen homeScreen = new AuctionHomeScreen(connection, new Stage());
+                        homeScreen.start(primaryStage);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                });
+                delay.play();
             } else {
                 actiontarget.setText("Sai tài khoản hoặc mật khẩu!");
             }
