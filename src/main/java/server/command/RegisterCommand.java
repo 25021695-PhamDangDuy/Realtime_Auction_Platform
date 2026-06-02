@@ -1,12 +1,10 @@
 package server.command;
 
-import controller.AccountController;
-import models.User;
+import controller.brain.AccountController;
 import server.ClientSession;
 import server.Role;
-import server.AuctionServer;
+
 import java.util.Set;
-import java.util.UUID;
 
 public class RegisterCommand implements Command {
     @Override

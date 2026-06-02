@@ -1,6 +1,6 @@
 package server;
 
-import controller.WalletManager;
+import controller.brain.WalletManager;
 
 import java.io.IOException;
 import java.net.ServerSocket;

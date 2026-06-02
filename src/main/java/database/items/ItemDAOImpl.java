@@ -1,9 +1,15 @@
-package database;
+package database.items;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import database.DatabaseCreator;
+import database.getUserDAO;
+import function.ItemStatus;
+import models.Electronics;
 import models.Item;
+import models.User;
+
 import java.sql.*;
 import java.util.*;
 
@@ -58,7 +64,7 @@ public abstract class ItemDAOImpl<T extends Item> implements ItemDAO<T> {
     }
 
     @Override
-    public T get(UUID ID) {
+    public T get(UUID ID) throws SQLException {
         String querySQL = "SELECT * FROM items WHERE ID = ?";
         try (Connection conn = databaseCreator.getConnection()) {
             PreparedStatement psmt = conn.prepareStatement(querySQL);
@@ -92,8 +98,8 @@ public abstract class ItemDAOImpl<T extends Item> implements ItemDAO<T> {
     }
 
     @Override
-    public Set<T> getbyOwnerID(UUID owner_ID) {
-        Set<T> items = new HashSet<>();
+    public List<T> getbyOwnerID(UUID owner_ID) {
+        List<T> items = new ArrayList<>();
         String querySQL = "SELECT * FROM items WHERE owner_ID = ?";
         try (Connection conn = databaseCreator.getConnection()) {
             PreparedStatement psmt = conn.prepareStatement(querySQL);
@@ -108,14 +114,30 @@ public abstract class ItemDAOImpl<T extends Item> implements ItemDAO<T> {
         }
         return items;
     }
+    public T getbySessionID(UUID session_ID){
+        String querySQL = "SELECT item_ID FROM session WHERE ID = ?";
+        try (Connection conn = databaseCreator.getConnection()) {
+            PreparedStatement psmt = conn.prepareStatement(querySQL);
+            psmt.setString(1, session_ID.toString());
+
+            ResultSet rs = psmt.executeQuery();
+            if (rs.next()) {
+                T item = mapResultSetToItem(rs);
+                return item;
+            }
+        } catch (SQLException e) {
+            System.out.println("Error getting items by owner: " + e.getMessage());
+        }
+        return null;
+    }
 
 
-    public Set<T> getItemsByStatus(String status) {
+    public Set<T> getItemsByStatus(ItemStatus status) {
         Set<T> items = new HashSet<>();
         String querySQL = "SELECT * FROM items WHERE Status = ?";
         try (Connection conn = databaseCreator.getConnection()) {
             PreparedStatement psmt = conn.prepareStatement(querySQL);
-            psmt.setString(1, status);
+            psmt.setString(1, status.toString());
 
             ResultSet rs = psmt.executeQuery();
             while (rs.next()) {
@@ -127,6 +149,26 @@ public abstract class ItemDAOImpl<T extends Item> implements ItemDAO<T> {
         return items;
     }
 
-    // Abstract method - được override trong các subclass để tạo đúng loại Item
+    public List<T> getItembyStatusOwner(UUID ownerID, ItemStatus itemStatus){
+        List<T> items = new ArrayList<>();
+        String querySQL = "SELECT * FROM items WHERE owner_ID = ? Status = ?";
+        try (Connection conn = databaseCreator.getConnection()) {
+            PreparedStatement psmt = conn.prepareStatement(querySQL);
+
+            psmt.setString(1, ownerID.toString());
+            psmt.setString(2,itemStatus.toString());
+
+            ResultSet rs = psmt.executeQuery();
+            while (rs.next()) {
+                items.add(mapResultSetToItem(rs));
+            }
+        } catch (SQLException e) {
+            System.out.println("Error getting items by status and owner: " + e.getMessage());
+        }
+        return items;
+    }
+
+    //  method - được override trong các subclass để tạo đúng loại Item
     protected abstract T mapResultSetToItem(ResultSet rs) throws SQLException;
+
 }

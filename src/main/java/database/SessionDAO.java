@@ -2,7 +2,6 @@ package database;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import controller.AuctionObserver;
 import controller.BidHistory;
 import function.SessionStatus;
 
@@ -11,6 +10,7 @@ import models.*;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.*;
+import database.items.*;
 
 public class SessionDAO implements DataAccessObject<AuctionSession> {
     protected DatabaseCreator databaseCreator = DatabaseCreator.getInstance();
@@ -229,8 +229,10 @@ public class SessionDAO implements DataAccessObject<AuctionSession> {
         // Lấy Seller object
         SellerDAOImpl sellerDAO = new SellerDAOImpl();
         Seller seller = sellerDAO.get(sellerId);
-        getItemDAO getItemDAO = new getItemDAO();
+
+        getItemDao getItemDAO = new getItemDao();
         Item item = getItemDAO.get(itemId);
+
         if (seller != null) {
             BidTicketDAO dao = new BidTicketDAO();
             List<BidTicket> bidTickets = dao.getBySession(sessionId);

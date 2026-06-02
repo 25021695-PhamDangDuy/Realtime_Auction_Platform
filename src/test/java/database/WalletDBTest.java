@@ -1,4 +1,4 @@
-//import controller.WalletManager;
+//import controller.brain.WalletManager;
 //import database.BidderDAOImpl;
 //import database.SellerDAOImpl;
 //import models.Bidder;

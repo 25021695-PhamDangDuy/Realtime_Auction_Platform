@@ -1,6 +1,6 @@
 package server.command;
 
-import controller.AccountController;
+import controller.brain.AccountController;
 import models.Bidder;
 import models.Seller;
 import models.User;
