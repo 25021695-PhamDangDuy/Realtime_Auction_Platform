@@ -123,6 +123,7 @@ public class AuctionSession {
         if (bidder.getID().equals(seller.getID())) {
             throw new IllegalArgumentException("Người bán không thể tự đấu giá món đồ của mình!");
         }
+
         // 3. Tránh tự "đấu" chính mình
         if (this.getTopBidder() != null && bidder.getID().equals(this.getTopBidder().getID())) {
             throw new IllegalArgumentException("Bạn đang là người giữ giá cao nhất rồi!");
@@ -159,14 +160,14 @@ public class AuctionSession {
             endTime = newEndTime;
         }
     }
-    public void finishSession() throws IllegalArgumentException, SQLException {
+    public void finishSession() throws IllegalArgumentException{
         if(sessionChecker.isSessionTimeUp(this)){
             status = SessionStatus.FINISHED;
             item.setItemStatus(ItemStatus.SOLD);
-
             Bidder winner = this.getTopBidder();
-            item.setOwner(winner);
+            Item reward = item;
 
+            reward.setItemStatus(ItemStatus.SOLD);
         }else{
             throw new IllegalArgumentException("Session is not timeup!");
         }
@@ -205,6 +206,17 @@ public class AuctionSession {
             status = SessionStatus.RUNNING;
         } else {
             throw new IllegalArgumentException("Session is not upcoming");
+
+    }
+
+    }
+    public BidTicket getTopbid(){return topBid;}
+    // Gửi thông báo cho toàn bộ khán giả trong phòng
+    public void notifyBidObservers(String message) {
+        // Lặp qua danh sách (List) những người đang theo dõi
+        for (AuctionObserver observer : observers) {
+            // Gọi cái "tai" của từng người để nhét tin nhắn vào
+            observer.update(message);
         }
     }
 }

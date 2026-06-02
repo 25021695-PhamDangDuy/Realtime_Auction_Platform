@@ -61,7 +61,6 @@ public class BidHistory {
     class này sẽ kết nối với database để phục vụ cho việc lưu trữ history lớn, và class này đóng vai trò là bộ nhớ đệm để truy xuất nhanh
     Những method dưới đây sẽ tập trung vào xóa và chuyển dữ liệu sang db
      */
-
 //    public void removeLast() throws IllegalArgumentException{
 //        if(history.isEmpty()){
 //            throw new IllegalArgumentException("History is empty");

@@ -22,30 +22,16 @@ public class AuctionRegister extends Application implements MessageListener {
     private ServerConnection connection;
     private Stage primaryStage;
     private javafx.scene.text.Text message;
-
-    public AuctionRegister() {
-    }
+    
 
     public AuctionRegister(ServerConnection connection, Stage primaryStage) {
         this.connection = connection;
         this.primaryStage = primaryStage;
     }
-    public void setConnection(ServerConnection connection) {
-        this.connection = connection;
-    }
-
 
     public void start(Stage stage){
-        if (this.primaryStage == null) {
-            this.primaryStage = stage;
-        }
-
-        // SỬA LỖI LOGIC 2: Kiểm tra an toàn trước khi kích hoạt Listener mạng
-        if (connection != null) {
-            connection.setMessageListener(this);
-        } else {
-            System.err.println("[CẢNH BÁO]: Biến connection hiện tại đang bị NULL, kiểm tra lại luồng truyền dữ liệu!");
-        }
+        this.primaryStage = stage;
+        connection.setMessageListener(this);
         primaryStage.setTitle("Đăng ký tài khoản đấu giá");
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);//căn giữa màn hình;
@@ -106,8 +92,6 @@ public class AuctionRegister extends Application implements MessageListener {
                 connection.sendCommand(command);
                 System.out.println("[LOG SENT]: Đã gửi yêu cầu đăng ký -> " + command);
 
-                message.setFill(javafx.scene.paint.Color.BLUE);
-                message.setText("Đang gửi yêu cầu đăng ký...");
             } catch (Exception e) {
                 System.err.println("[LOG ERROR]: Lỗi: " + e.getMessage());
                 message.setFill(javafx.scene.paint.Color.FIREBRICK);
@@ -120,7 +104,7 @@ public class AuctionRegister extends Application implements MessageListener {
         grid.add(btnBackToLogin, 1, 8);
         btnBackToLogin.setOnAction(event -> {
             try {
-                AuctionLogin loginView = new AuctionLogin();
+                AuctionLogin loginView = new AuctionLogin(connection,stage);
                 // 2. Lấy Stage hiện tại một cách an toàn từ chính nút bấm này
                 Stage currentStage = (Stage) btnBackToLogin.getScene().getWindow();
 
@@ -141,20 +125,13 @@ public class AuctionRegister extends Application implements MessageListener {
             System.out.println("Nhận được từ server (Register): " + serverMessage);
 
             // Giả sử server của bạn kia trả về "REGISTER_SUCCESS" khi tạo tk thành công
-            if ("SUCCESS".equals(serverMessage)) {
-                message.setText("Đăng ký thành công! Đang chuyển sang Đăng nhập...");
+            if (serverMessage.startsWith("SUCCESS")) {
+                message.setText("Đăng ký thành công!");
                 message.setFill(javafx.scene.paint.Color.GREEN);
 
-                try {
-                    // Đăng ký thành công thì chuyển về màn hình Login cho user nhập lại
-                    AuctionLogin loginApp = new AuctionLogin(connection);
-                    loginApp.start(primaryStage);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
             }
             // Giả sử server trả về "REGISTER_EXISTS" nếu tên tài khoản bị trùng dưới database
-            else if ("EXISTS".equals(serverMessage)) {
+            else if ("REGISTER_EXISTS".equals(serverMessage)) {
                 message.setText("Tên tài khoản đã tồn tại trên hệ thống!");
                 message.setFill(javafx.scene.paint.Color.FIREBRICK);
             }

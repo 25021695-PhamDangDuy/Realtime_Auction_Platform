@@ -63,7 +63,7 @@ public class AuctionManager {
             System.out.println(e.getMessage());
         }
     }
-    public void createSession(Item item, Seller seller, long startPrice, long minIncrement, LocalDateTime endtime, LocalDateTime startTime) {
+    public AuctionSession createSession(Item item, Seller seller, long startPrice, long minIncrement, LocalDateTime endtime, LocalDateTime startTime) {
         try{
             if(sessionChecker.durationTime(startTime,endtime,5,43200) && sessionChecker.isItemAvailable(item)){
                 AuctionSession session = new AuctionSession(item,seller,startPrice,minIncrement,endtime,startTime,SessionStatus.UPCOMING);
@@ -72,10 +72,12 @@ public class AuctionManager {
                 sessionDAO.save(session);
                 itemDAO.update(item);
                 log.info("Đã tạo phiên đấu giá ID:" + session.getID().toString() + "|SUCCESS");
+                return session;
             }
         }catch (Exception e){
             System.out.println(e.getMessage());
         }
+        return  null;
     }
 
     public AuctionSession getSession(UUID ID) throws SQLException {
