@@ -3,6 +3,7 @@ package server.command;
 import controller.brain.AuctionManager;
 import models.AuctionSession;
 import server.ClientSession;
+import server.GsonUtil;
 import server.Role;
 
 import java.sql.SQLException;
@@ -48,27 +49,17 @@ public class GetAuctionSessionCommand implements Command {
             if (sessionList == null || sessionList.isEmpty()) {
                 session.sendMessage("SUCCESS_SESSIONS|EMPTY");
                 return;
+
             }
 
-            // ========================================================
-            // GÓI GHÉM DỮ LIỆU ĐỂ GỬI VỀ GIAO DIỆN SẢNH
-            // ========================================================
-            StringBuilder response = new StringBuilder("SUCCESS_SESSIONS");
+            // GÓI GHÉM BẰNG GSON (Thay thế hoàn toàn StringBuilder)
+            // 1. Ép cả cái List thành 1 chuỗi JSON dài
+            String jsonList = GsonUtil.gson.toJson(sessionList);
 
-            /*
-             Mở comment và sửa lại tên các hàm get() cho đúng với class AuctionSession của bạn.
-             Quy ước ở đây là: sessionID, tên_món_hàng, giá_hiện_tại
+            // 2. Nối thêm cái mã lệnh ở đầu để Lễ tân Client biết đường nhận
+            session.sendMessage("SUCCESS_SESSIONS|" + jsonList);
 
-            for (AuctionSession aucSession : sessionList) {
-                response.append("|")
-                        .append(aucSession.getSessionID()).append(",")
-                        .append(aucSession.getItem().getName()).append(",")
-                        .append(aucSession.getCurrentPrice());
-            }
-            */
-
-            session.sendMessage(response.toString());
-            System.out.println("[Command] Đã gửi danh sách phòng " + status + " cho Bidder: " + session.getCurrentUser().getName());
+            System.out.println("[Command] Đã gửi danh sách Session bằng GSON!");
 
         } catch (NullPointerException e) {
             // Bắt đúng cái lỗi mà file Controller của bạn Duy ném ra khi không có phòng

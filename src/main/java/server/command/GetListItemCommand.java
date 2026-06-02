@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
 
-public class GET_LIST_ITEM implements Command {
+public class GetListItemCommand implements Command {
 
     @Override
     public Set<Role> getAllowedRoles() {

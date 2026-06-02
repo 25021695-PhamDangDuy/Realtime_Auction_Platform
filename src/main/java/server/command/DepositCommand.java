@@ -1,6 +1,7 @@
 package server.command;
 
-import controller.WalletManager;
+
+import controller.brain.WalletManager;
 import models.Wallet;
 import server.ClientSession;
 import server.Role;
@@ -33,7 +34,7 @@ public class DepositCommand implements Command {
             }
 
             //BƯỚC MỚI: Tự động tìm ID ví của ông khách này trong Database
-            Wallet wallet = WalletManager.getInstance().getWalletbyOwnerID(ownerID);
+            Wallet wallet = WalletManager.getInstance().getWallet(ownerID);
             UUID walletID= wallet.getID();
 
             if (walletID == null) {

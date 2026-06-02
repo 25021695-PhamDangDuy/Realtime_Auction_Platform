@@ -1,7 +1,6 @@
 package server.command;
 
-
-import controller.WalletManager;
+import controller.brain.WalletManager;
 import models.Wallet;
 import server.ClientSession;
 import server.Role;
@@ -34,7 +33,7 @@ public class WithdrawCommand implements Command {
             }
 
             // Tự động tìm ID ví
-            Wallet wallet = WalletManager.getInstance().getWalletbyOwnerID(ownerID);
+            Wallet wallet = WalletManager.getInstance().getWallet(ownerID);
             UUID walletID=wallet.getID();
 
             if (walletID == null) {

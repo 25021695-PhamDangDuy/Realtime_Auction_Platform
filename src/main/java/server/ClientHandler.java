@@ -29,6 +29,7 @@ public class ClientHandler implements Runnable {
         commandRegistry.put("WITHDRAW",new WithdrawCommand());
         commandRegistry.put("CREAT_ITEM",new CreateItemCommand());
         commandRegistry.put("LOGOUT",new LogoutCommand());
+        commandRegistry.put("GetAuctionSession", new GetAuctionSessionCommand());
 
     }
 
