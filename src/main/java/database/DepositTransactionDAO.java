@@ -23,7 +23,7 @@ public class DepositTransactionDAO implements TransactionDAO<DepositTransaction>
         try (Connection conn = databaseCreator.getConnection()) {
             PreparedStatement psmt = conn.prepareStatement(querySQL);
             psmt.setString(1, senderID.toString());
-            psmt.setString(2, TransactionType.DEPOSIT_WALLET.toString());
+            psmt.setString(2, TransactionType.DEPOSIT_WALLET.name());
 
             ResultSet rs = psmt.executeQuery();
             if (rs.next()) {
@@ -42,9 +42,9 @@ public class DepositTransactionDAO implements TransactionDAO<DepositTransaction>
             PreparedStatement psmt = conn.prepareStatement(updateSQL);
             psmt.setLong(1, depositTransaction.getAmount());
             psmt.setString(2, gson.toJson(depositTransaction.getTimestamp()));
-            psmt.setString(3, depositTransaction.getTransactionStatus().toString());
+            psmt.setString(3, depositTransaction.getTransactionStatus().name());
             psmt.setString(4, depositTransaction.getID().toString());
-            psmt.setString(5, TransactionType.DEPOSIT_WALLET.toString());
+            psmt.setString(5, TransactionType.DEPOSIT_WALLET.name());
 
             psmt.executeUpdate();
             System.out.println("DepositTransaction updated successfully");
@@ -65,8 +65,8 @@ public class DepositTransactionDAO implements TransactionDAO<DepositTransaction>
             psmt.setNull(4, Types.VARCHAR);
             psmt.setLong(5, depositTransaction.getAmount());
             psmt.setString(6, gson.toJson(depositTransaction.getTimestamp()));
-            psmt.setString(7, TransactionType.DEPOSIT_WALLET.toString());
-            psmt.setString(8, depositTransaction.getTransactionStatus().toString());
+            psmt.setString(7, TransactionType.DEPOSIT_WALLET.name());
+            psmt.setString(8, depositTransaction.getTransactionStatus().name());
 
             psmt.executeUpdate();
             System.out.println("DepositTransaction saved successfully");
@@ -81,7 +81,7 @@ public class DepositTransactionDAO implements TransactionDAO<DepositTransaction>
         try (Connection conn = databaseCreator.getConnection()) {
             PreparedStatement psmt = conn.prepareStatement(querySQL);
             psmt.setString(1, ID.toString());
-            psmt.setString(2, TransactionType.DEPOSIT_WALLET.toString());
+            psmt.setString(2, TransactionType.DEPOSIT_WALLET.name());
 
             ResultSet rs = psmt.executeQuery();
             if (rs.next()) {
@@ -99,7 +99,7 @@ public class DepositTransactionDAO implements TransactionDAO<DepositTransaction>
         String querySQL = "SELECT * FROM transactions WHERE type = ?";
         try (Connection conn = databaseCreator.getConnection()) {
             PreparedStatement psmt = conn.prepareStatement(querySQL);
-            psmt.setString(1, TransactionType.DEPOSIT_WALLET.toString());
+            psmt.setString(1, TransactionType.DEPOSIT_WALLET.name());
 
             ResultSet rs = psmt.executeQuery();
             while (rs.next()) {

@@ -180,7 +180,7 @@ public class WalletDAO implements DataAccessObject<Wallet> {
     }
 
     public boolean isHasOwnerID(UUID ID){
-        String SQL = "SELECT EXISTS(SELECT 1 FROM users WHERE ID = ?)";
+        String SQL = "SELECT EXISTS(SELECT 1 FROM wallets WHERE owner_ID = ?)";
         try (Connection conn = databaseCreator.getConnection()){
             PreparedStatement psmt = conn.prepareStatement(SQL);
             psmt.setString(1, ID.toString());

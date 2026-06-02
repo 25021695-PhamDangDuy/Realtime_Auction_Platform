@@ -55,11 +55,17 @@
 
         </dependency>
 
+        <!-- Thêm/update dependency này -->
+        <dependency>
+            <groupId>net.bytebuddy</groupId>
+            <artifactId>byte-buddy</artifactId>
+            <version>1.15.0</version>  <!-- Phiên bản mới hỗ trợ Java 25 -->
+        </dependency>
+
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>5.5.0</version>
-
+            <version>5.7.0</version>  <!-- Update sang version mới -->
         </dependency>
 
         <!-- Source: https://mvnrepository.com/artifact/org.mockito/mockito-junit-jupiter -->
@@ -95,6 +101,14 @@
                 <version>3.2.5</version> <configuration>
                 <useModulePath>false</useModulePath>
             </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
+                <configuration>
+                    <argLine>-Dnet.bytebuddy.experimental=true</argLine>  <!-- ← THÊM DÒNG NÀY -->
+                </configuration>
             </plugin>
         </plugins>
     </build>

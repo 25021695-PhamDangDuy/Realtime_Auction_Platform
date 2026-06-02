@@ -1,11 +1,20 @@
 package models;
 
+import function.ItemStatus;
+
+import java.util.UUID;
+
 public class Art extends Item{
     String author;
     String material;
 
     public Art(User user, String name, long price, String condition, String author, String material){
         super(user,name,condition,price);
+        this.author = author;
+        this.material = material;
+    }
+    public Art(UUID ID, User user, String name, long price, String condition, String author, String material, ItemStatus status){
+        super(ID,user,name,condition,price,status);
         this.author = author;
         this.material = material;
     }

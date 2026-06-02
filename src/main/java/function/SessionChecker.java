@@ -10,6 +10,7 @@ public class SessionChecker {
         if(startTime == null || endTime == null){
             throw new NullPointerException("Tham số thiếu");
         }
+
         //Config: Giới hạn một phiên sẽ gồm tối thiểu minMinutes phút, và tối đa maxMinutes phút
         Duration duration = Duration.between(startTime,endTime);
         if(startTime.isBefore(LocalDateTime.now().minusMinutes(1))) {

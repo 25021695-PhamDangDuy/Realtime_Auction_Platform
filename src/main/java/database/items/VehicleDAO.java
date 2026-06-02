@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import database.getUserDAO;
+import function.ItemStatus;
 import models.User;
 import models.Vehicle;
 import java.sql.ResultSet;
@@ -19,24 +20,24 @@ public class VehicleDAO extends ItemDAOImpl<Vehicle> {
         String name = rs.getString("Name");
         String condition = rs.getString("Condition");
         long price = rs.getLong("Price");
-
+        ItemStatus status = gson.fromJson(rs.getString("Status"),ItemStatus.class);
         // Lấy owner từ owner_ID
         UUID ownerId = UUID.fromString(rs.getString("owner_ID"));
         getUserDAO userDAO = new getUserDAO();
         User owner = userDAO.get(ownerId);
 
-        return new Vehicle(owner, name, price, condition);
+        return new Vehicle(itemId,owner, name, price, condition,status);
     }
 
     @Override
-    public void save(Vehicle vehicle) {
+    public void save(Vehicle vehicle) throws SQLException {
         // Save vào bảng items trước
         super.save(vehicle);
         System.out.println("Vehicle saved successfully");
     }
 
     @Override
-    public void update(Vehicle vehicle) {
+    public void update(Vehicle vehicle) throws SQLException {
         // Update items table
         super.update(vehicle);
 

@@ -1,4 +1,4 @@
-package controller.ItemController;
+package controller.ItemService;
 
 import database.SessionDAO;
 import database.getUserDAO;
@@ -44,5 +44,8 @@ public class ItemController {
         return item;
     }
 
+    public static void updateItem(Item item) throws SQLException {
+        getItemDao.update(item);
+    }
 
 }
