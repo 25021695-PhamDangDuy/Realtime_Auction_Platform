@@ -1,5 +1,7 @@
 package controller;
 
+import controller.brain.AuctionManager;
+import controller.brain.PaymentManager;
 import function.SystemLogger;
 import models.AuctionSession;
 

@@ -1,5 +1,6 @@
 package controller;
 
+import controller.brain.WalletManager;
 import database.DepositTransactionDAO;
 import database.TransactionDAO;
 import function.TransactionExcutor;

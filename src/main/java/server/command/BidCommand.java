@@ -1,12 +1,11 @@
 package server.command;
 
-import controller.AuctionManager;
+import controller.brain.AuctionManager;
 import models.AuctionSession;
 import models.Bidder;
 import server.ClientManager;
 import server.ClientSession;
 import server.Role;
-import server.command.Command;
 
 import java.sql.SQLException;
 import java.util.Set;

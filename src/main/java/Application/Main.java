@@ -1,20 +1,22 @@
 package Application;
 
-import controller.AccountController;
-import controller.WalletManager;
-import database.BidderDAOImpl;
-import database.SellerDAOImpl;
+import controller.brain.AccountController;
 import function.DiversityRule;
-import models.Bidder;
+import database.items.*;
+import database.getUserDAO;
+import models.Art;
 import models.Seller;
 import models.User;
-import models.Wallet;
 
 import java.sql.SQLException;
 
 public class Main {
     public static void main(String[] args) throws SQLException {
-        DiversityRule diversityRule = new DiversityRule();
-        System.out.println(diversityRule.validate("1109asdSd"));
+        AccountController accountController = AccountController.getInstance();
+        ArtDAO artDAO = new ArtDAO();
+        getUserDAO getUserDAO = new getUserDAO();
+
+        User u = accountController.getInfor("Linh");
+        System.out.println(u);
     }
 }

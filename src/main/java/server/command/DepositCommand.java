@@ -1,6 +1,5 @@
 package server.command;
 
-import controller.WalletManager;
 import server.ClientSession;
 import server.Role;
 

@@ -1,6 +1,8 @@
 package database;
 
 import models.User;
+import server.Role;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -39,25 +41,49 @@ public class getUserDAO extends UserDAOImpl<User> {
         return null;
     }
 
-    public User getbyUsername(String name) throws SQLException{
+    public User getbyUsername(String name) throws SQLException {
         String SQLquery = "SELECT ID, Username, Password, role FROM users WHERE Username = ?";
-        try(Connection conn = databaseCreator.getConnection()){
+        try (Connection conn = databaseCreator.getConnection();
+             PreparedStatement preparedStatement = conn.prepareStatement(SQLquery)) {
+
+            preparedStatement.setString(1, name);
+
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                // .next() sẽ đẩy con trỏ vào dòng đầu tiên.
+                // Nếu có dữ liệu, nó trả về true. Nếu không tìm thấy username, nó trả về false.
+                if (rs.next()) {
+                    // Đọc dữ liệu khi chắc chắn dòng này tồn tại
+                    String ID = rs.getString("ID");
+                    String Name = rs.getString("Username");
+                    String Pw = rs.getString("Password");
+                    String role = rs.getString("role");
+
+                    System.out.println("DEBUG: Found user - ID: " + ID + ", Role: " + role);
+                    System.out.println(ID + " " + Name + " " + Pw + " " + role);
+                    System.out.println(role.equals("BIDDER"));
+                    User u = createUserByRole(UUID.fromString(ID), Name, Pw, role);
+                    System.out.println("DEBUG: Created user object: " + u.getName());
+                    return u;
+                } else {
+                    // Không tìm thấy User nào có Username này trong DB
+                    return null;
+                }
+            }
+        } catch (SQLException e) {
+            throw e;
+        }
+    }
+
+    public boolean isUsername(String name) throws SQLException{
+        String SQLquery = "SELECT EXISTS(SELECT 1 FROM users WHERE Username = ?)";
+        try(Connection conn = databaseCreator.getConnection()) {
             PreparedStatement preparedStatement = conn.prepareStatement(SQLquery);
 
             preparedStatement.setString(1, name);
 
             ResultSet rs = preparedStatement.executeQuery();
-            if(rs == null){
-                throw new NullPointerException("Không tìm thấy ID user");
-            }
-            String ID = rs.getString("ID");
-            String Name = rs.getString("Username");
-            String Pw = rs.getString("Password");
-            String role = rs.getString("role");
 
-            return createUserByRole(UUID.fromString(ID),Name,Pw,role);
-        }catch (SQLException e){
-            throw new SQLException(e);
+            return rs.getBoolean(1);
         }
     }
 }

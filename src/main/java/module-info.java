@@ -19,6 +19,10 @@ module Realtime.Auction.Platform {
     opens database to org.junit.platform.commons;
     opens controller to org.junit.platform.commons;
     opens models to org.junit.platform.commons;
+    exports controller.brain;
+    opens controller.brain to org.junit.platform.commons;
+    exports database.items;
+    opens database.items to org.junit.platform.commons;
 //    opens server to org.junit.platform.commons;
 
 }

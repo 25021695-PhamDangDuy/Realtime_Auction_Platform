@@ -1,6 +1,6 @@
-package controller;
+package controller.brain;
 
-import database.ItemDAOImpl;
+import database.items.ItemDAOImpl;
 import database.SessionDAO;
 import function.ItemStatus;
 import function.SessionChecker;
@@ -10,7 +10,6 @@ import models.*;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
