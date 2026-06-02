@@ -9,6 +9,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import view.network.ServerConnection;
 
 import java.text.NumberFormat;
 import java.time.LocalDateTime;
@@ -20,6 +21,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+
 public class AuctionHomeScreen extends Application {
 
     private String username;
@@ -29,7 +31,15 @@ public class AuctionHomeScreen extends Application {
     private final NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
     private final List<AuctionSession> sessionList = new ArrayList<>();
     private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+    private ServerConnection connection;
+    private Stage primaryStage;
+    public AuctionHomeScreen(ServerConnection connection, Stage primaryStage) {
+        this.connection = connection;
+        this.primaryStage = primaryStage;
+    }
 
+    public AuctionHomeScreen() {
+    }
 
     @Override
     public void start(Stage primaryStage) {
@@ -199,7 +209,7 @@ public class AuctionHomeScreen extends Application {
         // Sự kiện khi nhấn nút (Sẽ code chuyển Scene sang phòng đấu ở đây)
         btnView.setOnAction(e -> {
             System.out.println("Chuyển hướng người dùng sang phòng đấu của: " + session.itemName);
-            AuctionRoom room = new AuctionRoom();
+            AuctionRoom room = new AuctionRoom(connection,new Stage());
         });
 
         card.getChildren().addAll(topRow, imgBox, lblName, lblPrice, btnView);
@@ -239,7 +249,7 @@ public class AuctionHomeScreen extends Application {
         btnRoom.setOnAction( event ->  {
             try {
                 Stage currentStage = (Stage) btnRoom.getScene().getWindow();
-                AuctionRoom room = new AuctionRoom();
+                AuctionRoom room = new AuctionRoom(connection,new Stage());
                 Stage roomStage = new Stage();
                 room.start(roomStage);
                 currentStage.close();
@@ -296,6 +306,22 @@ public class AuctionHomeScreen extends Application {
             lblSystemTime.setText("⏱ Hệ thống: " + now.format(formatter));
         }), 0, 1, TimeUnit.SECONDS);
     }
+    public void initializeData() {
+        if (connection != null && connection.connect("localhost",8000)) {
+            // 1. Nếu có kết nối mạng: Gửi lệnh lên server để lấy dữ liệu thật từ DB
+            connection.sendCommand("FETCH_AUCTION_DATA");
+        } else {
+            // 2. Nếu chạy local một mình để test UI: Mới gọi mockData
+            loadMockData();
+        }
+    }
+    private void loadMockData() {
+        // Nơi bạn add các dữ liệu giả lập để test giao diện
+        sessionList.add(new AuctionSession("NEW","03/06/2026","IPhone 15",15000000));
+        sessionList.add(new AuctionSession("OLD","03/06/2026","Bình gốm cổ",1000000));
+    }
+
+
 
 
     public static void main(String[] args) {
@@ -317,3 +343,9 @@ public class AuctionHomeScreen extends Application {
         }
     }
 }
+
+
+
+
+
+

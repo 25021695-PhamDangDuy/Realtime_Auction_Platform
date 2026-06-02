@@ -19,15 +19,14 @@ import view.network.ServerConnection;
 
 
 public class AuctionRegister extends Application implements MessageListener {
-    private ServerConnection connection = new ServerConnection();
+    private ServerConnection connection;
     private Stage primaryStage;
     private javafx.scene.text.Text message;
+    
 
-    public AuctionRegister(ServerConnection connection) {
+    public AuctionRegister(ServerConnection connection, Stage primaryStage) {
         this.connection = connection;
-    }
-
-    public AuctionRegister() {
+        this.primaryStage = primaryStage;
     }
 
     public void start(Stage stage){

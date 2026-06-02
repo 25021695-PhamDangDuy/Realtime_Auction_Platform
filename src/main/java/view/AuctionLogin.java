@@ -27,6 +27,10 @@ public class AuctionLogin extends Application implements MessageListener {
     public AuctionLogin(ServerConnection connection) {
         this.connection = connection;
     }
+    public AuctionLogin(ServerConnection connection, Stage primaryStage) {
+        this.connection = connection;
+        this.primaryStage = primaryStage;
+    }
     public void start(Stage primaryStage) {
         this.connection = new ServerConnection();
         this.connection.setMessageListener(this);
@@ -84,7 +88,7 @@ public class AuctionLogin extends Application implements MessageListener {
         btnGoToRegister.setOnAction(e -> {
             try {
                 // Khởi tạo màn hình đăng ký tài khoản
-                AuctionRegister registerApp = new AuctionRegister(connection);
+                AuctionRegister registerApp = new AuctionRegister(connection,primaryStage);
 
                 // Truyền chính primaryStage hiện tại sang để đổi giao diện trên cùng 1 cửa sổ
                 registerApp.start(primaryStage);
@@ -106,7 +110,7 @@ public class AuctionLogin extends Application implements MessageListener {
         Platform.runLater(() -> {
             if (serverMessage.startsWith("LOGIN_SUCCESS")) {
                 actiontarget.setText("Đăng nhập thành công!");
-                AuctionHomeScreen homeScreen = new AuctionHomeScreen();
+                AuctionHomeScreen homeScreen = new AuctionHomeScreen(connection,new Stage());
                 homeScreen.start(primaryStage);
             } else {
                 actiontarget.setText("Sai tài khoản hoặc mật khẩu!");
@@ -118,3 +122,9 @@ public class AuctionLogin extends Application implements MessageListener {
         launch(args);
     }
 }
+
+
+
+
+
+
