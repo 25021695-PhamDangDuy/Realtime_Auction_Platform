@@ -116,9 +116,10 @@ public class AccountController{
 
     }
 
-    public void upRole(User userNew){
-        Seller seller = new Seller(userNew.getID(),userNew.getName(),userNew.getPassword());
+    public void upRole(User userNew) {
+        Seller seller = new Seller(userNew.getID(), userNew.getName(), userNew.getPassword());
         getUserDAO.update(seller);
+    }
     public List<UUID> getSessionsByUserID(UUID ID) throws SQLException {
         ObserverDAO observerDAO = new ObserverDAO();
         return  observerDAO.getSessionsByObserverID(ID);

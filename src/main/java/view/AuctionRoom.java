@@ -7,11 +7,14 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import models.AuctionSession;
 import server.GsonUtil;
 import view.network.MessageListener;
 import view.network.ServerConnection;
 
 import java.text.NumberFormat;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Locale;
 import java.util.UUID;
 import java.util.concurrent.Executors;
@@ -30,7 +33,7 @@ public class AuctionRoom extends Application implements MessageListener {
     private long initPrice;
     private long currentPrice;
     private javafx.scene.image.ImageView imgProductView;
-    private int timeLeft = 600;
+    private int timeLeft;
     private Label lblCountdown;
     private Label lblMoneyToWords;
     private javafx.scene.control.TextField txtBidInput;
@@ -48,13 +51,22 @@ public class AuctionRoom extends Application implements MessageListener {
     private javafx.scene.control.Label lblName;
     private javafx.scene.control.Label lblMessage;
 
-    public AuctionRoom(ServerConnection connection, Stage primaryStage) {
+    public AuctionRoom(ServerConnection connection, Stage primaryStage, AuctionSession session) {
+
         this.connection = connection;
         this.primaryStage = primaryStage;
-    }
+        this.roomId = session.getID().toString();
+        this.itemName = session.getItem().getName();
+        this.sellerName = session.getSeller().getName();
+        this.currentPrice = session.getCurrentPrice();
+        this.timeLeft = Duration.between(LocalDateTime.now(),session.getEndTime()).toMillisPart();
 
-    public AuctionRoom() {
     }
+    public AuctionRoom(ServerConnection connection,Stage primaryStage){
+        this.primaryStage = primaryStage;
+        this.connection = connection;
+    }
+    public AuctionRoom(){}
 
     @Override
     public void start(Stage stage) {
