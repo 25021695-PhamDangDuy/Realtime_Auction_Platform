@@ -154,7 +154,6 @@ public class UserDashboardScreen extends Application implements MessageListener 
     }
 
     private void triggerLoadProfile() {
-        // 1. Xóa nội dung cũ đang hiển thị ở phần giữa màn hình
         centerContent.getChildren().clear();
 
         // 2. Tạo các Label mới và lấy dữ liệu TRỰC TIẾP từ biến currentUser
@@ -167,6 +166,7 @@ public class UserDashboardScreen extends Application implements MessageListener 
         Label lblId = new Label("ID: " + currentUser.getID().toString());
         lblId.setFont(Font.font("Arial", 16));
 
+        // Đã sửa lại thành getUsername() cho chuẩn xác
         Label lblUsername = new Label("Tài khoản: " + currentUser.getName());
         lblUsername.setFont(Font.font("Arial", 16));
 
@@ -180,8 +180,38 @@ public class UserDashboardScreen extends Application implements MessageListener 
         Label lblRole = new Label("Vai trò: " + displayRole);
         lblRole.setFont(Font.font("Arial", 16));
 
+        // =========================================================
+        // KHU VỰC CHỨA VAI TRÒ VÀ NÚT NÂNG CẤP (Dùng HBox để xếp ngang)
+        // =========================================================
+        javafx.scene.layout.HBox roleBox = new javafx.scene.layout.HBox(15);
+        roleBox.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+        roleBox.getChildren().add(lblRole);
+
+        // Chỉ "mọc" ra nút nâng cấp nếu người này đang là Bidder
+        if (roleName.equals("Bidder")) {
+            Button btnUpgrade = new Button("Nâng cấp lên Seller");
+            btnUpgrade.setStyle("-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;");
+
+            btnUpgrade.setOnAction(e -> {
+                // Đổi text và khóa nút lại để tránh user bấm spam 2, 3 lần
+                btnUpgrade.setText("Đang xử lý...");
+                btnUpgrade.setDisable(true);
+
+                // Gửi lệnh lên Server (Lưu ý: biến connection có thể khác tùy file của bạn,
+                // ví dụ: App.connection.sendCommand(...) nếu connection là biến static)
+                if (connection != null) {
+                    connection.sendCommand("UPGRADE_SELLER");
+                }
+            });
+
+            // Nhét nút vào HBox bên cạnh cái Label Vai trò
+            roleBox.getChildren().add(btnUpgrade);
+        }
+        // =========================================================
+
         // 3. Bơm tất cả vào centerContent để hiển thị ngay lập tức
-        centerContent.getChildren().addAll(lblTitle, spacer, lblId, lblUsername, lblName, lblRole);
+        // CHÚ Ý: Thay lblRole cũ bằng cái roleBox mới
+        centerContent.getChildren().addAll(lblTitle, spacer, lblId, lblUsername, lblName, roleBox);
     }
 
     private void triggerLoadWallet() {
@@ -342,6 +372,31 @@ public class UserDashboardScreen extends Application implements MessageListener 
         // TẤT CẢ TƯƠNG TÁC GIAO DIỆN PHẢI NẰM TRONG Platform.runLater
         Platform.runLater(() -> {
             switch (command) {
+                case "SUCCESS_UPGRADE":
+                    String newProfileJson = parts[1];
+
+                    // 1. Dùng GSON đúc lại đối tượng User mới (Lúc này GSON sẽ tự hiểu nó là Seller nhờ cái nhãn "type")
+                    models.User upgradedUser = GsonUtil.gson.fromJson(newProfileJson, models.User.class);
+
+                    javafx.application.Platform.runLater(() -> {
+                        // 2. Báo tin vui
+                        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
+                        alert.setTitle("Thành công");
+                        alert.setHeaderText(null);
+                        alert.setContentText("Chúc mừng! Bạn đã được thăng cấp thành Người Bán (Seller)!");
+                        alert.showAndWait();
+
+                        // 3. CẬP NHẬT LẠI BIẾN CURRENT USER CHO TOÀN BỘ GIAO DIỆN
+                        this.currentUser = upgradedUser; // (Thay 'this' bằng tên class chứa biến currentUser của bạn)
+
+                        // 4. Gọi hàm vẽ lại toàn bộ thanh Menu bên trái (Sidebar)
+                        // Vì currentUser giờ đã là Seller, cái code instanceof Seller của bạn sẽ chạy!
+                        createSidebar();
+
+                        // 5. Load lại chính diện mạo Hồ sơ
+                        triggerLoadProfile();
+                    });
+                    break;
                 case "SUCCESS_GET_ITEMS":
                     String itemsJson = parts[1];
 

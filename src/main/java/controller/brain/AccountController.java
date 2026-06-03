@@ -92,7 +92,7 @@ public class AccountController{
         return user;
     }
 
-    public void updateInforUser(User userNew) throws SQLException {
+    public void updateUserLegal(User userNew) throws SQLException {
         User u = getUserDAO.getbyUsername(userNew.getName());
         //Kiểm tra mật khẩu mới:
         if(!passwordValidator.valid(userNew.getPassword())){
@@ -113,17 +113,17 @@ public class AccountController{
         }else {
             throw new IllegalArgumentException("Không thể ép Seller lên Bidder");
         }
+
     }
 
     public void upRole(User userNew){
         Seller seller = new Seller(userNew.getID(),userNew.getName(),userNew.getPassword());
         getUserDAO.update(seller);
-    }
-
     public List<UUID> getSessionsByUserID(UUID ID) throws SQLException {
         ObserverDAO observerDAO = new ObserverDAO();
         return  observerDAO.getSessionsByObserverID(ID);
     }
+
 
 
 
