@@ -147,6 +147,10 @@ public class AuctionManager {
         observerDAO.clearObserversForSession(session.getID());
     }
 
+    public void runSession(AuctionSession session) throws SQLException {
+        session.runSession();
+        sessionDAO.update(session);
+    }
 
     public void cancelSession(AuctionSession session) throws NullPointerException,IllegalArgumentException, SQLException {
         /*
