@@ -19,7 +19,7 @@ public class VehicleCreatorCommand implements ItemCreator {
             Item newVehicleItem = VehicleItemController.createItem(clientSession.getCurrentUser(), name, price, condition);
             VehicleItemController.saveItem(newVehicleItem);
 
-            clientSession.sendMessage("SUCCESS|Đã tạo phương tiện thành công!");
+            clientSession.sendMessage("SUCCESS_CREATE|Đã tạo phương tiện thành công!");
 
         } catch (Exception e) {
             clientSession.sendMessage("ERROR|Dữ liệu phương tiện không hợp lệ!");

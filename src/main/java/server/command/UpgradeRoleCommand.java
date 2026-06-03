@@ -30,6 +30,7 @@ public class UpgradeRoleCommand implements Command {
 
             // 3. Cập nhật lại Session trên Server
             session.setCurrentUser(upgradedUser);
+            session.setRole(Role.SELLER);
 
             // 4. Ép GSON nén ông Seller mới này lại, nhớ bọc bằng User.class để có nhãn "type":"Seller"
             String userJson = GsonUtil.gson.toJson(upgradedUser, models.User.class);

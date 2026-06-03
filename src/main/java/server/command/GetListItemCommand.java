@@ -68,7 +68,7 @@ public class GetListItemCommand implements Command {
             String jsonList = GsonUtil.gson.toJson(myItems, listType);
 
             // 3. GỬI VỀ CLIENT
-            session.sendMessage("SUCCESS_GET_ITEMS|" + jsonList);
+            session.sendMessage("SUCCESS_GET_ITEMS|" + status+"|"+jsonList);
 
             System.out.println("[Command] Đã gửi danh sách Item bằng GSON cho Seller: " + ownerName);
 

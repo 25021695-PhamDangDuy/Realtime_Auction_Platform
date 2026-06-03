@@ -20,7 +20,7 @@ public class ElectronicCreatorCommand implements ItemCreator {
             Item newElectronicItem = ElectronicItemController.createItem(clientSession.getCurrentUser(), name, price, condition, month);
             ElectronicItemController.saveItem(newElectronicItem);
             //gửi thông báo về
-            clientSession.sendMessage("SUCCESS|Đã tạo sảm phẩm thành công!");
+            clientSession.sendMessage("SUCCESS_CREATE|Đã tạo sảm phẩm thành công!");
         } catch (Exception e) {
             clientSession.sendMessage("ERROR|Dữ liệu sản phẩm không hợp lệ!");
         }
