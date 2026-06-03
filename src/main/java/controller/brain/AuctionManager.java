@@ -1,6 +1,7 @@
 package controller.brain;
 
 import controller.BidHistory;
+import database.ObserverDAO;
 import database.items.ItemDAOImpl;
 import database.SessionDAO;
 import function.ItemStatus;
@@ -27,7 +28,7 @@ public class AuctionManager {
     private WalletManager walletManager = WalletManager.getInstance();
     private PaymentManager paymentManager = PaymentManager.getInstance();
     //Contructor
-    private AuctionManager(){}
+    private AuctionManager()  {}
 
     public static AuctionManager getInstance() {
         if(instance == null) {
@@ -97,6 +98,10 @@ public class AuctionManager {
         }
 
         //Logic kiểm tra phiên có trong db chưa?
+        //Thêm observer
+        ObserverDAO observerDAO = new ObserverDAO();
+        observerDAO.addObserverToSession(bidder.getID(),auctionSession.getID());
+
         //Cơ chế extend thời gian
         synchronized (AuctionManager.class) {
             if(auctionSession.getTopBid() == null) {
@@ -137,6 +142,9 @@ public class AuctionManager {
         itemDAO.update(session.getItem());
         log.info("Phiên đấu giá ID:" + session.getID().toString() + " đã kết thúc");
 
+        //Tiến hành xóa observers
+        ObserverDAO observerDAO = new ObserverDAO();
+        observerDAO.clearObserversForSession(session.getID());
     }
 
 
@@ -153,7 +161,8 @@ public class AuctionManager {
         sessionDAO.update(session);
         log.info("Phiên đấu giá ID:" + session.getID().toString() + " đã bị hủy");
 
-
+        ObserverDAO observerDAO = new ObserverDAO();
+        observerDAO.clearObserversForSession(session.getID());
     }
 
     public void pendSession(AuctionSession session) throws NullPointerException,IllegalArgumentException, SQLException{
@@ -165,7 +174,6 @@ public class AuctionManager {
         session.pendSession();
         sessionDAO.update(session);
         log.info("Phiên đấu giá ID:" + session.getID().toString() + " đã bị dừng");
-
 
 
     }
@@ -211,4 +219,5 @@ public class AuctionManager {
         }
         return list;
     }
+
 }

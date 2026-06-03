@@ -115,10 +115,9 @@ public class AuctionHomeScreen extends Application implements MessageListener {
                 e.printStackTrace();
             }
         });
+        taskbar.getChildren().add(btnBackToLogin);
+        root.setBottom(taskbar);
 
-
-        taskbar.getChildren().addAll(btnAddProduct, btnBackToLogin);
-        taskbar.setSpacing(15);
 
 
         root.setBottom(taskbar);
@@ -168,6 +167,7 @@ public class AuctionHomeScreen extends Application implements MessageListener {
         card.setPadding(new Insets(15));
         card.setStyle("-fx-background-color: white; -fx-background-radius: 8; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.08), 8, 0, 0, 0);");
         card.setPrefWidth(300);
+        card.setStyle(card.getStyle() + " -fx-cursor: hand;");
 
         // 1. Label hiển thị Trạng thái (Bám sát thiết kế: Chưa bắt đầu, Đang diễn ra, Đã kết thúc)
         Label lblStatus = new Label(session.status);
@@ -214,9 +214,8 @@ public class AuctionHomeScreen extends Application implements MessageListener {
         }
         btnView.setMaxWidth(Double.MAX_VALUE);
         // Sự kiện khi nhấn nút (Sẽ code chuyển Scene sang phòng đấu ở đây)
-        btnView.setOnAction(e -> {
-            String command = "JOIN_ROOM|" + session.sessionId;
-
+        Runnable joinRoomAction = () -> {
+            String command = "JOIN_ROOM|" + session.sessionId; // Set ID của AuctionSession tương ứng
             try {
                 // Gửi lệnh qua server xử lý tập trung
                 connection.sendCommand(command);
@@ -224,8 +223,11 @@ public class AuctionHomeScreen extends Application implements MessageListener {
             } catch (Exception ex) {
                 System.err.println("Lỗi gửi yêu cầu vào phòng: " + ex.getMessage());
             }
+        };
 
-        });
+        // Cài đặt sự kiện: Bấm vào nút HOẶC bấm vào bất kỳ đâu trên Card đều kích hoạt hành động
+        btnView.setOnAction(e -> joinRoomAction.run());
+        card.setOnMouseClicked(e -> joinRoomAction.run());
         card.getChildren().addAll(topRow, imgBox, lblName, lblPrice, btnView);
         return card;
     }
@@ -293,7 +295,7 @@ public class AuctionHomeScreen extends Application implements MessageListener {
                 e.printStackTrace();
             }
         });
-        taskbar.getChildren().addAll(btnDashboard, btnRoom, btnNoti, btnProfile);
+        taskbar.getChildren().addAll(btnRoom, btnNoti, btnProfile);
         return taskbar;
     }
     private Button createNavButton(String text, boolean isActive) {
@@ -364,6 +366,7 @@ public class AuctionHomeScreen extends Application implements MessageListener {
                 System.err.println("Lỗi bóc tách dữ liệu JSON phiên đấu giá: " + e.getMessage());
                 e.printStackTrace();
             }
+
         });
 
 

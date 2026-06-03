@@ -8,6 +8,7 @@ public abstract class User {
     private UUID ID;
     private String  Name, Password;
     private Role role;
+    private Wallet wallet;
 
     public User(String Name,String Password) {
         this.ID = UUID.randomUUID();
@@ -19,6 +20,7 @@ public abstract class User {
         this.Name = name;
         this.Password = pw;
     }
+
     //Getter
     public String getName(){return Name;}
     public UUID getID(){return ID;}
@@ -30,7 +32,8 @@ public abstract class User {
     }
     public void setPassword(String newPW){Password = newPW; }
     protected void setRole(Role role){this.role = role;}
-
+    public void setWallet(Wallet wallet){this.wallet = wallet;}
+    public Wallet getWallet(){return wallet;}
 }
 
 

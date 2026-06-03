@@ -40,7 +40,6 @@ public class getUserDAO extends UserDAOImpl<User> {
         }
         return null;
     }
-
     public User getbyUsername(String name) throws SQLException {
         String SQLquery = "SELECT ID, Username, Password, role FROM users WHERE Username = ?";
         try (Connection conn = databaseCreator.getConnection();
@@ -58,11 +57,7 @@ public class getUserDAO extends UserDAOImpl<User> {
                     String Pw = rs.getString("Password");
                     String role = rs.getString("role");
 
-                    System.out.println("DEBUG: Found user - ID: " + ID + ", Role: " + role);
-                    System.out.println(ID + " " + Name + " " + Pw + " " + role);
-                    System.out.println(role.equals("BIDDER"));
                     User u = createUserByRole(UUID.fromString(ID), Name, Pw, role);
-                    System.out.println("DEBUG: Created user object: " + u.getName());
                     return u;
                 } else {
                     // Không tìm thấy User nào có Username này trong DB

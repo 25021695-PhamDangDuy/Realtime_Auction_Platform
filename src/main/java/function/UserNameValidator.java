@@ -7,7 +7,6 @@ public class UserNameValidator implements Validator<String>{
     @Override
     public boolean valid(String s) {
 
-
         if(lengthRule.validate(s)){
             return true;
         }else {

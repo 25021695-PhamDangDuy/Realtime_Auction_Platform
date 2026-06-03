@@ -1,7 +1,10 @@
 package database;
 
+import controller.brain.WalletManager;
 import function.SessionStatus;
 import models.Seller;
+import models.Wallet;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,7 +14,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class SellerDAOImpl extends UserDAOImpl<Seller>{
-
+    private WalletManager walletManager = WalletManager.getInstance();
     @Override
     public Seller get(UUID ID) {
         String retrieveSQL = "SELECT * FROM users WHERE ID = ? AND role = 'SELLER' ";
@@ -27,8 +30,8 @@ public class SellerDAOImpl extends UserDAOImpl<Seller>{
                 UUID id = UUID.fromString(rs.getString("ID"));
                 String name = rs.getString("Username");
                 String pw = rs.getString("Password");
-
-                seller = new Seller(id,name,pw);
+                Wallet wallet = walletManager.getWalletbyOwner(name);
+                seller = new Seller(id,name,pw,wallet);
             }
         }catch (SQLException e){
             System.out.println("Khong tim thay user");
@@ -49,9 +52,9 @@ public class SellerDAOImpl extends UserDAOImpl<Seller>{
                 UUID id = UUID.fromString(rs.getString("ID"));
                 String name = rs.getString("Username");
                 String pw = rs.getString("Password");
-
-                Seller bidder = new Seller(id,name,pw);
-                userList.add(bidder);
+                Wallet wallet = walletManager.getWalletbyOwner(name);
+                Seller seller = new Seller(id,name,pw,wallet);
+                userList.add(seller);
             }
         }catch (SQLException e){
             System.out.println("Khong tim thay user");

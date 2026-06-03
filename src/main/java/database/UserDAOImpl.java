@@ -3,11 +3,9 @@ package database;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import controller.brain.WalletManager;
 import function.SystemLogger;
-import models.Admin;
-import models.Bidder;
-import models.Seller;
-import models.User;
+import models.*;
 import server.Role;
 
 import java.sql.Connection;
@@ -79,8 +77,7 @@ public abstract class UserDAOImpl<T extends User> implements UserDAO<T>{
 
 
     // Helper method: Tạo User object tương ứng dựa trên role
-    public User createUserByRole(UUID id, String username, String password, String role) {
-
+    public User createUserByRole(UUID id, String username, String password, String role) throws SQLException, IllegalArgumentException {
         switch(role.toUpperCase().trim()) {  // ← Chuyển thành UPPERCASE
             case "BIDDER":
                 Bidder b = new Bidder(id, username, password);
