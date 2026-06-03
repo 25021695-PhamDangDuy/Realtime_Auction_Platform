@@ -15,7 +15,7 @@ public class App extends Application {
     public void start(Stage primaryStage) throws Exception {
 
         // 1. Mở ống Socket kết nối thẳng tới Server ngay khi App vừa chạy
-        boolean isConnected = connection.connect("localhost", 8080);
+        boolean isConnected = connection.connect("26.229.239.211", 8080);
 
         if (isConnected) {
             System.out.println("[App] Đã kết nối thành công tới Server đấu giá!");

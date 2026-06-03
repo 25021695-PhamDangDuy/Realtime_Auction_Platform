@@ -47,7 +47,7 @@ public class AuctionSessionUpcomingWatcher implements Runnable{
 
             for(AuctionSession as : auctionSessionList) {
                 try {
-                    manager.finishSession(as);
+                    manager.runSession(as);
                 } catch (NullPointerException e) {
                     System.out.println(e.getMessage());
                     failedSession.add(as); //thêm phiên lỗi vào danh sách lỗi
