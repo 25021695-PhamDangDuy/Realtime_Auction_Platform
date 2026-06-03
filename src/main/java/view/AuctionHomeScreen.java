@@ -46,14 +46,16 @@ public class AuctionHomeScreen extends Application implements MessageListener {
         this.connection=connection;
         this.primaryStage = primaryStage;
         this.user = user;
-        username = user.getName();
-        userBalance = user.getWallet().getBalance();
     }
-
+        public User getcurrentUser(){return user;}
+        public void setUserBalance(){this.userBalance=this.getcurrentUser().getWallet().getBalance();}
+        public void getUserName(){this.username=this.getcurrentUser().getName();}
 
 
     @Override
     public void start(Stage primaryStage) {
+        this.setUserBalance();
+        this.getUserName();
         // 1. Cài đặt kết nối và Lắng nghe dữ liệu
         if (this.connection != null) {
             connection.setMessageListener(this);
