@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import server.GsonUtil;
 import view.network.MessageListener;
 import view.network.ServerConnection;
 
@@ -30,6 +31,7 @@ public class AuctionRoom extends Application implements MessageListener {
     private Label lblCountdown;
     private Label lblMoneyToWords;
     private javafx.scene.control.TextField txtBidInput;
+    private ScrollPane scrollHistory;
 
     private Button btnSubmitBid;
     private VBox historyLogBox;
@@ -304,6 +306,7 @@ public class AuctionRoom extends Application implements MessageListener {
         Button btnHome = new Button("🏠 Trang chủ");
         Button btnRoom = new Button("🔨 Phòng đấu");
         Button btnNoti = new Button("🔔 Thông báo");
+        Button btnOut  = new Button("Rời phòng");
 
         btnHome.setStyle("-fx-background-color: transparent; -fx-text-fill: #bdc3c7;");
         btnRoom.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-font-weight: bold;");
@@ -311,7 +314,7 @@ public class AuctionRoom extends Application implements MessageListener {
         btnHome.setOnAction(event -> {
             try {
                 // 1. Khởi tạo thực thể của màn hình HomeScreen
-                AuctionHomeScreen homeScreen = new AuctionHomeScreen(connection,new Stage());
+                AuctionHomeScreen homeScreen = new AuctionHomeScreen();
 
                 // 2. Gọi hàm start và truyền cửa sổ chính primaryStage vào
                 homeScreen.start(primaryStage);
@@ -338,7 +341,7 @@ public class AuctionRoom extends Application implements MessageListener {
 
         long userBid = Long.parseLong(rawInput);
 
-        // KIỂM TRA LUẬT: Giá đưa ra phải lớn hơn hoặc bằng Giá hiện tại + Bước giá tối thiểu
+        // KIỂM TRA LUẬT: Giá đưa ra phải lớn hơn hoặc bằng Giá hiện tại
         long requiredAmount = currentPrice;
         if (userBid < requiredAmount) {
             showAlert("Đặt giá thất bại! Mức giá bạn đưa ra phải tối thiểu đạt: " + currencyFormat.format(requiredAmount));
@@ -447,13 +450,63 @@ public class AuctionRoom extends Application implements MessageListener {
                 // Trường hợp bạn đặt giá thấp hơn giá hiện tại của phòng và bị server từ chối
                 lblMessage.setText("Giá bạn đặt thấp hơn giá hiện tại của phòng!");
                 lblMessage.setTextFill(javafx.scene.paint.Color.FIREBRICK);
+            } else if ("SUCCESS_BID_HISTORY".equals(header)) {
+                // tokens là "SUCCESS_BID_HISTORY"
+                // tokens sẽ là toàn bộ chuỗi JSON chứa List<BidTicket> do bên Server gửi về
+                if (tokens.length > 1) {
+                    String[] jsonHistory = tokens;
+
+                    try {
+                        // 1. Dùng Gson bóc tách chuỗi JSON thành List các lượt đấu giá
+                        java.lang.reflect.Type listType = new com.google.gson.reflect.TypeToken<java.util.List<BidTicket>>(){}.getType();
+                        // Thay 'GsonUtil.gson' bằng đối tượng Gson đang có trong dự án của bạn
+                        java.util.List<BidTicket> historyList = GsonUtil.gson.fromJson(jsonHistory[0], listType);
+
+                        // 2. Xóa các log cũ trên giao diện để nạp lại danh sách mới nhất
+                        historyLogBox.getChildren().clear();
+
+                        // 3. Duyệt danh sách và render lên giao diện historyLogBox
+                        for (BidTicket ticket : historyList) {
+                            // Định dạng hiển thị. Ví dụ: "• Nguyễn Văn A đã đặt: 500,000 VND"
+                            // Bạn có thể tùy biến thêm ticket.getBidTime() nếu muốn hiển thị giờ giấc
+                            String logText = String.format("• %s đã đặt giá: %,.0f VND",
+                                    ticket.getBidderName(),
+                                    ticket.getPrice());
+
+                            javafx.scene.control.Label lblLog = new javafx.scene.control.Label(logText);
+                            lblLog.setStyle("-fx-font-size: 13px; -fx-text-fill: #2c3e50;");
+
+                            // Thêm dòng log vào VBox hiển thị trực tiếp
+                            historyLogBox.getChildren().add(lblLog);
+                        }
+
+                        // 4. Tự động cuộn thanh cuộn xuống dưới cùng khi có lịch sử mới (Nếu biến scrollHistory khả dụng)
+                        if (scrollHistory != null) {
+                            scrollHistory.setVvalue(1.0);
+                        }
+
+                    } catch (Exception ex) {
+                        System.out.println("Lỗi nạp lịch sử đấu giá từ Server!");
+                        ex.printStackTrace();
+                    }
+                }
             }
         });
     }
 
 
+
     public static void main(String[] args) {
         launch(args);
+    }
+    public class BidTicket {
+        private String bidderName; // Tên người đặt giá (khớp với key trong thuộc tính JSON từ Server)
+        private double price;      // Mức giá đặt
+        private String bidTime;    // Thời gian đặt (nếu có)
+
+        public String getBidderName() { return bidderName; }
+        public double getPrice() { return price; }
+        public String getBidTime() { return bidTime; }
     }
 }
 

@@ -9,6 +9,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import view.network.MessageListener;
 import view.network.ServerConnection;
 
 import java.text.NumberFormat;
@@ -22,7 +23,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 
-public class AuctionHomeScreen extends Application {
+public class AuctionHomeScreen extends Application implements MessageListener {
 
     private String username;
     private long userBalance ;
@@ -36,16 +37,18 @@ public class AuctionHomeScreen extends Application {
     private FlowPane listContainer;
 
 
-    public AuctionHomeScreen(ServerConnection connection, Stage primaryStage) {
-        this.connection = connection;
+    public AuctionHomeScreen() {
+    }
+    public AuctionHomeScreen(Stage primaryStage) {
         this.primaryStage = primaryStage;
     }
 
-    public AuctionHomeScreen() {
-    }
+
 
     @Override
     public void start(Stage primaryStage) {
+        this.connection = new ServerConnection();
+        connection.setMessageListener(this);
         connection.sendCommand("GetAuctionSession|ACTIVE");
         // ROOT LAYOUT
         BorderPane root = new BorderPane();
@@ -310,36 +313,59 @@ public class AuctionHomeScreen extends Application {
             lblSystemTime.setText("⏱ Hệ thống: " + now.format(formatter));
         }), 0, 1, TimeUnit.SECONDS);
     }
-    public void initializeData() {
-        if (connection != null && connection.connect("localhost",8000)) {
-            // 1. Nếu có kết nối mạng: Gửi lệnh lên server để lấy dữ liệu thật từ DB
-            connection.sendCommand("FETCH_AUCTION_DATA");
-        } else {
-            // 2. Nếu chạy local một mình để test UI: Mới gọi mockData
-            loadMockData();
-        }
-    }
-    private void loadMockData() {
-        // Nơi bạn add các dữ liệu giả lập để test giao diện
-        sessionList.add(new AuctionSession("A01","NEW","03/06/2026","IPhone 15",15000000));
-        sessionList.add(new AuctionSession("A02","OLD","03/06/2026","Bình gốm cổ",1000000));
-    }
+
+
     // Trong hàm xử lý tin nhắn nhận từ server của bạn:
-    public void onMessageReceived(List<AuctionSession> sessionsFromServer) {
+    public void onMessageReceived(String message) {
+        javafx.application.Platform.runLater(() -> {
+            try {
+                System.out.println("[LOG RECEIVE]: Nhận chuỗi dữ liệu từ Server -> " + message);
 
-        // THIẾU CÁI NÀY LÀ CARD SẼ KHÔNG BAO GIỜ HIỆN LÊN GIAO DIỆN:
-        Platform.runLater(() -> {
-            // Giả sử listContainer là FlowPane/VBox hiển thị chính trên giao diện của bạn
-            listContainer.getChildren().clear();
+                // Tách chuỗi theo dấu gạch đứng để lấy lệnh và phần JSON dữ liệu cốt lõi
+                String[] parts = message.split("\\|", 2);
+                String command = parts[0];
+                String jsonCore = parts.length > 1 ? parts[1] : "";
 
-            for (AuctionSession session : sessionsFromServer) {
-                // Gọi hàm tạo card của bạn
-                VBox card = createSessionCard(session);
+                // 2. Kiểm tra xem mã lệnh gửi về có phải là danh sách phiên đấu giá không
+                if (command.equals("SUCCESS_SESSIONS")) {
 
-                // Thêm card vào container chính
-                listContainer.getChildren().add(card);
+                    // Xóa sạch các thẻ card cũ trên giao diện trước khi nạp dữ liệu mới
+                    listContainer.getChildren().clear();
+
+                    if (jsonCore.equals("EMPTY") || jsonCore.trim().isEmpty()) {
+                        System.out.println("Hiện tại hệ thống không có phòng đấu giá nào đang mở.");
+                        return;
+                    }
+                    com.google.gson.Gson gson = new com.google.gson.Gson();
+
+
+                    java.lang.reflect.Type listType = new com.google.gson.reflect.TypeToken<java.util.ArrayList<AuctionSession>>() {}.getType();
+                    java.util.List<AuctionSession> activeSessions = gson.fromJson(jsonCore, listType);
+                    // 5. Duyệt qua danh sách và gọi hàm sinh giao diện của bạn để đưa lên màn hình
+                    for (AuctionSession session : activeSessions) {
+
+                        // Gọi hàm tạo card VBox mà bạn đã hoàn thiện trước đó
+                        VBox card = createSessionCard(session);
+
+                        // Đẩy card sản phẩm trực tiếp vào vùng hiển thị
+                        listContainer.getChildren().add(card);
+                    }
+                }
+
+                // Bạn có thể bắt thêm các lệnh khác tại đây (Ví dụ vào phòng, lỗi, v.v.)
+                else if (command.equals("JOIN_ROOM_SUCCESS")) {
+                    AuctionRoom room = new AuctionRoom();
+                    room.start(primaryStage);
+
+                }
+
+            } catch (Exception e) {
+                System.err.println("Lỗi bóc tách dữ liệu JSON phiên đấu giá: " + e.getMessage());
+                e.printStackTrace();
             }
         });
+
+
     }
     public static void main(String[] args) {
         launch(args);

@@ -2,6 +2,7 @@ package view;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -28,6 +29,7 @@ public class AddProduct extends Application implements MessageListener {
     private ImageView imgPreview;
     private File selectedImageFile;
     private Label lblMessage;
+    private ComboBox<String> cbItemType;
 
     private TextField txtName;
     private TextArea txtDesc;
@@ -91,6 +93,21 @@ public class AddProduct extends Application implements MessageListener {
         });
 
         // 5. Khởi tạo các ô nhập thông tin sản phẩm khác
+        cbItemType = new ComboBox<>();
+
+        // Nạp các danh mục tương ứng 100% với các Key định nghĩa ở Server (Ảnh 1 của bạn)
+        cbItemType.setItems(FXCollections.observableArrayList(
+                "ELECTRONIC",
+                "ART",
+                "VEHICLE"
+        ));
+
+        // Gợi ý: Chọn sẵn mục đầu tiên làm mặc định để tránh bị null
+        cbItemType.getSelectionModel().selectFirst();
+
+        // Thiết lập thêm một text gợi ý (Prompt Text) nếu không chọn mặc định
+        cbItemType.setPromptText("-- Chọn loại sản phẩm --");
+
         txtName = new TextField();
         txtName.setPromptText("Nhập tên sản phẩm...");
 
@@ -111,13 +128,18 @@ public class AddProduct extends Application implements MessageListener {
         // Nút bấm gửi thông tin (Bạn có thể thêm nút này vào cuối form)
         Button btnSubmit = new Button("Đăng sản phẩm");
         btnSubmit.setOnAction(e -> {
+            String selectedType = cbItemType.getValue();
             String productName = txtName.getText().trim();
             String startPriceStr = txtStartPrice.getText().trim();
-
+            if (selectedType == null) {
+                // Xử lý thông báo nếu người dùng chưa chọn loại hàng
+                lblMessage.setText("Vui lòng chọn loại sản phẩm!");
+                return;
+            }
             // Lấy ngày chọn từ DatePicker (nếu trống thì báo lỗi)
             if (productName.isEmpty() || startPriceStr.isEmpty() || datePicker.getValue() == null) {
                 lblMessage.setText("Vui lòng nhập đầy đủ thông tin sản phẩm!");
-                lblMessage.setTextFill(javafx.scene.paint.Color.FIREBRICK);
+                lblMessage.setTextFill(Color.FIREBRICK);
                 return;
             }
 
@@ -127,28 +149,30 @@ public class AddProduct extends Application implements MessageListener {
                 long startPrice = Long.parseLong(startPriceStr);
                 if (startPrice < 0) {
                     lblMessage.setText("Giá khởi điểm không được âm!");
-                    lblMessage.setTextFill(javafx.scene.paint.Color.FIREBRICK);
+                    lblMessage.setTextFill(Color.FIREBRICK);
                     return;
                 }
 
                 // CHUẨN HÓA CHUỖI LỆNH GỬI ĐI
-                String command = "ADD_PRODUCT|" + productName + "|" + startPrice + "|" + endDate;
+                String command = "CREATE_ITEM|" + selectedType + "|" + productName + "|" + startPriceStr;
 
                 connection.sendCommand(command);
                 System.out.println("[LOG SENT]: Đã gửi yêu cầu đăng sản phẩm -> " + command);
 
                 lblMessage.setText("Đang xử lý đăng sản phẩm...");
-                lblMessage.setTextFill(javafx.scene.paint.Color.BLUE);
+                lblMessage.setTextFill(Color.BLUE);
 
             } catch (NumberFormatException ex) {
                 lblMessage.setText("Giá tiền nhập vào phải là số nguyên hợp lệ!");
-                lblMessage.setTextFill(javafx.scene.paint.Color.FIREBRICK);
+                lblMessage.setTextFill(Color.FIREBRICK);
             } catch (Exception ex) {
                 lblMessage.setText("Lỗi kết nối đến Server!");
-                lblMessage.setTextFill(javafx.scene.paint.Color.FIREBRICK);
+                lblMessage.setTextFill(Color.FIREBRICK);
                 ex.printStackTrace();
             }
         });
+        grid.add(new Label("Loại sản phẩm"),0,1);
+        grid.add(cbItemType,1,1);
         grid.add(new Label("Hình ảnh:"), 0, 0);
         grid.add(btnChooseImage, 1, 0);
         grid.add(imgPreview, 1, 1);
@@ -184,14 +208,17 @@ public class AddProduct extends Application implements MessageListener {
         Platform.runLater(() -> {
             System.out.println("Nhận được phản hồi đăng sản phẩm: " + serverMessage);
 
+
             if ("ADD_PRODUCT_SUCCESS".equals(serverMessage)) {
                 lblMessage.setText("Đăng sản phẩm thành công!");
                 lblMessage.setTextFill(Color.GREEN);
 
                 // Tùy chọn: Sau khi đăng thành công, tự động chuyển về màn hình chính sau 1-2 giây
                 try {
-                    AuctionHomeScreen homeScreen = new AuctionHomeScreen(connection, new Stage());
+                    AuctionHomeScreen homeScreen = new AuctionHomeScreen();
                     homeScreen.start(primaryStage);
+                    connection.sendCommand("LOAD_AUCTION_ROOMS");
+
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }

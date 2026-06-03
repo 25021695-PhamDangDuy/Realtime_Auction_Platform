@@ -115,7 +115,7 @@ public class AuctionLogin extends Application implements MessageListener {
                 delay.setOnFinished(event -> {
                     try {
                         // Khởi tạo màn hình trang chủ mới và truyền connection sang
-                        AuctionHomeScreen homeScreen = new AuctionHomeScreen(connection, new Stage());
+                        AuctionHomeScreen homeScreen = new AuctionHomeScreen();
                         homeScreen.start(primaryStage);
                     } catch (Exception e) {
                         e.printStackTrace();
