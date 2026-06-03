@@ -1,4 +1,5 @@
 package view;
+import controller.brain.AuctionManager;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -9,6 +10,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import models.User;
 import view.network.MessageListener;
 import view.network.ServerConnection;
 
@@ -18,13 +20,14 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 
 public class AuctionHomeScreen extends Application implements MessageListener {
-
+    private User user;
     private String username;
     private long userBalance ;
     private Label lblSystemTime;
@@ -39,16 +42,18 @@ public class AuctionHomeScreen extends Application implements MessageListener {
 
     public AuctionHomeScreen() {
     }
-    public AuctionHomeScreen(ServerConnection connection,Stage primaryStage) {
+    public AuctionHomeScreen(ServerConnection connection, Stage primaryStage, User user) {
         this.connection=connection;
         this.primaryStage = primaryStage;
+        this.user = user;
+        username = user.getName();
+        userBalance = user.getWallet().getBalance();
     }
 
 
 
     @Override
     public void start(Stage primaryStage) {
-        this.connection = new ServerConnection();
         connection.setMessageListener(this);
         connection.sendCommand("GetAuctionSession|ACTIVE");
         // ROOT LAYOUT
@@ -202,6 +207,7 @@ public class AuctionHomeScreen extends Application implements MessageListener {
 
         // 4. Nút hành động: Chỉ dẫn tới phòng đấu chứ không đấu trực tiếp tại đây
         Button btnView = new Button();
+
         if (session.status.equals("Đang diễn ra")) {
             btnView.setText("Vào phòng đấu ngay 🔨");
             btnView.setStyle("-fx-background-color: #2c3e50; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;");
@@ -212,6 +218,7 @@ public class AuctionHomeScreen extends Application implements MessageListener {
             btnView.setText("Xem kết quả phiên");
             btnView.setStyle("-fx-background-color: #eaeded; -fx-text-fill: #7f8c8d; -fx-cursor: hand;");
         }
+
         btnView.setMaxWidth(Double.MAX_VALUE);
         // Sự kiện khi nhấn nút (Sẽ code chuyển Scene sang phòng đấu ở đây)
         Runnable joinRoomAction = () -> {
@@ -259,7 +266,7 @@ public class AuctionHomeScreen extends Application implements MessageListener {
         btnRoom.setOnAction( event ->  {
             try {
                 Stage currentStage = (Stage) btnRoom.getScene().getWindow();
-                AuctionRoom room = new AuctionRoom(connection,new Stage());
+                AuctionRoom room = new AuctionRoom();
                 Stage roomStage = new Stage();
                 room.start(roomStage);
                 currentStage.close();
@@ -272,10 +279,10 @@ public class AuctionHomeScreen extends Application implements MessageListener {
         btnProfile.setOnAction(event -> {
             try{
                 Stage currentStage = (Stage) btnProfile.getScene().getWindow();
-//                UserDashboardScreen account = new UserDashboardScreen(connection,currentStage);
-//                Stage accountStage = new Stage();
-//                account.start(accountStage);
-//                currentStage.close();
+                UserDashboardScreen account = new UserDashboardScreen(connection,currentStage,user);
+                Stage accountStage = new Stage();
+                account.start(accountStage);
+                currentStage.close();
                 System.out.println("[LOG NAVIGATION]: Chuyển cửa sổ sang Account thành công.");
             } catch (Exception e) {
                 System.err.println("[LOG ERROR]: Không thể chuyển cảnh tài khoản: " + e.getMessage());
@@ -324,52 +331,63 @@ public class AuctionHomeScreen extends Application implements MessageListener {
             try {
                 System.out.println("[LOG RECEIVE]: Nhận chuỗi dữ liệu từ Server -> " + message);
 
-                // Tách chuỗi theo dấu gạch đứng để lấy lệnh và phần JSON dữ liệu cốt lõi
                 String[] parts = message.split("\\|", 2);
                 String command = parts[0];
                 String jsonCore = parts.length > 1 ? parts[1] : "";
 
-                // 2. Kiểm tra xem mã lệnh gửi về có phải là danh sách phiên đấu giá không
                 if (command.equals("SUCCESS_SESSIONS")) {
-
-                    // Xóa sạch các thẻ card cũ trên giao diện trước khi nạp dữ liệu mới
                     listContainer.getChildren().clear();
 
                     if (jsonCore.equals("EMPTY") || jsonCore.trim().isEmpty()) {
                         System.out.println("Hiện tại hệ thống không có phòng đấu giá nào đang mở.");
                         return;
                     }
-                    com.google.gson.Gson gson = new com.google.gson.Gson();
 
+                    // 1. CẤU HÌNH GSON ĐỂ ĐỌC ĐÚNG ĐỊNH DẠNG LOCALDATETIME PHỨC TẠP TỪ SERVER
+                    com.google.gson.Gson gson = new com.google.gson.GsonBuilder()
+                            .registerTypeAdapter(java.time.LocalDateTime.class, (com.google.gson.JsonDeserializer<java.time.LocalDateTime>) (json, typeOfT, context) -> {
+                                com.google.gson.JsonObject jsonObject = json.getAsJsonObject();
+                                com.google.gson.JsonObject dateObj = jsonObject.getAsJsonObject("date");
+                                com.google.gson.JsonObject timeObj = jsonObject.getAsJsonObject("time");
+
+                                return java.time.LocalDateTime.of(
+                                        dateObj.get("year").getAsInt(),
+                                        dateObj.get("month").getAsInt(),
+                                        dateObj.get("day").getAsInt(),
+                                        timeObj.get("hour").getAsInt(),
+                                        timeObj.get("minute").getAsInt(),
+                                        timeObj.get("second").getAsInt()
+                                );
+                            }).create();
 
                     java.lang.reflect.Type listType = new com.google.gson.reflect.TypeToken<java.util.ArrayList<AuctionSession>>() {}.getType();
                     java.util.List<AuctionSession> activeSessions = gson.fromJson(jsonCore, listType);
-                    // 5. Duyệt qua danh sách và gọi hàm sinh giao diện của bạn để đưa lên màn hình
+
+                    System.out.println("[DEBUG]: Đã parse thành công số phòng: " + activeSessions.size());
+
                     for (AuctionSession session : activeSessions) {
+                        // TẠM THỜI MAPPING: Vì Server trả về "RUNNING", đổi nó sang chuỗi tiếng Việt cho UI hiểu
+                        if ("RUNNING".equals(session.status)) {
+                            session.status = "Đang diễn ra";
+                        } else if ("UPCOMING".equals(session.status)) {
+                            session.status = "Chưa bắt đầu";
+                        }
 
-                        // Gọi hàm tạo card VBox mà bạn đã hoàn thiện trước đó
                         VBox card = createSessionCard(session);
-
-                        // Đẩy card sản phẩm trực tiếp vào vùng hiển thị
                         listContainer.getChildren().add(card);
                     }
                 }
-
-                // Bạn có thể bắt thêm các lệnh khác tại đây (Ví dụ vào phòng, lỗi, v.v.)
                 else if (command.equals("JOIN_ROOM_SUCCESS")) {
-                    AuctionRoom room = new AuctionRoom();
+                    // 2. FIX MẤT CONNECTION: Truyền instance connection hiện tại (this.connection) vào phòng mới
+                    AuctionRoom room = new AuctionRoom(this.connection, primaryStage);
                     room.start(primaryStage);
-
                 }
 
             } catch (Exception e) {
-                System.err.println("Lỗi bóc tách dữ liệu JSON phiên đấu giá: " + e.getMessage());
+                System.err.println("Lỗi xử lý luồng nhận dữ liệu: " + e.getMessage());
                 e.printStackTrace();
             }
-
         });
-
-
     }
     public static void main(String[] args) {
         launch(args);

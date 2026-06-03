@@ -270,6 +270,7 @@ public class AuctionRoom extends Application implements MessageListener {
 
                 String command = "BID|" + roomId + "|" + bidAmount;
 
+
                 // ---- BƯỚC 3: Gọi hàm gửi lệnh đi tới server ----
                 connection.sendCommand(command);
                 System.out.println("[LOG SENT]: Đã gửi yêu cầu đặt giá -> " + command);

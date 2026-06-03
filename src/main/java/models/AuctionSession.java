@@ -31,8 +31,8 @@ public class AuctionSession {
     private LocalDateTime endTime;// thời gian kết thúc
     private SessionStatus status;// trạng thái phiên
 
-    private SessionChecker sessionChecker = new SessionChecker();
-    private BidTicketDAO bidTicketDAO = new BidTicketDAO();
+    private transient SessionChecker sessionChecker = new SessionChecker();
+    private transient BidTicketDAO bidTicketDAO = new BidTicketDAO();
     //Tạo
     public AuctionSession(Item item,Seller seller,long startPrice,long minIncrement,LocalDateTime endTime,LocalDateTime startTime, SessionStatus status) {
         this.ID = UUID.randomUUID();
@@ -126,7 +126,7 @@ public class AuctionSession {
 
     public synchronized void placeBid(Bidder bidder, long bidAmount) throws IllegalArgumentException{
         // 1. Kiểm tra thời gian & trạng thái
-        if ( sessionChecker.isAuctioning(this)) {
+        if (!sessionChecker.isAuctioning(this)) {
             throw new IllegalArgumentException(status.getDescription());
         }
         // 2. Chống gian lận: Người bán tự đẩy giá (Shill Bidding)
