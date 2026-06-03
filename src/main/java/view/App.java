@@ -21,10 +21,10 @@ public class App extends Application {
             System.out.println("[App] Đã kết nối thành công tới Server đấu giá!");
             try {
                 // GỌI GIAO DIỆN AUCTION LOGIN LÊN MÀN HÌNH
-                AuctionRegister registerScreen = new AuctionRegister(connection,primaryStage);
+                AuctionLogin loginScreen = new AuctionLogin(connection,primaryStage);
 
                 // Truyền cái sân khấu (primaryStage) sang cho AuctionLogin tự vẽ đồ của nó lên
-                registerScreen.start(primaryStage);
+                loginScreen.start(primaryStage);
 
             } catch (Exception e) {
                 System.err.println("Lỗi khi mở giao diện đăng nhập!");

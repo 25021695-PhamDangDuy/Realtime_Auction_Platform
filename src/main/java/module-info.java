@@ -15,10 +15,11 @@ module Realtime.Auction.Platform {
     exports models;
 
     // THÊM: Mở package cho JUnit
+    opens server to com.google.gson;
     opens function to org.junit.platform.commons;
     opens database to org.junit.platform.commons;
     opens controller to org.junit.platform.commons;
-    opens models to org.junit.platform.commons;
+    opens models to org.junit.platform.commons,com.google.gson;
     exports controller.brain;
     opens controller.brain to org.junit.platform.commons;
     exports database.items;

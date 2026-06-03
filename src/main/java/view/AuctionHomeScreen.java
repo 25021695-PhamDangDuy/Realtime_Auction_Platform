@@ -39,15 +39,12 @@ public class AuctionHomeScreen extends Application implements MessageListener {
 
     public AuctionHomeScreen() {
     }
-    public AuctionHomeScreen(Stage primaryStage) {
+    public AuctionHomeScreen(ServerConnection connection,Stage primaryStage) {
+        this.connection=connection;
         this.primaryStage = primaryStage;
     }
 
-    public AuctionHomeScreen(String username, long userBalance, Stage primaryStage) {
-        this.username = username;
-        this.userBalance = userBalance;
-        this.primaryStage = primaryStage;
-    }
+
 
     @Override
     public void start(Stage primaryStage) {
@@ -220,6 +217,7 @@ public class AuctionHomeScreen extends Application implements MessageListener {
         Runnable joinRoomAction = () -> {
             String command = "JOIN_ROOM|" + session.sessionId; // Set ID của AuctionSession tương ứng
             try {
+                // Gửi lệnh qua server xử lý tập trung
                 connection.sendCommand(command);
                 System.out.println("[LOG SENT]: Đã gửi yêu cầu tham gia phòng -> " + command);
             } catch (Exception ex) {
@@ -274,10 +272,10 @@ public class AuctionHomeScreen extends Application implements MessageListener {
         btnProfile.setOnAction(event -> {
             try{
                 Stage currentStage = (Stage) btnProfile.getScene().getWindow();
-                Account account = new Account(this.username,this.userBalance,this.connection);
-                Stage accountStage = new Stage();
-                account.start(accountStage);
-                currentStage.close();
+//                UserDashboardScreen account = new UserDashboardScreen(connection,currentStage);
+//                Stage accountStage = new Stage();
+//                account.start(accountStage);
+//                currentStage.close();
                 System.out.println("[LOG NAVIGATION]: Chuyển cửa sổ sang Account thành công.");
             } catch (Exception e) {
                 System.err.println("[LOG ERROR]: Không thể chuyển cảnh tài khoản: " + e.getMessage());

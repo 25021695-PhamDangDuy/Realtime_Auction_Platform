@@ -9,7 +9,7 @@ import java.util.Set;
 public class RegisterCommand implements Command {
     @Override
     public Set<Role> getAllowedRoles() {
-        return Set.of(Role.GUEST); // Chỉ khách mới được đăng ký
+        return Set.of(Role.GUEST,Role.BIDDER,Role.SELLER,Role.ADMIN); // Chỉ khách mới được đăng ký
     }
 
     @Override

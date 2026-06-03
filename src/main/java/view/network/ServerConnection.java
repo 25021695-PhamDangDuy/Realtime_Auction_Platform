@@ -42,6 +42,9 @@ public class ServerConnection {
         try {
             String serverMessage;
             while ((serverMessage = in.readLine()) != null) {
+                // THÊM DÒNG NÀY ĐỂ BẮT MẠCH:
+                System.out.println("[Luồng Nghe] Đã nhận từ Server: " + serverMessage);
+                System.out.println("[Luồng Nghe] Trạng thái Listener hiện tại: " + (messageListener == null ? "BỊ NULL" : "SẴN SÀNG"));
                 if (messageListener != null) {
                     messageListener.onMessageReceived(serverMessage);
                 }

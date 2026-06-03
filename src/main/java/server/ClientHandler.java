@@ -22,14 +22,25 @@ public class ClientHandler implements Runnable {
     private static final Map<String, Command> commandRegistry = new HashMap<>();
 
     static {
-        commandRegistry.put("LOGIN", new LoginCommand());
-        commandRegistry.put("BID", new BidCommand());
         commandRegistry.put("REGISTER",new RegisterCommand());
+        commandRegistry.put("LOGIN", new LoginCommand());
+        commandRegistry.put("LOGOUT",new LogoutCommand());
+        //Item
+        commandRegistry.put("CREAT_ITEM",new CreateItemCommand());
+        commandRegistry.put("GET_MY_ITEMS",new GetListItemCommand());
+        commandRegistry.put("GET_INFORMATION",new GetInformationCommand());
+        commandRegistry.put("GET_ITEM_DETAIL",new GetItemDetailCommand());
+        //Phiên
+        commandRegistry.put("CREATE_ROOM",new CreateRoomCommand());
+        commandRegistry.put("GET_SESSIONS", new GetAuctionSessionCommand());
+        commandRegistry.put("JOIN_ROOM",new JoinRoomCommand());
+        commandRegistry.put("LEAVE_ROOM",new LeaveRoomCommand());
+        commandRegistry.put("BID", new BidCommand());
+        commandRegistry.put("GET_BID_HISTORY",new GetBidHistoryCommand());
+        //Ví
+        commandRegistry.put("VIEW_WALLET",new ViewWalletCommand());
         commandRegistry.put("DEPOSIT",new DepositCommand());
         commandRegistry.put("WITHDRAW",new WithdrawCommand());
-        commandRegistry.put("CREAT_ITEM",new CreateItemCommand());
-        commandRegistry.put("LOGOUT",new LogoutCommand());
-        commandRegistry.put("GetAuctionSession", new GetAuctionSessionCommand());
 
     }
 

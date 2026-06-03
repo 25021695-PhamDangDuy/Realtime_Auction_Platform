@@ -5,6 +5,7 @@ import models.Bidder;
 import models.Seller;
 import models.User;
 import server.ClientSession;
+import server.GsonUtil;
 import server.Role;
 
 import java.util.Set;
@@ -14,7 +15,7 @@ public class LoginCommand implements Command {
     @Override
     public Set<Role> getAllowedRoles() {
         // Chỉ những người mang thẻ GUEST (chưa đăng nhập) mới được xài lệnh này
-        return Set.of(Role.GUEST);
+        return Set.of(Role.GUEST,Role.BIDDER,Role.SELLER,Role.ADMIN);
     }
 
     @Override
@@ -35,18 +36,19 @@ public class LoginCommand implements Command {
 
             // 2. Nếu code chạy xuống được đây nghĩa là không bị văng Exception (Đăng nhập đúng)
             session.setCurrentUser(loggedInUser);
+            String userJson = GsonUtil.gson.toJson(loggedInUser,User.class);
 
             // 3. Phân loại người dùng bằng toán tử instanceof của Java
             if (loggedInUser instanceof Seller) {
                 session.setRole(Role.SELLER);
-                session.sendMessage("SUCCESS|Đăng nhập thành công với tư cách Người bán");
+                session.sendMessage("SUCCESS_LOGIN|" + userJson);
             } else if (loggedInUser instanceof Bidder) {
                 session.setRole(Role.BIDDER);
-                session.sendMessage("SUCCESS|Đăng nhập thành công với tư cách Người mua");
+                session.sendMessage("SUCCESS_LOGIN|" + userJson);
             } else {
                 // Đề phòng có class Admin kế thừa User
                 session.setRole(Role.ADMIN);
-                session.sendMessage("SUCCESS|Đăng nhập thành công với tư cách Quản trị viên");
+                session.sendMessage("SUCCESS_LOGIN|" + userJson);
             }
 
         } catch (Exception e) {

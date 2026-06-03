@@ -26,21 +26,21 @@ public class DepositCommand implements Command {
 
         try {
             long amount = Long.parseLong(args[1]);
-            UUID ownerID = session.getCurrentUser().getID(); // Căn cước của khách
-
+            String ownerName = session.getCurrentUser().getName(); // Căn cước của khách
+            UUID ownerID=session.getCurrentUser().getID();
             if (amount <= 0) {
                 session.sendMessage("ERROR|Số tiền nạp phải lớn hơn 0.");
                 return;
             }
 
             //BƯỚC MỚI: Tự động tìm ID ví của ông khách này trong Database
-            Wallet wallet = WalletManager.getInstance().getWallet(ownerID);
-            UUID walletID= wallet.getID();
+            Wallet wallet = WalletManager.getInstance().getWalletbyOwner(ownerName);
 
-            if (walletID == null) {
+            if (wallet == null) {
                session.sendMessage("ERROR|Tài khoản của bạn chưa được khởi tạo ví!");
                 return;
             }
+            UUID walletID= wallet.getID();
 
             // Đầy đủ 3 tham số rồi, gọi hàm
            WalletManager.getInstance().depositWallet(walletID, ownerID, amount);

@@ -26,20 +26,20 @@ public class WithdrawCommand implements Command {
         try {
             long amount = Long.parseLong(args[1]);
             UUID ownerID = session.getCurrentUser().getID();
-
+            String ownerName=session.getCurrentUser().getName();
             if (amount <= 0) {
                 session.sendMessage("ERROR|Số tiền rút phải lớn hơn 0.");
                 return;
             }
 
             // Tự động tìm ID ví
-            Wallet wallet = WalletManager.getInstance().getWallet(ownerID);
-            UUID walletID=wallet.getID();
+            Wallet wallet = WalletManager.getInstance().getWalletbyOwner(ownerName);
 
-            if (walletID == null) {
+            if (wallet == null) {
                 session.sendMessage("ERROR|Tài khoản của bạn chưa được khởi tạo ví!");
                 return;
             }
+            UUID walletID=wallet.getID();
 
             // Gọi hàm rút
             WalletManager.getInstance().withdrawWallet(walletID, ownerID, amount);

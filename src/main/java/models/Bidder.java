@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.UUID;
 
 public class Bidder extends User implements AuctionObserver {
-    private Wallet wallet;
-    private List<Item> itemList;
+    private transient Wallet wallet;
+    private transient List<Item> itemList;
 
 
     //Lock Objects
@@ -22,7 +22,7 @@ public class Bidder extends User implements AuctionObserver {
      Vì vậy ta hướng tới giải pháp chia nhỏ khóa bằng Object Lock
      Mỗi method sẽ có một khóa riêng
      */
-    private final Object itemListKeyLock = new Object();
+    private final transient Object itemListKeyLock = new Object();
 
     //Constructor
     public Bidder(String name,String password){

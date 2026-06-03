@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class Seller extends Bidder implements AuctionObserver {
-    List<Item> productlist;
+    transient List<Item> productlist;
 
 
     public Seller(String Name,String password) {

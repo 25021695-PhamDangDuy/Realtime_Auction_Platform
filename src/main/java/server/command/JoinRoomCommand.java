@@ -18,6 +18,7 @@ public class JoinRoomCommand implements Command {
 
     @Override
     public void execute(ClientSession session, String[] args) {
+        //Cú pháp chuẩn JOIN_ROOM| roomId
         try {
             UUID roomId = UUID.fromString(args[1]);
 

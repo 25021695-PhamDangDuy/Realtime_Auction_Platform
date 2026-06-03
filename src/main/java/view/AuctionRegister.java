@@ -124,7 +124,6 @@ public class AuctionRegister extends Application implements MessageListener {
         javafx.application.Platform.runLater(() -> {
             System.out.println("Nhận được từ server (Register): " + serverMessage);
 
-            // Giả sử server của bạn kia trả về "REGISTER_SUCCESS" khi tạo tk thành công
             if (serverMessage.startsWith("SUCCESS")) {
                 message.setText("Đăng ký thành công!");
                 message.setFill(javafx.scene.paint.Color.GREEN);

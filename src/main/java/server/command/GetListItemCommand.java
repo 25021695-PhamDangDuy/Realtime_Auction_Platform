@@ -7,6 +7,7 @@ import server.GsonUtil;
 import server.Role;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -14,7 +15,7 @@ public class GetListItemCommand implements Command {
 
     @Override
     public Set<Role> getAllowedRoles() {
-        return Set.of(Role.SELLER);
+        return Set.of(Role.SELLER,Role.BIDDER,Role.ADMIN);
     }
 
     @Override
@@ -55,22 +56,19 @@ public class GetListItemCommand implements Command {
                     return;
             }
 
-            // Xử lý nếu kho rỗng (Giữ nguyên đoạn này của bạn)
-            if (myItems == null || myItems.isEmpty()) {
-                session.sendMessage("SUCCESS_MY_ITEMS|EMPTY");
-                return;
+            // Xử lý nếu kho rỗng
+            // 1. CHỐNG NULL: Nếu Database không tìm thấy món nào, trả về danh sách rỗng
+            // chứ tuyệt đối không được để myItems = null, GSON sẽ không nén được thành mảng []
+            if (myItems == null) {
+                myItems = new ArrayList<>();
             }
 
-            // ========================================================
-            // GÓI GHÉM DỮ LIỆU BẰNG GSON (ĐA HÌNH CHO CẢ DANH SÁCH)
-            // ========================================================
-            // Thay vì chỉ lấy ID, Tên, Giá, GSON sẽ tự động quét cả mảng
-            // và nén toàn bộ thông tin (kể cả thuộc tính riêng của Xe, Tranh...)
+            // 2. ÉP GSON NÉN THÀNH DẠNG MẢNG (ARRAY)
+            java.lang.reflect.Type listType = new com.google.gson.reflect.TypeToken<List<models.Item>>(){}.getType();
+            String jsonList = GsonUtil.gson.toJson(myItems, listType);
 
-            String jsonList = GsonUtil.gson.toJson(myItems);
-
-            String response = "SUCCESS_MY_ITEMS|" + jsonList;
-            session.sendMessage(response);
+            // 3. GỬI VỀ CLIENT
+            session.sendMessage("SUCCESS_GET_ITEMS|" + jsonList);
 
             System.out.println("[Command] Đã gửi danh sách Item bằng GSON cho Seller: " + ownerName);
 
