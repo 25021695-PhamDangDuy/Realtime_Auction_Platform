@@ -38,7 +38,7 @@ private WalletManager walletManager = WalletManager.getInstance();
                 String pw = rs.getString("Password");
 
                 Wallet wallet = walletManager.getWalletbyOwner(name);
-                bidder = new Bidder(id, name, pw,wallet);
+                bidder = new Bidder(id, name, pw);
             }
         }catch (SQLException e){
             System.out.println("Không tìm thấy Bidder: " + e.getMessage());
@@ -60,7 +60,7 @@ private WalletManager walletManager = WalletManager.getInstance();
                 String pw = rs.getString("Password");
 
                 Wallet wallet = walletManager.getWalletbyOwner(name);
-                Bidder bidder = new Bidder(id, name, pw,wallet);
+                Bidder bidder = new Bidder(id, name, pw);
                 bidderList.add(bidder);
             }
         }catch (SQLException e){

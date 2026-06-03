@@ -14,11 +14,13 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
+import models.Item;
 import models.User;
 import server.GsonUtil;
 import view.network.MessageListener;
 import view.network.ServerConnection;
 
+import java.util.List;
 import java.util.UUID;
 
 
@@ -108,7 +110,16 @@ public class UserDashboardScreen extends Application implements MessageListener 
             // btnHistory.setOnAction(e -> ...);
 
             Button btnWonItems = createMenuButton("🏆 Tài Sản Đã Mua");
-            // btnWonItems.setOnAction(e -> ...);
+            btnWonItems.setOnAction(e -> {
+                // Dọn dẹp màn hình giữa và hiện chữ Loading
+                centerContent.getChildren().clear();
+                centerContent.getChildren().add(new Label("Đang lấy danh sách từ kho đồ..."));
+
+                // Gửi lệnh lên Server (Gọi đúng cái case "SOLD" của bạn)
+                if (connection != null) {
+                    connection.sendCommand("GET_MY_ITEMS|SOLD");
+                }
+            });
 
             sidebar.getChildren().addAll(new Label(""), btnHistory, btnWonItems);
 
@@ -281,6 +292,43 @@ public class UserDashboardScreen extends Application implements MessageListener 
 
         container.getChildren().addAll(lblInstruct, txtAmount, lblStatus, formButtons);
     }
+    private void showBoughtItemsUI(List<models.Item> items) {
+        centerContent.getChildren().clear();
+
+        javafx.scene.control.Label lblTitle = new javafx.scene.control.Label("TÀI SẢN ĐÃ MUA");
+        lblTitle.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
+
+        // Nếu list trống, báo cho người ta biết
+        if (items == null || items.isEmpty()) {
+            centerContent.getChildren().addAll(lblTitle, new javafx.scene.control.Label("Kho đồ trống trơn. Hãy ra chợ chốt đơn đi bạn!"));
+            return;
+        }
+
+        // Khởi tạo cái Bảng
+        javafx.scene.control.TableView<models.Item> table = new javafx.scene.control.TableView<>();
+
+        // Cột 1: Tên vật phẩm (Chữ "name" phải khớp với tên biến trong class Item của bạn)
+        javafx.scene.control.TableColumn<models.Item, String> colName = new javafx.scene.control.TableColumn<>("Tên vật phẩm");
+        colName.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("name"));
+
+        // Cột 2: Giá trị (Thay "currentPrice" bằng tên biến lưu giá trị món đồ)
+        javafx.scene.control.TableColumn<models.Item, Double> colPrice = new javafx.scene.control.TableColumn<>("Giá chốt");
+        colPrice.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("currentPrice"));
+
+        // Cột 3: Mô tả
+        javafx.scene.control.TableColumn<models.Item, String> colDesc = new javafx.scene.control.TableColumn<>("Mô tả");
+        colDesc.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("description"));
+
+        // Nhét các cột vào bảng, nhét dữ liệu vào bảng
+        table.getColumns().addAll(colName, colPrice, colDesc);
+        table.getItems().addAll(items);
+
+        // Ép bảng tự động giãn vừa khung hình
+        table.setColumnResizePolicy(javafx.scene.control.TableView.CONSTRAINED_RESIZE_POLICY);
+
+        // Bơm tất cả ra màn hình
+        centerContent.getChildren().addAll(lblTitle, table);
+    }
 
     // ==========================================================
     // 5. TRẠM THU PHÁT: GHI ĐÈ HÀM TỪ MessageListener
@@ -294,37 +342,17 @@ public class UserDashboardScreen extends Application implements MessageListener 
         // TẤT CẢ TƯƠNG TÁC GIAO DIỆN PHẢI NẰM TRONG Platform.runLater
         Platform.runLater(() -> {
             switch (command) {
-                case "SUCCESS_INFORMATION":
-                    try {
-                        // 1. Phép thuật GSON Đa hình: Dịch JSON thành class con xịn!
-                        models.User profileUser = GsonUtil.gson.fromJson(data, models.User.class);
+                case "SUCCESS_GET_ITEMS":
+                    String itemsJson = parts[1];
 
-                        // 2. Hiển thị thông tin chung (áp dụng cho cả 2 Role)
-                        lblProfileName.setText("Tên hiển thị: " + profileUser.getName());
-                        // Nếu có thêm Email hay Mô tả thì bạn setText ở đây luôn
+                    // Dùng bùa chú GSON để đúc chuỗi JSON trở lại thành List<Item>
+                    java.lang.reflect.Type listType = new com.google.gson.reflect.TypeToken<List<models.Item>>(){}.getType();
+                    List<Item> boughtItems = GsonUtil.gson.fromJson(itemsJson, listType);
 
-                        // 3. Rẽ nhánh hiển thị thông tin đặc thù bằng Đa hình (instanceof)
-                        if (profileUser instanceof models.Seller) {
-                            models.Seller seller = (models.Seller) profileUser;
-
-                            // Do UI hiện tại của ta chỉ có 2 dòng (Tên và Role),
-                            // hoặc bạn có thể tạo thêm Label mới tùy ý.
-                            lblProfileRole.setText("Vai trò: Seller ");
-
-                            // Ví dụ nếu bạn có thêm nút Xem Kho Đồ như trong ảnh cũ:
-                            // btnXemKhoDo.setVisible(true);
-
-                        } else if (profileUser instanceof models.Bidder) {
-                            models.Bidder bidder = (models.Bidder) profileUser;
-
-                            // Hiện thông tin riêng của Bidder
-                            lblProfileRole.setText("Vai trò: Người Mua");
-                        }
-
-                    } catch (Exception e) {
-                        lblProfileName.setText("Lỗi: Không thể phân tích dữ liệu hồ sơ!");
-                        e.printStackTrace();
-                    }
+                    // Bắt buộc dùng Platform.runLater để vẽ lên Giao diện (vì đang ở luồng mạng)
+                    javafx.application.Platform.runLater(() -> {
+                        showBoughtItemsUI(boughtItems);
+                    });
                     break;
 
                 case "SUCCESS_WALLET_BALANCE":
