@@ -43,6 +43,13 @@ public class UserDashboardScreen extends Application implements MessageListener 
 
     private javafx.scene.control.TableView<models.Item> tableInventory = new javafx.scene.control.TableView<>();
     private String currentFilter = "AVAILABLE";
+
+    // 1. Bộ nhớ đệm lưu đồ chưa bán để nạp vào Dropdown tạo phòng
+    private java.util.List<models.Item> cachedAvailableItems = new java.util.ArrayList<>();
+    // 2. Nút bấm và các ô nhập liệu của Form tạo phòng đấu giá
+    private javafx.scene.control.Button btnSubmitRoom;
+    private javafx.scene.control.TextField txtStartPrice;
+    private javafx.scene.control.TextField txtStepPrice;
     //contructor
     public UserDashboardScreen(ServerConnection connection, Stage primaryStage, User currentUser) {
         this.connection = connection;
@@ -111,9 +118,6 @@ public class UserDashboardScreen extends Application implements MessageListener 
 
         // Khối 1: Bất kỳ ai mang dòng máu Bidder (Bidder gốc hoặc Seller kế thừa) đều có nút đi mua hàng
         if (currentUser instanceof models.Bidder) {
-            javafx.scene.control.Button btnHistory = createMenuButton(" 📜 Lịch Sử Đấu Giá");
-            // btnHistory.setOnAction(e -> ...);
-
             javafx.scene.control.Button btnWonItems = createMenuButton(" 🏆 Tài Sản Đã Mua");
             btnWonItems.setOnAction(e -> {
                 // Dọn dẹp màn hình giữa và hiện chữ Loading
@@ -126,7 +130,7 @@ public class UserDashboardScreen extends Application implements MessageListener 
                 }
             });
 
-            sidebar.getChildren().addAll(new javafx.scene.control.Label(""), btnHistory, btnWonItems);
+            sidebar.getChildren().addAll(new javafx.scene.control.Label(""), btnWonItems);
         }
 
         // Khối 2: ĐÃ XÓA CHỮ "else". Giờ nó là một cổng kiểm tra độc lập.
@@ -149,7 +153,10 @@ public class UserDashboardScreen extends Application implements MessageListener 
             });
 
             javafx.scene.control.Button btnMyRooms = createMenuButton(" ⚖ Phòng Đấu Giá");
-            // btnMyRooms.setOnAction(e -> ...);
+            btnMyRooms.setOnAction(e -> {
+                System.out.println("Đang mở quản lý Phòng đấu giá...");
+                initAuctionRoomMainUI(); // Gọi hàm vẽ màn hình chính của phòng
+            });
 
             // Bơm thêm vào thanh Sidebar hiện tại
             sidebar.getChildren().addAll(new javafx.scene.control.Label(""), separator, btnInventory, btnMyRooms);
@@ -394,7 +401,7 @@ public class UserDashboardScreen extends Application implements MessageListener 
         colName.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("name"));
 
         // 3. Cột Giá (Thay "currentPrice" bằng đúng tên biến lưu giá trong class Item )
-        javafx.scene.control.TableColumn<models.Item, Double> colPrice = new javafx.scene.control.TableColumn<>("Giá (VNĐ)");
+        javafx.scene.control.TableColumn<models.Item, Long> colPrice = new javafx.scene.control.TableColumn<>("Giá (VNĐ)");
         colPrice.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("currentPrice"));
 
         // 4. Cột Mô tả (Thay "description" bằng đúng tên biến mô tả trong class Item)
@@ -713,6 +720,144 @@ public class UserDashboardScreen extends Application implements MessageListener 
 
         centerContent.getChildren().add(formBox);
     }
+    // Gắn vào Sidebar: btnMyRooms.setOnAction(e -> initAuctionRoomMainUI());
+    private void initAuctionRoomMainUI() {
+        centerContent.getChildren().clear();
+
+        javafx.scene.layout.VBox mainBox = new javafx.scene.layout.VBox(20);
+        mainBox.setPadding(new javafx.geometry.Insets(20));
+
+        // Header
+        javafx.scene.layout.HBox headerBox = new javafx.scene.layout.HBox();
+        headerBox.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+
+        javafx.scene.control.Label lblTitle = new javafx.scene.control.Label("⚖ PHÒNG ĐẤU GIÁ CỦA TÔI");
+        lblTitle.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
+
+        javafx.scene.layout.Region spacer = new javafx.scene.layout.Region();
+        javafx.scene.layout.HBox.setHgrow(spacer, javafx.scene.layout.Priority.ALWAYS);
+
+        // Nút mở phòng mới
+        javafx.scene.control.Button btnOpenRoom = new javafx.scene.control.Button("➕ Mở phòng đấu giá mới");
+        btnOpenRoom.setStyle("-fx-background-color: #e67e22; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand; -fx-padding: 8 15;");
+
+        // SỰ KIỆN: Bấm nút này sẽ mở Form tạo phòng (Truyền danh sách đồ rảnh vào)
+        btnOpenRoom.setOnAction(e -> showCreateRoomForm(cachedAvailableItems));
+
+        headerBox.getChildren().addAll(lblTitle, spacer, btnOpenRoom);
+        mainBox.getChildren().add(headerBox);
+
+        // Bảng danh sách các phòng đấu giá hiện tại của Seller này (Bạn bổ sung TableView phòng nếu cần)
+        javafx.scene.control.Label lblSub = new javafx.scene.control.Label("Tính năng quản lý danh sách phòng đang đấu giá đang được phát triển...");
+        lblSub.setStyle("-fx-font-style: italic; -fx-text-fill: #7f8c8d;");
+        mainBox.getChildren().add(lblSub);
+
+        centerContent.getChildren().add(mainBox);
+
+        // KÍCH HOẠT LỆNH: Xin Server danh sách đồ AVAILABLE để nạp vào Form trước
+        if (connection != null) {
+            connection.sendCommand("GET_MY_ITEMS|AVAILABLE");
+        }
+    }
+    private void showCreateRoomForm(java.util.List<models.Item> availableItems) {
+        centerContent.getChildren().clear();
+
+        javafx.scene.layout.VBox formBox = new javafx.scene.layout.VBox(15);
+        formBox.setPadding(new javafx.geometry.Insets(30));
+        formBox.setMaxWidth(600);
+
+        javafx.scene.control.Label lblTitle = new javafx.scene.control.Label("🔨 KHỞI TẠO PHÒNG ĐẤU GIÁ MỚI");
+        lblTitle.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #c0392b;");
+
+        // 1. Dropdown chọn Vật phẩm
+        javafx.scene.control.ComboBox<models.Item> cbItems = new javafx.scene.control.ComboBox<>();
+        cbItems.getItems().setAll(availableItems);
+        cbItems.setPromptText("-- Chọn vật phẩm trong kho để đem đấu giá --");
+        cbItems.setPrefWidth(450);
+
+        // Định dạng hiển thị Tên sản phẩm kèm 8 ký tự ID trong Dropdown
+        cbItems.setCellFactory(lv -> new javafx.scene.control.ListCell<models.Item>() {
+            @Override
+            protected void updateItem(models.Item item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty ? null : item.getName() + " (ID: " + item.getID().toString().substring(0,8) + "...)");
+            }
+        });
+        cbItems.setButtonCell(new javafx.scene.control.ListCell<models.Item>() {
+            @Override
+            protected void updateItem(models.Item item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty ? null : item.getName());
+            }
+        });
+
+        // 2. Ô nhập Giá tiền
+        javafx.scene.layout.HBox priceBox = new javafx.scene.layout.HBox(20);
+        javafx.scene.layout.VBox p1 = new javafx.scene.layout.VBox(5, new javafx.scene.control.Label("Giá khởi điểm:"), txtStartPrice = new javafx.scene.control.TextField());
+        javafx.scene.layout.VBox p2 = new javafx.scene.layout.VBox(5, new javafx.scene.control.Label("Bước giá tối thiểu:"), txtStepPrice = new javafx.scene.control.TextField());
+        txtStartPrice.setPromptText("Ví dụ: 500000");
+        txtStepPrice.setPromptText("Ví dụ: 50000");
+        priceBox.getChildren().addAll(p1, p2);
+
+        // 3. Chọn Cấu hình Thời gian (Bắt buộc chẻ Ngày và Giờ)
+        javafx.scene.layout.HBox timeContainer = new javafx.scene.layout.HBox(40);
+
+        // Thời gian bắt đầu
+        javafx.scene.layout.VBox startBox = new javafx.scene.layout.VBox(5);
+        javafx.scene.control.DatePicker dpStart = new javafx.scene.control.DatePicker(java.time.LocalDate.now());
+        javafx.scene.control.TextField txtSHour = new javafx.scene.control.TextField("08"); txtSHour.setPrefWidth(40);
+        javafx.scene.control.TextField txtSMin = new javafx.scene.control.TextField("00"); txtSMin.setPrefWidth(40);
+        javafx.scene.layout.HBox ts = new javafx.scene.layout.HBox(5, txtSHour, new javafx.scene.control.Label(":"), txtSMin);
+        startBox.getChildren().addAll(new javafx.scene.control.Label("Ngày bắt đầu:"), dpStart, ts);
+
+        // Thời gian kết thúc
+        javafx.scene.layout.VBox endBox = new javafx.scene.layout.VBox(5);
+        javafx.scene.control.DatePicker dpEnd = new javafx.scene.control.DatePicker(java.time.LocalDate.now().plusDays(1));
+        javafx.scene.control.TextField txtEHour = new javafx.scene.control.TextField("21"); txtEHour.setPrefWidth(40);
+        javafx.scene.control.TextField txtEMin = new javafx.scene.control.TextField("00"); txtEMin.setPrefWidth(40);
+        javafx.scene.layout.HBox te = new javafx.scene.layout.HBox(5, txtEHour, new javafx.scene.control.Label(":"), txtEMin);
+        endBox.getChildren().addAll(new javafx.scene.control.Label("Ngày kết thúc:"), dpEnd, te);
+
+        timeContainer.getChildren().addAll(startBox, endBox);
+
+        // 4. Các nút điều hướng
+        btnSubmitRoom = new javafx.scene.control.Button("Phát Sóng Phòng Đấu Giá");
+        btnSubmitRoom.setStyle("-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold;");
+
+        javafx.scene.control.Button btnCancel = new javafx.scene.control.Button("Hủy");
+        btnCancel.setOnAction(e -> initAuctionRoomMainUI());
+
+        btnSubmitRoom.setOnAction(e -> {
+            models.Item item = cbItems.getValue();
+            if (item == null || txtStartPrice.getText().isEmpty() || txtStepPrice.getText().isEmpty()) {
+                System.out.println("Vui lòng điền đủ thông tin!"); return;
+            }
+
+            try {
+                // Ép chuỗi Ngày + Giờ thành định dạng ISO: YYYY-MM-DDTHH:MM:SS
+                String startTimeStr = dpStart.getValue().toString() + "T" + String.format("%02d", Integer.parseInt(txtSHour.getText())) + ":" + String.format("%02d", Integer.parseInt(txtSMin.getText())) + ":00";
+                String endTimeStr = dpEnd.getValue().toString() + "T" + String.format("%02d", Integer.parseInt(txtEHour.getText())) + ":" + String.format("%02d", Integer.parseInt(txtEMin.getText())) + ":00";
+
+                // Cú pháp chuẩn của bạn: CREATE_ROOM | itemID | startPrice | minIncrement | startTime | endTime
+                String cmd = String.join("|", "CREATE_ROOM", item.getID().toString(), txtStartPrice.getText().trim(), txtStepPrice.getText().trim(), startTimeStr, endTimeStr);
+
+                if (connection != null) {
+                    connection.sendCommand(cmd);
+                    btnSubmitRoom.setText("Đang khởi tạo phòng...");
+                    btnSubmitRoom.setDisable(true);
+                }
+            } catch (Exception ex) {
+                System.out.println("Lỗi định dạng số giờ/phút!");
+            }
+        });
+
+        javafx.scene.layout.HBox btnBox = new javafx.scene.layout.HBox(10, btnSubmitRoom, btnCancel);
+        formBox.getChildren().addAll(lblTitle, new javafx.scene.control.Label("Vật phẩm đấu giá:"), cbItems, priceBox, timeContainer, btnBox);
+        centerContent.getChildren().add(formBox);
+    }
+
+    // Khai báo nhanh 2 cái textfield phụ trợ
+
 
     // ==========================================================
     // 5. TRẠM THU PHÁT: GHI ĐÈ HÀM TỪ MessageListener
@@ -726,6 +871,22 @@ public class UserDashboardScreen extends Application implements MessageListener 
         // TẤT CẢ TƯƠNG TÁC GIAO DIỆN PHẢI NẰM TRONG Platform.runLater
         Platform.runLater(() -> {
             switch (command) {
+                case "SUCCESS_CREATE_ROOM":
+                    String successMsgRoom = parts[1]; // Nhận chuỗi "Tạo phòng đấu giá thành công!" từ Server
+
+                    javafx.application.Platform.runLater(() -> {
+                        // Bước 1: Hiện hộp thoại thông báo (Alert) siêu đẹp của JavaFX
+                        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
+                        alert.setTitle("Thành Công 🎉");
+                        alert.setHeaderText(null);
+                        alert.setContentText(successMsgRoom);
+                        alert.showAndWait(); // Hiện lên và bắt người dùng bấm OK mới chạy tiếp
+
+                        // Bước 2: Gọi hàm quay trở lại màn hình quản lý phòng chính
+                        // Hàm này sẽ tự động xóa sạch cái Form tạo phòng cũ đi để lấp giao diện mới vào
+                        initAuctionRoomMainUI();
+                    });
+                    break;
                 case "SUCCESS_CREATE":
                     // Server báo tạo thành công, hoặc làm gì đó thành công
                     String successMsg = parts[1];
@@ -763,26 +924,33 @@ public class UserDashboardScreen extends Application implements MessageListener 
                     });
                     break;
                 case "SUCCESS_GET_ITEMS":
-                    // Lấy cục data phía sau (ví dụ: "SOLD|[]")
+                    // Giữ nguyên đoạn bóc tách chuỗi chuẩn chỉ của bạn
                     String payload = parts[1];
-
-                    // Cắt nó ra làm 2 mảnh bằng dấu "|"
                     String[] subParts = payload.split("\\|", 2);
-                    String itemStatus = subParts[0]; // Mảnh 1: "SOLD"
-                    String jsonList = subParts[1];   // Mảnh 2: "[]"
+                    String itemStatus = subParts[0];
+                    String jsonList = subParts[1];
 
-                    // Đúc JSON thành danh sách (Đoạn này trở đi giữ nguyên)
                     java.lang.reflect.Type listType = new com.google.gson.reflect.TypeToken<List<models.Item>>(){}.getType();
                     List<models.Item> itemList = GsonUtil.gson.fromJson(jsonList, listType);
 
                     javafx.application.Platform.runLater(() -> {
-                        // ==========================================
-                        // TỔNG ĐÀI PHÂN LUỒNG GIAO DIỆN
-                        // ==========================================
+
+                        // =========================================================
+                        // LỚP ĐỆM BỔ SUNG: Cứ thấy đồ AVAILABLE là âm thầm lưu lại,
+                        // bất kể người dùng đang đứng ở Tab nào hay màn hình nào!
+                        // =========================================================
+                        if (itemStatus.equals("AVAILABLE")) {
+                            this.cachedAvailableItems = itemList;
+                        }
+
+                        // =========================================================
+                        // GIỮ NGUYÊN 100% LOGIC PHÂN LUỒNG CŨ TRONG ẢNH CỦA BẠN
+                        // =========================================================
                         if (itemStatus.equals("SOLD")) {
                             showBoughtItemsUI(itemList);
                         }
                         else if (itemStatus.equals("AVAILABLE") || itemStatus.equals("AUCTION")) {
+                            // Chỉ khi nào Tab đang chọn khớp với loại đồ gửi về thì mới nạp vào bảng
                             if (itemStatus.equals(currentFilter)) {
                                 tableInventory.getItems().setAll(itemList);
                                 if (itemList.isEmpty()) {
@@ -790,6 +958,7 @@ public class UserDashboardScreen extends Application implements MessageListener 
                                 }
                             }
                         }
+
                     });
                     break;
 
