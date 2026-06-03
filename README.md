@@ -102,7 +102,12 @@ java Main
 - [x] Tự động gia hạn thêm 30 giây nếu có người trả giá vào những giây cuối cùng (Anti-sniping).
 ## 6.Link video chạy thử và báo cáo pdf
 - **Video chạy thử:** 
-- **Báo cáo:*https://drive.google.com/file/d/1VL7vmHBqfLn9b_x7HHpjyrKSqYObuSLq/view?usp=drive_link* 
+
+https://github.com/user-attachments/assets/a37117b8-072a-4d12-a65a-931b7e1d8658
+
+
+- **Báo cáo: [Báo cáo thực hành xây dựng hệ thống đấu giá.docx.pdf](https://github.com/user-attachments/files/28561504/Bao.cao.th.c.hanh.xay.d.ng.h.th.ng.d.u.gia.docx.pdf)
+
 
 
 
