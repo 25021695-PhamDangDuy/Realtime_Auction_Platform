@@ -151,9 +151,9 @@ public class AuctionHomeScreen extends Application implements MessageListener {
 
         // Thành phần: Tên user & Số dư tài khoản
         VBox userBox = new VBox(4);
-        Label lblUser = new Label("👤 Người dùng: " + username);
+        Label lblUser = new Label("👤 Người dùng: " + user.getName());
         lblUser.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: white;");
-        Label lblBalance = new Label("💰 Số dư: " + currencyFormat.format(userBalance));
+        Label lblBalance = new Label("💰 Số dư: " + currencyFormat.format(user.getWallet().getBalance()));
         lblBalance.setStyle("-fx-font-size: 13px; -fx-text-fill: #f1c40f; -fx-font-weight: bold;");
         userBox.getChildren().addAll(lblUser, lblBalance);
 
