@@ -13,6 +13,7 @@ import view.network.ServerConnection;
 
 import java.text.NumberFormat;
 import java.util.Locale;
+import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -29,7 +30,7 @@ public class AuctionRoom extends Application implements MessageListener {
     private long initPrice;
     private long currentPrice;
     private javafx.scene.image.ImageView imgProductView;
-    private int timeLeft;
+    private int timeLeft = 600;
     private Label lblCountdown;
     private Label lblMoneyToWords;
     private javafx.scene.control.TextField txtBidInput;
@@ -195,13 +196,18 @@ public class AuctionRoom extends Application implements MessageListener {
 
         // Hàng chứa ô nhập tự do và nút xác nhận
         HBox inputRow = new HBox(10);
+        inputRow.setAlignment(Pos.CENTER);
+
         txtBidInput = new TextField();
         txtBidInput.setPrefHeight(40);
+        txtBidInput.setPromptText("Nhập số tiền muốn đặt...");
         txtBidInput.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
         HBox.setHgrow(txtBidInput, Priority.ALWAYS);
+
         btnSubmitBid = new Button("ĐẶT GIÁ NGAY");
         btnSubmitBid.setPrefHeight(40);
-        btnSubmitBid.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;");
+        btnSubmitBid.setPrefWidth(150);
+        btnSubmitBid.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand; -fx-font-size: 14px;");
 
         inputRow.getChildren().addAll(txtBidInput, btnSubmitBid);
 
@@ -250,7 +256,7 @@ public class AuctionRoom extends Application implements MessageListener {
                 }
 
 
-                String command = "BID|" + bidAmount;
+                String command = "BID|" + roomId + "|" + bidAmount;
 
                 // ---- BƯỚC 3: Gọi hàm gửi lệnh đi tới server ----
                 connection.sendCommand(command);
@@ -283,7 +289,7 @@ public class AuctionRoom extends Application implements MessageListener {
 
         historyBox.getChildren().addAll(lblHistTitle, scrollHistory);
 
-        container.getChildren().addAll(statusRow, priceDisplayBox, bidActionBox, historyBox);
+        container.getChildren().addAll(statusRow, priceDisplayBox, bidActionBox, historyBox, btnSubmitBid, txtBidInput);
         return container;
     }
 
