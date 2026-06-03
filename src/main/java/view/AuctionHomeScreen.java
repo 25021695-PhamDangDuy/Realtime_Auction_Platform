@@ -342,22 +342,46 @@ public class AuctionHomeScreen extends Application implements MessageListener {
                         return;
                     }
 
-                    // 1. CẤU HÌNH GSON ĐỂ ĐỌC ĐÚNG ĐỊNH DẠNG LOCALDATETIME PHỨC TẠP TỪ SERVER
+                    // 1. CẤU HÌNH BỘ DỊCH THUẬT GSON ĐỂ ĐỒNG BỘ DỮ LIỆU TỪ SERVER SANG UI
                     com.google.gson.Gson gson = new com.google.gson.GsonBuilder()
-                            .registerTypeAdapter(java.time.LocalDateTime.class, (com.google.gson.JsonDeserializer<java.time.LocalDateTime>) (json, typeOfT, context) -> {
-                                com.google.gson.JsonObject jsonObject = json.getAsJsonObject();
-                                com.google.gson.JsonObject dateObj = jsonObject.getAsJsonObject("date");
-                                com.google.gson.JsonObject timeObj = jsonObject.getAsJsonObject("time");
+                            .registerTypeAdapter(AuctionSession.class, (com.google.gson.JsonDeserializer<AuctionSession>) (json, type, context) -> {
+                                com.google.gson.JsonObject obj = json.getAsJsonObject();
 
-                                return java.time.LocalDateTime.of(
-                                        dateObj.get("year").getAsInt(),
-                                        dateObj.get("month").getAsInt(),
-                                        dateObj.get("day").getAsInt(),
-                                        timeObj.get("hour").getAsInt(),
-                                        timeObj.get("minute").getAsInt(),
-                                        timeObj.get("second").getAsInt()
-                                );
-                            }).create();
+                                // 1. Lấy ID phòng
+                                String id = obj.has("ID") ? obj.get("ID").getAsString() : "";
+
+                                // 2. Lấy trạng thái
+                                String status = obj.has("status") ? obj.get("status").getAsString() : "UNKNOWN";
+
+                                // 3. Lấy giá hiện tại (Server đang gửi là currentPrice)
+                                long price = obj.has("currentPrice") ? obj.get("currentPrice").getAsLong() : 0;
+
+                                // 4. Mò sâu vào object "item" để lấy tên xe (CAR)
+                                String itemName = "Tài sản chưa rõ";
+                                if (obj.has("item") && obj.get("item").isJsonObject()) {
+                                    com.google.gson.JsonObject itemObj = obj.getAsJsonObject("item");
+                                    if (itemObj.has("name")) {
+                                        itemName = itemObj.get("name").getAsString();
+                                    }
+                                }
+
+                                // 5. Mò sâu vào object "startTime" để lấy ngày tháng và ghép thành chuỗi dd/mm/yyyy cho UI
+                                String dateStr = "Đang cập nhật";
+                                if (obj.has("startTime") && obj.get("startTime").isJsonObject()) {
+                                    com.google.gson.JsonObject startObj = obj.getAsJsonObject("startTime");
+                                    if (startObj.has("date") && startObj.get("date").isJsonObject()) {
+                                        com.google.gson.JsonObject dateObj = startObj.getAsJsonObject("date");
+                                        int day = dateObj.has("day") ? dateObj.get("day").getAsInt() : 1;
+                                        int month = dateObj.has("month") ? dateObj.get("month").getAsInt() : 1;
+                                        int year = dateObj.has("year") ? dateObj.get("year").getAsInt() : 2026;
+                                        dateStr = String.format("%02d/%02d/%d", day, month, year); // Tạo chuỗi định dạng Việt Nam
+                                    }
+                                }
+
+                                // 6. Nhét toàn bộ dữ liệu vừa bóc được vào hàm khởi tạo của Class UI
+                                return new AuctionSession(id, status, dateStr, itemName, price);
+                            })
+                            .create();
 
                     java.lang.reflect.Type listType = new com.google.gson.reflect.TypeToken<java.util.ArrayList<AuctionSession>>() {}.getType();
                     java.util.List<AuctionSession> activeSessions = gson.fromJson(jsonCore, listType);
@@ -376,7 +400,7 @@ public class AuctionHomeScreen extends Application implements MessageListener {
                         listContainer.getChildren().add(card);
                     }
                 }
-                else if (command.equals("JOIN_ROOM_SUCCESS")) {
+                else if (command.equals("SUCCESS_JOIN_ROOM")) {
                     // 2. FIX MẤT CONNECTION: Truyền instance connection hiện tại (this.connection) vào phòng mới
                     AuctionRoom room = new AuctionRoom(this.connection, primaryStage);
                     room.start(primaryStage);

@@ -16,7 +16,7 @@ public class ClientSession implements AuctionObserver {
 
     @Override
     public UUID getID() {
-        return null;
+        return this.getUserId();
     }
 
     public ClientSession(PrintWriter out, ClientHandler handler) {
