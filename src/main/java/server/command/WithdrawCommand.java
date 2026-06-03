@@ -34,12 +34,12 @@ public class WithdrawCommand implements Command {
 
             // Tự động tìm ID ví
             Wallet wallet = WalletManager.getInstance().getWallet(ownerID);
-            UUID walletID=wallet.getID();
 
-            if (walletID == null) {
+            if (wallet == null) {
                 session.sendMessage("ERROR|Tài khoản của bạn chưa được khởi tạo ví!");
                 return;
             }
+            UUID walletID=wallet.getID();
 
             // Gọi hàm rút
             WalletManager.getInstance().withdrawWallet(walletID, ownerID, amount);

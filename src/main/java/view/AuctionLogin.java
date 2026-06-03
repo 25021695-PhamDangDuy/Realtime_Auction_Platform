@@ -15,6 +15,8 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.*;
+import models.User;
+import server.GsonUtil;
 import view.network.MessageListener;
 import view.network.ServerConnection;
 
@@ -32,7 +34,6 @@ public class AuctionLogin extends Application implements MessageListener {
         this.primaryStage = primaryStage;
     }
     public void start(Stage primaryStage) {
-        this.connection = new ServerConnection();
         this.connection.setMessageListener(this);
         primaryStage.setTitle("Hệ thống đấu giá online");
         GridPane grid = new GridPane();// căn chỉnh các ô nhập
@@ -105,25 +106,38 @@ public class AuctionLogin extends Application implements MessageListener {
         primaryStage.show();
     }
     @Override
-    public void onMessageReceived(String serverMessage) {
-        // Code xử lý khi server trả về kết quả (đọc từ dòng in.readLine() của ServerConnection)
-        Platform.runLater(() -> {
-            if (serverMessage.startsWith("SUCCESS")) {
-                actiontarget.setText("Đăng nhập thành công!");
-                actiontarget.setStyle("-fx-fill: #2ecc71; -fx-font-weight: bold;");
-                javafx.animation.PauseTransition delay = new javafx.animation.PauseTransition(javafx.util.Duration.seconds(2));
-                delay.setOnFinished(event -> {
+    public void onMessageReceived(String message) {
+        String[] parts = message.split("\\|", 2);
+        String command = parts[0];
+        String data = (parts.length > 1) ? parts[1] : "";
+
+        javafx.application.Platform.runLater(() -> {
+            switch (command) {
+                case "SUCCESS_LOGIN":
                     try {
-                        // Khởi tạo màn hình trang chủ mới và truyền connection sang
-                        AuctionHomeScreen homeScreen = new AuctionHomeScreen();
-                        homeScreen.start(primaryStage);
+                        // MỞ GÓI: Ép kiểu ngược từ JSON thành User xịn (có đầy đủ thuộc tính của Bidder/Seller)
+                        User user = GsonUtil.gson.fromJson(data, User.class);
+
+                        System.out.println("Đăng nhập thành công! Vai trò: " + user.getClass().getSimpleName());
+
+                        // Khởi tạo Dashboard và truyền cái user vừa dịch được vào Constructor
+                        view.UserDashboardScreen dashboard = new view.UserDashboardScreen(connection, primaryStage, user);
+                        dashboard.start(primaryStage);
+
                     } catch (Exception e) {
+                        System.out.println("Lỗi mở gói JSON!");
                         e.printStackTrace();
                     }
-                });
-                delay.play();
-            } else {
-                actiontarget.setText("Sai tài khoản hoặc mật khẩu!");
+                    break;
+
+                case "ERROR":
+                    // Hiện hộp thoại báo lỗi (Sai pass, tài khoản không tồn tại...)
+                    javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.ERROR);
+                    alert.setTitle("Lỗi");
+                    alert.setHeaderText(null);
+                    alert.setContentText(data);
+                    alert.show();
+                    break;
             }
         });
     }

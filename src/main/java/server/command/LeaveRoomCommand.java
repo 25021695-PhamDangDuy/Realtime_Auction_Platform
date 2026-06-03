@@ -18,6 +18,7 @@ public class LeaveRoomCommand implements Command {
 
     @Override
     public void execute(ClientSession session, String[] args) {
+        //Cú pháp chuẩn : LEAVE_ROOM| rômId
         try {
             UUID roomId = UUID.fromString(args[1]);
 

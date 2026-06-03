@@ -4,8 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import models.*;
 
-import view.network.RuntimeTypeAdapterFactory;
-
 public class GsonUtil {
 
     // Tạo sẵn 1 cái máy GSON dùng chung cho cả Client và Server
@@ -19,7 +17,7 @@ public class GsonUtil {
                 .registerSubtype(Vehicle.class, "VEHICLE")
                 .registerSubtype(Electronics.class, "ELECTRONIC");
 
-        RuntimeTypeAdapterFactory<User> userFactory = RuntimeTypeAdapterFactory.of(User.class, "role")
+        RuntimeTypeAdapterFactory<User> userFactory = RuntimeTypeAdapterFactory.of(User.class, "type")
                 .registerSubtype(Bidder.class, "BIDDER")
                 .registerSubtype(Seller.class, "SELLER")
                 .registerSubtype(Admin.class, "ADMIN");

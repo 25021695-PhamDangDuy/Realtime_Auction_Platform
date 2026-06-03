@@ -74,7 +74,7 @@ public class WalletManager {
     public void createWallet(UUID ownerID, long amount) throws IllegalArgumentException, SQLException{
         UUID walletID = UUID.randomUUID();
         //Logic ownerID
-        if(!walletDAO.isHasOwnerID(ownerID)){
+        if(walletDAO.isHasOwnerID(ownerID)){
             throw new IllegalArgumentException("userID: " + ownerID.toString() + " đã có tồn tại ví tiền");
         }
         //Logic amount

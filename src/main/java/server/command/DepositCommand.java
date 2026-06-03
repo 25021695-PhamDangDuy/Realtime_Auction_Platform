@@ -35,12 +35,12 @@ public class DepositCommand implements Command {
 
             //BƯỚC MỚI: Tự động tìm ID ví của ông khách này trong Database
             Wallet wallet = WalletManager.getInstance().getWallet(ownerID);
-            UUID walletID= wallet.getID();
 
-            if (walletID == null) {
+            if (wallet == null) {
                session.sendMessage("ERROR|Tài khoản của bạn chưa được khởi tạo ví!");
                 return;
             }
+            UUID walletID= wallet.getID();
 
             // Đầy đủ 3 tham số rồi, gọi hàm
            WalletManager.getInstance().depositWallet(walletID, ownerID, amount);

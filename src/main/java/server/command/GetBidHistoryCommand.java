@@ -33,7 +33,7 @@ public class GetBidHistoryCommand implements Command {
 
             // 2. LẤY DANH SÁCH LỊCH SỬ TỪ DATABASE HOẶC MEMORY
 
-            List<BidTicket> history = BidHistory.getAllBidTicket(roomId);
+            List<BidTicket> history = BidHistory.getLegalBySessionID(roomId);
             // 3. Kiểm tra nếu phòng chưa có ai đặt giá
             if (history == null || history.isEmpty()) {
                 session.sendMessage("SUCCESS_BID_HISTORY|EMPTY");

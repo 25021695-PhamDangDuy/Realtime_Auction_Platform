@@ -39,7 +39,8 @@ public class AuctionHomeScreen extends Application implements MessageListener {
 
     public AuctionHomeScreen() {
     }
-    public AuctionHomeScreen(Stage primaryStage) {
+    public AuctionHomeScreen(ServerConnection connection,Stage primaryStage) {
+        this.connection=connection;
         this.primaryStage = primaryStage;
     }
 
@@ -269,10 +270,10 @@ public class AuctionHomeScreen extends Application implements MessageListener {
         btnProfile.setOnAction(event -> {
             try{
                 Stage currentStage = (Stage) btnProfile.getScene().getWindow();
-                Account account = new Account();
-                Stage accountStage = new Stage();
-                account.start(accountStage);
-                currentStage.close();
+//                UserDashboardScreen account = new UserDashboardScreen(connection,currentStage);
+//                Stage accountStage = new Stage();
+//                account.start(accountStage);
+//                currentStage.close();
                 System.out.println("[LOG NAVIGATION]: Chuyển cửa sổ sang Account thành công.");
             } catch (Exception e) {
                 System.err.println("[LOG ERROR]: Không thể chuyển cảnh tài khoản: " + e.getMessage());
