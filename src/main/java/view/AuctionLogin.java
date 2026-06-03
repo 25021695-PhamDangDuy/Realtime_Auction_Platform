@@ -2,7 +2,6 @@ package view;
 
 import function.SessionStatus;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.*;
@@ -38,7 +37,10 @@ public class AuctionLogin extends Application implements MessageListener {
         this.primaryStage = primaryStage;
     }
     public void start(Stage primaryStage) {
-        this.connection.setMessageListener(this);
+        if (this.connection == null) {
+            this.connection = new ServerConnection();
+        }
+        connection.setMessageListener(this);
         primaryStage.setTitle("Hệ thống đấu giá online");
         GridPane grid = new GridPane();// căn chỉnh các ô nhập
         grid.setAlignment(Pos.CENTER);

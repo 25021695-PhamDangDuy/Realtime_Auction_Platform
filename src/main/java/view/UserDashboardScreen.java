@@ -909,10 +909,9 @@ public class UserDashboardScreen extends Application implements MessageListener 
 
                         // 4. Gọi hàm vẽ lại toàn bộ thanh Menu bên trái (Sidebar)
                         // Vì currentUser giờ đã là Seller, cái code instanceof Seller của bạn sẽ chạy!
-                        createSidebar();
+                        UserDashboardScreen updateScreen=new UserDashboardScreen(connection,primaryStage,upgradedUser);
 
-                        // 5. Load lại chính diện mạo Hồ sơ
-                        triggerLoadProfile();
+                        updateScreen.start(primaryStage);
                     });
                     break;
                 case "SUCCESS_GET_ITEMS":
