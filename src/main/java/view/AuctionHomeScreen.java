@@ -54,51 +54,55 @@ public class AuctionHomeScreen extends Application implements MessageListener {
 
     @Override
     public void start(Stage primaryStage) {
-        connection.setMessageListener(this);
-        connection.sendCommand("GetAuctionSession|ACTIVE");
-        // ROOT LAYOUT
+        // 1. Cài đặt kết nối và Lắng nghe dữ liệu
+        if (this.connection != null) {
+            connection.setMessageListener(this);
+            connection.sendCommand("GET_SESSIONS|ACTIVE");
+        } else {
+            System.err.println("[LỖI]: Connection bị mất khi mở màn hình Home!");
+        }
+
+        // 2. ROOT LAYOUT
         BorderPane root = new BorderPane();
         root.setStyle("-fx-background-color: #f8f9fa;");
-        listContainer = new FlowPane();
-        listContainer.setHgap(15); // Khoảng cách ngang giữa các card
-        listContainer.setVgap(15); // Khoảng cách dọc giữa các card
-        listContainer.setStyle("-fx-padding: 20;");
-        // Bọc listContainer vào ScrollPane để cuộn được khi có nhiều sản phẩm
-        ScrollPane scrollPane = new ScrollPane(listContainer);
-        scrollPane.setFitToWidth(true);
-        scrollPane.setStyle("-fx-background-color: transparent; -fx-background-insets: 0;");
-        root.setCenter(scrollPane);
+
         // [HEADER] - Hiển thị Tên user, Số dư tài khoản và Thời gian hệ thống
         HBox header = createHeader();
         root.setTop(header);
+
+        // 3. MAIN CONTENT (CENTER)
+        // Tạo vùng chứa động cho các Card phòng đấu giá (Lưu vào biến toàn cục)
+        listContainer = new FlowPane();
+        listContainer.setHgap(15);
+        listContainer.setVgap(15);
+        listContainer.setStyle("-fx-padding: 0;");
+
+        // Tạo vùng chứa chính của màn hình (Chứa Tiêu đề + Vùng listContainer)
         VBox mainContainer = new VBox(20);
         mainContainer.setPadding(new Insets(25));
+
         Label lblTitle = new Label("Danh sách các phiên đấu giá tài sản");
         lblTitle.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
 
+        // Nhét listContainer nằm ngay dưới Tiêu đề
+        mainContainer.getChildren().addAll(lblTitle, listContainer);
 
-        // Lưới hiển thị danh sách các phiên (GridPane)
-        GridPane sessionGrid = new GridPane();
-        sessionGrid.setHgap(20);
-        sessionGrid.setVgap(20);
+        // Bọc toàn bộ vùng chứa chính vào ScrollPane để có thể cuộn được
+        ScrollPane scrollPane = new ScrollPane(mainContainer);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setStyle("-fx-background-color: transparent; -fx-background-insets: 0;");
 
-        for (int i = 0; i < sessionList.size(); i++) {
-            VBox card = createSessionCard(sessionList.get(i));
-            sessionGrid.add(card, i % 3, i / 3); // Tự động xuống dòng sau mỗi 3 thẻ
-        }
-
-        mainContainer.getChildren().addAll(lblTitle, sessionGrid);
-        scrollPane.setContent(mainContainer);
+        // Set vào chính giữa màn hình
         root.setCenter(scrollPane);
 
-        // [BOTTOM] - Taskbar (Thanh điều hướng) theo yêu cầu
+        // 4. [BOTTOM] - Taskbar (Thanh điều hướng) theo yêu cầu
         HBox taskbar = createTaskbar();
+
         Button btnAddProduct = new Button("➕ Thêm sản phẩm");
         btnAddProduct.setStyle("-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;");
 
         Button btnBackToLogin = new Button("← Quay lại đăng nhập");
         btnBackToLogin.setStyle("-fx-background-color: transparent; -fx-text-fill: #7f8c8d; -fx-underline: true; -fx-cursor: hand;");
-
 
         btnAddProduct.setOnAction(event -> {
             try {
@@ -110,7 +114,6 @@ public class AuctionHomeScreen extends Application implements MessageListener {
             }
         });
 
-
         btnBackToLogin.setOnAction(event -> {
             try {
                 AuctionLogin loginView = new AuctionLogin();
@@ -120,19 +123,15 @@ public class AuctionHomeScreen extends Application implements MessageListener {
                 e.printStackTrace();
             }
         });
+
+        // Thêm nút back vào taskbar và gắn taskbar vào đáy màn hình
         taskbar.getChildren().add(btnBackToLogin);
         root.setBottom(taskbar);
 
-
-
-        root.setBottom(taskbar);
-
-        root.setBottom(taskbar);
-
-        // Kích hoạt luồng cập nhật thời gian thực
+        // 5. Kích hoạt luồng cập nhật thời gian thực
         startRealtimeClock();
 
-        // Khởi tạo Cửa sổ ứng dụng
+        // 6. Khởi tạo Cửa sổ ứng dụng
         Scene scene = new Scene(root, 1000, 650);
         primaryStage.setTitle("Trang Chủ Hệ Thống Đấu Giá - Màn Hình Chính");
         primaryStage.setScene(scene);

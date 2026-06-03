@@ -1,5 +1,6 @@
 package view;
 
+import function.SessionStatus;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -15,13 +16,16 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.*;
-import models.User;
+import models.*;
 import server.GsonUtil;
 import view.network.MessageListener;
 import view.network.ServerConnection;
 
+import java.time.LocalDateTime;
+
 
 public class AuctionLogin extends Application implements MessageListener {
+
     private ServerConnection connection;
     private Stage primaryStage;
     private Text actiontarget;
@@ -121,8 +125,9 @@ public class AuctionLogin extends Application implements MessageListener {
                         System.out.println("Đăng nhập thành công! Vai trò: " + user.getClass().getSimpleName());
 
                         // Khởi tạo Dashboard và truyền cái user vừa dịch được vào Constructor
-                        view.UserDashboardScreen dashboard = new view.UserDashboardScreen(connection, primaryStage, user);
+                        view.AuctionHomeScreen dashboard = new view.AuctionHomeScreen(connection, primaryStage,user);
                         dashboard.start(primaryStage);
+
 
                     } catch (Exception e) {
                         System.out.println("Lỗi mở gói JSON!");
