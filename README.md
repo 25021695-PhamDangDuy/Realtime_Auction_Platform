@@ -102,7 +102,7 @@ java Main
 - [x] Tự động gia hạn thêm 30 giây nếu có người trả giá vào những giây cuối cùng (Anti-sniping).
 ## 6.Link video chạy thử và báo cáo pdf
 - **Video chạy thử:** 
-- **Báo cáo:** 
+- **Báo cáo:*https://drive.google.com/file/d/1VL7vmHBqfLn9b_x7HHpjyrKSqYObuSLq/view?usp=drive_link* 
 
 
 
