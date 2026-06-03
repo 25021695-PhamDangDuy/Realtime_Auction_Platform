@@ -45,7 +45,7 @@ public class UserDAOImplTest {
 
     @Test
     @DisplayName("Should create Bidder when role is 'BIDDER'")
-    public void testCreateUserByRole_Bidder() {
+    public void testCreateUserByRole_Bidder() throws SQLException {
         // Act
         User result = testUserDAO.createUserByRole(testId, testUsername, testPassword, "BIDDER");
 
@@ -59,7 +59,7 @@ public class UserDAOImplTest {
 
     @Test
     @DisplayName("Should create Bidder when role is lowercase 'bidder'")
-    public void testCreateUserByRole_BidderLowercase() {
+    public void testCreateUserByRole_BidderLowercase() throws SQLException {
         // Act
         User result = testUserDAO.createUserByRole(testId, testUsername, testPassword, "bidder");
 
@@ -70,7 +70,7 @@ public class UserDAOImplTest {
 
     @Test
     @DisplayName("Should create Bidder when role has extra whitespace")
-    public void testCreateUserByRole_BidderWithWhitespace() {
+    public void testCreateUserByRole_BidderWithWhitespace() throws SQLException {
         // Act
         User result = testUserDAO.createUserByRole(testId, testUsername, testPassword, "  BIDDER  ");
 
@@ -83,7 +83,7 @@ public class UserDAOImplTest {
 
     @Test
     @DisplayName("Should create Seller when role is 'SELLER'")
-    public void testCreateUserByRole_Seller() {
+    public void testCreateUserByRole_Seller() throws SQLException {
         // Act
         User result = testUserDAO.createUserByRole(testId, testUsername, testPassword, "SELLER");
 
@@ -97,7 +97,7 @@ public class UserDAOImplTest {
 
     @Test
     @DisplayName("Should create Seller when role is lowercase 'seller'")
-    public void testCreateUserByRole_SellerLowercase() {
+    public void testCreateUserByRole_SellerLowercase() throws SQLException {
         // Act
         User result = testUserDAO.createUserByRole(testId, testUsername, testPassword, "seller");
 
@@ -108,7 +108,7 @@ public class UserDAOImplTest {
 
     @Test
     @DisplayName("Should create Seller when role has extra whitespace")
-    public void testCreateUserByRole_SellerWithWhitespace() {
+    public void testCreateUserByRole_SellerWithWhitespace() throws SQLException {
         // Act
         User result = testUserDAO.createUserByRole(testId, testUsername, testPassword, "  SELLER  ");
 
@@ -121,7 +121,7 @@ public class UserDAOImplTest {
 
     @Test
     @DisplayName("Should create Admin when role is 'ADMIN'")
-    public void testCreateUserByRole_Admin() {
+    public void testCreateUserByRole_Admin() throws SQLException {
         // Act
         User result = testUserDAO.createUserByRole(testId, testUsername, testPassword, "ADMIN");
 
@@ -135,7 +135,7 @@ public class UserDAOImplTest {
 
     @Test
     @DisplayName("Should create Admin when role is lowercase 'admin'")
-    public void testCreateUserByRole_AdminLowercase() {
+    public void testCreateUserByRole_AdminLowercase() throws SQLException {
         // Act
         User result = testUserDAO.createUserByRole(testId, testUsername, testPassword, "admin");
 
@@ -146,7 +146,7 @@ public class UserDAOImplTest {
 
     @Test
     @DisplayName("Should create Admin when role has extra whitespace")
-    public void testCreateUserByRole_AdminWithWhitespace() {
+    public void testCreateUserByRole_AdminWithWhitespace() throws SQLException {
         // Act
         User result = testUserDAO.createUserByRole(testId, testUsername, testPassword, "  ADMIN  ");
 
@@ -159,7 +159,7 @@ public class UserDAOImplTest {
 
     @Test
     @DisplayName("Should return null when role is invalid")
-    public void testCreateUserByRole_InvalidRole() {
+    public void testCreateUserByRole_InvalidRole() throws SQLException {
         // Act
         User result = testUserDAO.createUserByRole(testId, testUsername, testPassword, "INVALID_ROLE");
 
@@ -169,7 +169,7 @@ public class UserDAOImplTest {
 
     @Test
     @DisplayName("Should return null when role is empty string")
-    public void testCreateUserByRole_EmptyRole() {
+    public void testCreateUserByRole_EmptyRole() throws SQLException {
         // Act
         User result = testUserDAO.createUserByRole(testId, testUsername, testPassword, "");
 

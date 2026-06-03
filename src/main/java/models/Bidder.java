@@ -29,9 +29,9 @@ public class Bidder extends User implements AuctionObserver {
         super(name,password);
 
     }
-    public Bidder(UUID id, String name, String pw){
+    public Bidder(UUID id, String name, String pw, Wallet wallet){
         super(id,name,pw);
-
+        this.wallet = wallet;
     }
 
     //Getter
@@ -75,6 +75,7 @@ public class Bidder extends User implements AuctionObserver {
         synchronized (itemListKeyLock){
             this.itemList.add(item);
         }
+
     }
     public void removeItem(Item item){
         //Kiểm tra xem item có null k

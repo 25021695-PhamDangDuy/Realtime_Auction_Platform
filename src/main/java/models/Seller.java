@@ -13,8 +13,8 @@ public class Seller extends Bidder implements AuctionObserver {
     public Seller(String Name,String password) {
         super(Name, password);
     }
-    public Seller(UUID ID, String name, String pw){
-        super(ID, name, pw);
+    public Seller(UUID ID, String name, String pw, Wallet wallet){
+        super(ID, name, pw, wallet);
     }
 
     @Override

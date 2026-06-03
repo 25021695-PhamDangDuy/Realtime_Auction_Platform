@@ -8,11 +8,13 @@ import database.items.VehicleDAO;
 import function.*;
 
 import models.*;
+import server.Role;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 //Class kiểm soát đăng nhập và tài khoản người dùng
 public class AccountController{
@@ -65,7 +67,6 @@ public class AccountController{
       bidderDAO.save(newBidder);
       walletManager.createWallet(newBidder.getID(),0);
       log.info("Tài khoản ID:" + newBidder.getID().toString() + " tạo thành công");
-
     }
 
     public User Login(String name, String pw) throws SQLException, IllegalArgumentException {
@@ -90,6 +91,37 @@ public class AccountController{
         User user = getUserDAO.getbyUsername(name);
         return user;
     }
+
+    public void updateUserLegal(User userNew) throws SQLException {
+        User u = getUserDAO.getbyUsername(userNew.getName());
+        //Kiểm tra mật khẩu mới:
+        if(!passwordValidator.valid(userNew.getPassword())){
+            throw new IllegalArgumentException("Mật khẩu không đủ mạnh");
+        }
+        //Kiểm tra tên mới
+        if(getUserDAO.isUsername(userNew.getName())){
+            throw new IllegalArgumentException("Tên đã tồn tại");
+        }
+        if(!userNameValidator.valid(userNew.getName())){
+            throw new IllegalArgumentException("Tên mới không đủ mạnh");
+        }
+        //Kiểm tra role
+        if(userNew.getRole().name().equals(u.getRole().name())){
+            getUserDAO.update(userNew);
+        }else if(userNew.getRole() == Role.SELLER){
+            getUserDAO.update(userNew);
+        }else {
+            throw new IllegalArgumentException("Không thể ép Seller lên Bidder");
+        }
+
+    }
+
+    public List<UUID> getSessionsByUserID(UUID ID) throws SQLException {
+        ObserverDAO observerDAO = new ObserverDAO();
+        return  observerDAO.getSessionsByObserverID(ID);
+    }
+
+
 
 
 }

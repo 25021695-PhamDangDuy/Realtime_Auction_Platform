@@ -1,6 +1,9 @@
 package database;
 
+import controller.brain.WalletManager;
 import models.Bidder;
+import models.Wallet;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,7 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class BidderDAOImpl extends UserDAOImpl<Bidder>{
-
+private WalletManager walletManager = WalletManager.getInstance();
 
     @Override
     public Bidder get(UUID ID) {
@@ -26,7 +29,7 @@ public class BidderDAOImpl extends UserDAOImpl<Bidder>{
                 // Kiểm tra role để đảm bảo đây thực sự là Bidder
                 String role = rs.getString("role");
                 if (!"BIDDER".equals(role)) {
-                    System.out.println("❌ Lỗi: ID này là " + role + ", không phải BIDDER!");
+                    System.out.println("Lỗi: ID này là " + role + ", không phải BIDDER!");
                     return null;
                 }
                 
@@ -34,7 +37,8 @@ public class BidderDAOImpl extends UserDAOImpl<Bidder>{
                 String name = rs.getString("Username");
                 String pw = rs.getString("Password");
 
-                bidder = new Bidder(id, name, pw);
+                Wallet wallet = walletManager.getWalletbyOwner(name);
+                bidder = new Bidder(id, name, pw,wallet);
             }
         }catch (SQLException e){
             System.out.println("Không tìm thấy Bidder: " + e.getMessage());
@@ -55,7 +59,8 @@ public class BidderDAOImpl extends UserDAOImpl<Bidder>{
                 String name = rs.getString("Username");
                 String pw = rs.getString("Password");
 
-                Bidder bidder = new Bidder(id, name, pw);
+                Wallet wallet = walletManager.getWalletbyOwner(name);
+                Bidder bidder = new Bidder(id, name, pw,wallet);
                 bidderList.add(bidder);
             }
         }catch (SQLException e){

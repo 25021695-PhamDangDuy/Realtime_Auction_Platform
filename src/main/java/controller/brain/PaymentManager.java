@@ -22,14 +22,12 @@ import java.util.concurrent.ConcurrentHashMap;
 Đây sẽ là lớp quản lí và gọi các hàm liên quan tài chính như Wallet, Transaction,v,v
  */
 public class PaymentManager {
-    private WalletManager walletManager;
     private static PaymentManager instance;
     //    private TransactionExcutor excutor;
     private ConcurrentHashMap<Class<? extends Transaction>, TransactionExcutor> strategies;
     private SystemLogger log = SystemLogger.getInstance();
 
     private PaymentManager() {
-        walletManager = WalletManager.getInstance();
         strategies = new ConcurrentHashMap<>();
         this.addStrategy();
     }
@@ -118,7 +116,7 @@ public class PaymentManager {
                         "Không tìm thấy strategy phù hợp: " + transaction.getClass().getSimpleName()
                 );
             }
-            excutor.excute(transaction, walletManager);
+            excutor.excute(transaction, WalletManager.getInstance());
 
         } catch (Exception e) {
             transaction.setTransactionStatus(TransactionStatus.FAILED);
@@ -131,8 +129,6 @@ public class PaymentManager {
             } else if (transaction instanceof WithdrawTransaction withdrawTransaction) {
                 WithdrawTransactionDAO withdrawTransactionDAO = new WithdrawTransactionDAO();
                 withdrawTransactionDAO.update(withdrawTransaction);
-
-                throw new IllegalArgumentException("Transaction execution failed: " + e.getMessage());
             }
         }
 

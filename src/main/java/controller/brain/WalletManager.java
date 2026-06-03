@@ -1,17 +1,26 @@
 package controller.brain;
 
+import controller.WithdrawTransactionExcutor;
 import database.WalletDAO;
 import function.SystemLogger;
+import models.DepositTransaction;
+import models.Transaction;
 import models.Wallet;
 import database.getUserDAO;
+import models.WithdrawTransaction;
+
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class WalletManager {
-    private WalletDAO walletDAO;
+    private final WalletDAO walletDAO;
     private static WalletManager instance;  //Singleton
-    private SystemLogger log = SystemLogger.getInstance();
-    private getUserDAO getUserDAO = new getUserDAO();
+    private final SystemLogger log = SystemLogger.getInstance();
+    private final getUserDAO getUserDAO = new getUserDAO();
+
+    private PaymentManager paymentManager = PaymentManager.getInstance();
 
     private WalletManager(){
         walletDAO = new WalletDAO();
@@ -56,8 +65,8 @@ public class WalletManager {
             throw new SQLException(e);
         }
         if(rs == null){
-            log.warning("ID: " + name.toString() + " ví chưa tồn tại");
-            throw new IllegalArgumentException("ví chưa tồn tại: " + name.toString());
+            log.warning("ID: " + name + " ví chưa tồn tại");
+            throw new IllegalArgumentException("ví chưa tồn tại: " + name);
         }
         return rs;
     }
@@ -74,7 +83,7 @@ public class WalletManager {
     public void createWallet(UUID ownerID, long amount) throws IllegalArgumentException, SQLException{
         UUID walletID = UUID.randomUUID();
         //Logic ownerID
-        if(!walletDAO.isHasOwnerID(ownerID)){
+        if(walletDAO.isHasOwnerID(ownerID)){
             throw new IllegalArgumentException("userID: " + ownerID.toString() + " đã có tồn tại ví tiền");
         }
         //Logic amount
@@ -90,6 +99,14 @@ public class WalletManager {
         Wallet wallet = getWalletHelper(walletID, ownerID);
         wallet.withdraw(amount);
         walletDAO.update(wallet);
+
+        HashMap<String,Object> map = new HashMap<>(Map.<String, Object>of(
+                "amount", amount,
+                "senderWalletID",walletID,
+                "senderID",ownerID
+        ));
+        Transaction transaction = paymentManager.createTransaction(WithdrawTransaction.class,map);
+        paymentManager.executeTransaction(transaction);
         log.info("Rút tiền ví:" + walletID + "|SUCCESS");
     }
 
@@ -98,6 +115,14 @@ public class WalletManager {
         Wallet wallet = getWalletHelper(walletID,ownerID);
         wallet.deposit(amount);
         walletDAO.update(wallet);
+
+        HashMap<String,Object> map = new HashMap<>(Map.<String, Object>of(
+                "amount", amount,
+                "senderWalletID",walletID,
+                "senderID",ownerID
+        ));
+        Transaction transaction = paymentManager.createTransaction(DepositTransaction.class,map);
+        paymentManager.executeTransaction(transaction);
         log.info("Nạp tiền ví:" + walletID + "|SUCCESS");
     }
 

@@ -57,7 +57,7 @@ public class SessionDAO implements DataAccessObject<AuctionSession> {
             psmt.setString(4, session.getStatus().name());
             psmt.setString(5, gson.toJson(session.getEndTime()));
             psmt.setString(6,session.getTopBid().toString());
-            psmt.setString(6, idString);
+            psmt.setString(7, idString);
 
             psmt.executeUpdate();
         } catch (SQLException e) {

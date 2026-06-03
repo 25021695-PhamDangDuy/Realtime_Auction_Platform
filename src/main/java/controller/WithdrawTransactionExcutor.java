@@ -12,18 +12,17 @@ import java.sql.SQLException;
 import java.util.UUID;
 
 public class WithdrawTransactionExcutor implements TransactionExcutor {
-    private TransactionDAO transactionDAO = new WithdrawTransactionDAO();
+    private final TransactionDAO<WithdrawTransaction> transactionDAO = new WithdrawTransactionDAO();
     @Override
     public void excute(Transaction transaction, WalletManager walletManager) throws SQLException,IllegalArgumentException,NullPointerException {
-        if(transaction instanceof WithdrawTransaction){
+        if(transaction instanceof WithdrawTransaction withdrawTransaction){
             UUID walletID = transaction.getSenderWalletID();
             UUID senderID = transaction.getSenderID();
             long amount = transaction.getAmount();
 
             transaction.setTransactionStatus(TransactionStatus.SUCCESS);
-            walletManager.withdrawWallet(walletID,senderID,amount);
 
-            transactionDAO.update(transaction);
+            transactionDAO.update(withdrawTransaction);
         }else{
             throw new IllegalArgumentException("Loại giao dịch không phù hợp");        }
     }

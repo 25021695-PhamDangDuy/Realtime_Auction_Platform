@@ -3,6 +3,7 @@ package models;
 import controller.AuctionObserver;
 import controller.BidHistory;
 import database.BidTicketDAO;
+import database.ObserverDAO;
 import function.ItemStatus;
 import function.SessionChecker;
 import function.SessionStatus;
@@ -29,7 +30,6 @@ public class AuctionSession {
     private LocalDateTime startTime;// Thời gian bắt đầu
     private LocalDateTime endTime;// thời gian kết thúc
     private SessionStatus status;// trạng thái phiên
-    private List<AuctionObserver> observers = new ArrayList<>(); //danh sách người theo dõi
 
     private SessionChecker sessionChecker = new SessionChecker();
     private BidTicketDAO bidTicketDAO = new BidTicketDAO();
@@ -58,20 +58,32 @@ public class AuctionSession {
         this.topBid = bidTicket;
     }
     //hàm đăng ký theo dõi/ hủy theo dõi phiên đấu giá
-    public void attach(AuctionObserver observer){
-        if (!observers.contains(observer)){
-            observers.add(observer);
-        }
+    public void attach(AuctionObserver observer) throws SQLException {
+        ObserverDAO observerDAO = new ObserverDAO();
+        observerDAO.addObserverToSession(observer.getID(),ID);
     }
-    public void detach(AuctionObserver observer){
-        observers.remove(observer);
+    public void detach(AuctionObserver observer) throws SQLException {
+        ObserverDAO observerDAO = new ObserverDAO();
+        observerDAO.removeObserverFromSession(observer.getID(),ID);
+
     }
+
+    public List<UUID> getObserver() throws SQLException {
+        ObserverDAO observerDAO = new ObserverDAO();
+        return observerDAO.getObserversBySessionID(ID);
+    }
+
+    public int getNumberObserver() throws SQLException {
+        ObserverDAO observerDAO = new ObserverDAO();
+        return observerDAO.getObserverCountBySessionID(ID);
+    }
+
     //gửi thông báo
-    public void notifyObservers(String message){
-        for (AuctionObserver observer : observers){
-            observer.update(message);
-        }
-    }
+//    public void notifyObservers(String message){
+//        for (AuctionObserver observer : observers){
+//            observer.update(message);
+//        }
+//    }
     public void broadcastToAll(String message){
         System.out.println("Broadcast to all server:" + message);
     }
@@ -116,7 +128,7 @@ public class AuctionSession {
 
     public synchronized void placeBid(Bidder bidder, long bidAmount) throws IllegalArgumentException{
         // 1. Kiểm tra thời gian & trạng thái
-        if ( sessionChecker.isAuctioning(this) & !status.equals(SessionStatus.RUNNING)) {
+        if ( sessionChecker.isAuctioning(this)) {
             throw new IllegalArgumentException(status.getDescription());
         }
         // 2. Chống gian lận: Người bán tự đẩy giá (Shill Bidding)
@@ -141,8 +153,7 @@ public class AuctionSession {
         topBid = newTicket;
 
         if(sessionChecker.isExtendTime(this,time)){
-            endTime.plusMinutes(10);
-            extendEndTime(endTime);
+            extendEndTime(endTime.plusMinutes(10));
         }
     }
 
