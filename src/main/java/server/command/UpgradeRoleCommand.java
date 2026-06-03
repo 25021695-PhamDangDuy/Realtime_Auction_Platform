@@ -2,6 +2,7 @@ package server.command;
 
 import controller.brain.AccountController;
 import database.UserDAO;
+import models.Seller;
 import models.User;
 import server.ClientSession;
 import server.GsonUtil;
@@ -32,11 +33,14 @@ public class UpgradeRoleCommand implements Command {
             session.setCurrentUser(upgradedUser);
             session.setRole(Role.SELLER);
 
-            // 4. Ép GSON nén ông Seller mới này lại, nhớ bọc bằng User.class để có nhãn "type":"Seller"
-            String userJson = GsonUtil.gson.toJson(upgradedUser, models.User.class);
+            // Lấy từ Database hoặc Session
+            Seller newSeller = new Seller(currentUser.getID(), currentUser.getName(),currentUser.getPassword());
 
+            newSeller.setWallet(currentUser.getWallet());
+
+            String json = GsonUtil.gson.toJson(newSeller, models.User.class);
             // 5. Gửi về cho Client
-            session.sendMessage("SUCCESS_UPGRADE|" + userJson);
+            session.sendMessage("SUCCESS_UPGRADE|" + json);
 
         } catch (Exception e) {
             session.sendMessage("ERROR|Lỗi khi nâng cấp: " + e.getMessage());
