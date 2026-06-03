@@ -59,12 +59,11 @@ public class AuctionSession {
     //hàm đăng ký theo dõi/ hủy theo dõi phiên đấu giá
     public void attach(AuctionObserver observer) throws SQLException {
         ObserverDAO observerDAO = new ObserverDAO();
-        observerDAO.addObserverToSession(observer.getID(),ID);
+        observerDAO.addObserverToSession((observer.getID()),ID);
     }
-    public void detach(AuctionObserver observer) throws SQLException {
+    public void detach(AuctionSession observer) throws SQLException {
         ObserverDAO observerDAO = new ObserverDAO();
         observerDAO.removeObserverFromSession(observer.getID(),ID);
-
     }
 
     public List<AuctionObserver> getObserver() throws SQLException {

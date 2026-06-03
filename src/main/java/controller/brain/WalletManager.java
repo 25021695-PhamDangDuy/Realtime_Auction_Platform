@@ -58,6 +58,7 @@ public class WalletManager {
         }
         Wallet rs = null;
         try{
+
             UUID ID = getUserDAO.getbyUsername(name).getID();
             rs = walletDAO.getByOwnerID(ID);
         } catch (SQLException e) {

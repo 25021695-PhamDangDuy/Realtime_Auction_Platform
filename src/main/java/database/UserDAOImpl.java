@@ -78,13 +78,12 @@ public abstract class UserDAOImpl<T extends User> implements UserDAO<T>{
 
     // Helper method: Tạo User object tương ứng dựa trên role
     public User createUserByRole(UUID id, String username, String password, String role) throws SQLException, IllegalArgumentException {
-        Wallet wallet = WalletManager.getInstance().getWalletbyOwner(username);;
         switch(role.toUpperCase().trim()) {  // ← Chuyển thành UPPERCASE
             case "BIDDER":
-                Bidder b = new Bidder(id, username, password,wallet);
+                Bidder b = new Bidder(id, username, password);
                 return b;
             case "SELLER":
-                return new Seller(id, username, password, wallet);
+                return new Seller(id, username, password);
             case "ADMIN":
                 return new Admin(id, username, password);
             default:

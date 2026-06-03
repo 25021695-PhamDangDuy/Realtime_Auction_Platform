@@ -1,6 +1,5 @@
 package controller.brain;
 
-import controller.AuctionController;
 import database.*;
 import database.items.ArtDAO;
 import database.items.ElectronicDAO;
@@ -39,7 +38,7 @@ public class AccountController{
 
     public static AccountController getInstance() {
         if(instance == null){
-            synchronized (AuctionController.class){
+            synchronized (AccountController.class){
                 if(instance == null ){
                     instance = new AccountController();
                     return  instance;
@@ -71,7 +70,6 @@ public class AccountController{
 
     public User Login(String name, String pw) throws SQLException, IllegalArgumentException {
         User user = getUserDAO.getbyUsername(name);
-
         if(user == null){
             throw new IllegalArgumentException("Tài khoản này chưa tồn tại");
         }
@@ -80,6 +78,8 @@ public class AccountController{
             throw new IllegalArgumentException("Mật khẩu không chính xác");
         }
 
+        Wallet wallet = walletManager.getWalletbyOwner(name);
+        user.setWallet(wallet);
         return user;
 
     }

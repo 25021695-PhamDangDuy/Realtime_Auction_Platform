@@ -1,6 +1,7 @@
 package database;
 
 import controller.AuctionObserver;
+import models.User;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,35 +10,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import database.DatabaseCreator;
 
-public class ObserverDAO implements DataAccessObject<AuctionObserver> {
-    private Connection connection;
 
+public class ObserverDAO{
+    private final Connection connection;
+    private final DatabaseCreator databaseCreator = DatabaseCreator.getInstance();
     public ObserverDAO() throws SQLException {
-        this.connection = DatabaseCreator.getInstance().getConnection();
+        this.connection = databaseCreator.getConnection();
     }
-
-    @Override
-    public void update(AuctionObserver auctionObserver) throws SQLException {
-        // Observer là interface, không cần update vào DB
-    }
-
-    @Override
-    public void save(AuctionObserver auctionObserver) throws SQLException {
-        // Observer là interface, cần lưu user_ID và session_ID vào observers_sessions table
-    }
-
-    @Override
-    public AuctionObserver get(UUID ID) throws SQLException {
-        return null;
-    }
-
-    @Override
-    public List<AuctionObserver> getAll() throws SQLException {
-        return List.of();
-    }
-
     /**
      * Lấy danh sách observer theo session ID
      * @param sessionID UUID của phiên đấu giá
@@ -52,8 +32,8 @@ public class ObserverDAO implements DataAccessObject<AuctionObserver> {
             ResultSet resultSet = statement.executeQuery();
 
             while (resultSet.next()) {
-                AuctionObserver a = (AuctionObserver) getUserDAO.get(UUID.fromString(resultSet.getString("user_ID")));
-                observers.add(a);
+                User a = getUserDAO.get(UUID.fromString(resultSet.getString("user_ID")));
+                observers.add((AuctionObserver) a);
             }
         }
 

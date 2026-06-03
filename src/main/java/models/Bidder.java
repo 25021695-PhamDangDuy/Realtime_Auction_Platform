@@ -29,9 +29,8 @@ public class Bidder extends User implements AuctionObserver {
         super(name,password);
 
     }
-    public Bidder(UUID id, String name, String pw, Wallet wallet){
+    public Bidder(UUID id, String name, String pw){
         super(id,name,pw);
-        this.wallet = wallet;
     }
 
     //Getter
@@ -50,13 +49,13 @@ public class Bidder extends User implements AuctionObserver {
     }
     public Role getRole(){return Role.BIDDER;}
 
-    @Override
+
     public void update(String message){
         System.out.println("Bidder " + getName() + " : " + message);
 
     }
     //Setter
-
+    public void addWallet(Wallet wallet){this.wallet = wallet;}
 
     public synchronized void addItem(Item item) throws NullPointerException,IllegalArgumentException{
         //Kiểm tra xem item có null k

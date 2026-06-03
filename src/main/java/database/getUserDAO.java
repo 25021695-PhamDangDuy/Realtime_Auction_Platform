@@ -40,7 +40,6 @@ public class getUserDAO extends UserDAOImpl<User> {
         }
         return null;
     }
-
     public User getbyUsername(String name) throws SQLException {
         String SQLquery = "SELECT ID, Username, Password, role FROM users WHERE Username = ?";
         try (Connection conn = databaseCreator.getConnection();
