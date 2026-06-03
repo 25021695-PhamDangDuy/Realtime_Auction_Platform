@@ -33,7 +33,6 @@ public class AuctionSession {
 
     private SessionChecker sessionChecker = new SessionChecker();
     private BidTicketDAO bidTicketDAO = new BidTicketDAO();
-
     //Tạo
     public AuctionSession(Item item,Seller seller,long startPrice,long minIncrement,LocalDateTime endTime,LocalDateTime startTime, SessionStatus status) {
         this.ID = UUID.randomUUID();
@@ -68,7 +67,7 @@ public class AuctionSession {
 
     }
 
-    public List<UUID> getObserver() throws SQLException {
+    public List<AuctionObserver> getObserver() throws SQLException {
         ObserverDAO observerDAO = new ObserverDAO();
         return observerDAO.getObserversBySessionID(ID);
     }
@@ -223,9 +222,9 @@ public class AuctionSession {
     }
     public BidTicket getTopbid(){return topBid;}
     // Gửi thông báo cho toàn bộ khán giả trong phòng
-    public void notifyBidObservers(String message) {
+    public void notifyBidObservers(String message) throws SQLException {
         // Lặp qua danh sách (List) những người đang theo dõi
-        for (AuctionObserver observer : this.) {
+        for (AuctionObserver observer : this.getObserver()) {
             // Gọi cái "tai" của từng người để nhét tin nhắn vào
             observer.update(message);
         }

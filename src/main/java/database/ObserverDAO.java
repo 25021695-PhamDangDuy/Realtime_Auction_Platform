@@ -12,7 +12,6 @@ import java.util.UUID;
 import database.DatabaseCreator;
 
 public class ObserverDAO implements DataAccessObject<AuctionObserver> {
-
     private Connection connection;
 
     public ObserverDAO() throws SQLException {
@@ -44,16 +43,17 @@ public class ObserverDAO implements DataAccessObject<AuctionObserver> {
      * @param sessionID UUID của phiên đấu giá
      * @return Danh sách user_ID những người theo dõi phiên
      */
-    public List<UUID> getObserversBySessionID(UUID sessionID) throws SQLException {
-        List<UUID> observers = new ArrayList<>();
+    public List<AuctionObserver> getObserversBySessionID(UUID sessionID) throws SQLException {
+        List<AuctionObserver> observers = new ArrayList<>();
         String sql = "SELECT user_ID FROM observers_sessions WHERE sessions_ID = ?";
-
+        getUserDAO getUserDAO = new getUserDAO();
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, sessionID.toString());
             ResultSet resultSet = statement.executeQuery();
 
             while (resultSet.next()) {
-                observers.add(UUID.fromString(resultSet.getString("user_ID")));
+                AuctionObserver a = (AuctionObserver) getUserDAO.get(UUID.fromString(resultSet.getString("user_ID")));
+                observers.add(a);
             }
         }
 
