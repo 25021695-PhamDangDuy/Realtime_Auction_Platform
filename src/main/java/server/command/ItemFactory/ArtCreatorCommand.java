@@ -24,7 +24,7 @@ public class ArtCreatorCommand implements ItemCreator {
             ArtItemController.saveItem(newArtItem);
 
             // Cần gửi tin nhắn báo thành công về cho Client
-            clientSession.sendMessage("SUCCESS|Đã tạo tác phẩm nghệ thuật thành công!");
+            clientSession.sendMessage("SUCCESS_CREATE|Đã tạo tác phẩm nghệ thuật thành công!");
 
         } catch (Exception e) {
              clientSession.sendMessage("ERROR|Dữ liệu tác phẩm nghệ thuật không hợp lệ!");

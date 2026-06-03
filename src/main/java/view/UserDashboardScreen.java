@@ -547,7 +547,10 @@ public class UserDashboardScreen extends Application implements MessageListener 
 
         javafx.scene.control.Button btnAddItem = new javafx.scene.control.Button("➕ Thêm vật phẩm");
         btnAddItem.setStyle("-fx-background-color: #2980b9; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;");
-        btnAddItem.setOnAction(e -> showAddProductForm());
+        btnAddItem.setOnAction(e -> {
+            System.out.println("Đang mở form tạo Item đa hình...");
+            showDynamicAddItemForm();
+        });
 
         headerBox.getChildren().addAll(lblTitle, cbStatusFilter, spacer, btnAddItem);
 
@@ -588,6 +591,128 @@ public class UserDashboardScreen extends Application implements MessageListener 
             connection.sendCommand("GET_MY_ITEMS|" + currentFilter);
         }
     }
+    // ==========================================================
+    // HÀM HIỂN THỊ FORM TẠO SẢN PHẨM (ĐA HÌNH - DYNAMIC UI)
+    // ==========================================================
+    private void showDynamicAddItemForm() {
+        centerContent.getChildren().clear();
+
+        javafx.scene.layout.VBox formBox = new javafx.scene.layout.VBox(15);
+        formBox.setPadding(new javafx.geometry.Insets(30));
+        formBox.setMaxWidth(500);
+
+        javafx.scene.control.Label lblTitle = new javafx.scene.control.Label("THÊM VẬT PHẨM MỚI");
+        lblTitle.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
+
+        // 1. CHỌN LOẠI SẢN PHẨM
+        javafx.scene.control.Label lblType = new javafx.scene.control.Label("Loại sản phẩm:");
+        javafx.scene.control.ComboBox<String> cbItemType = new javafx.scene.control.ComboBox<>();
+        cbItemType.getItems().addAll("Tác phẩm Nghệ thuật (ART)", "Đồ Điện tử (ELECTRONIC)", "Phương tiện (VEHICLE)");
+        cbItemType.setValue("Tác phẩm Nghệ thuật (ART)"); // Mặc định
+
+        // 2. CÁC THUỘC TÍNH CHUNG (Ai cũng phải có)
+        javafx.scene.control.TextField txtName = new javafx.scene.control.TextField();
+        txtName.setPromptText("Nhập tên vật phẩm...");
+
+        javafx.scene.control.TextField txtPrice = new javafx.scene.control.TextField();
+        txtPrice.setPromptText("Nhập giá khởi điểm (Ví dụ: 150000)");
+
+        // 3. KHU VỰC CHỨA CÁC THUỘC TÍNH RIÊNG (Sẽ thay đổi liên tục)
+        javafx.scene.layout.VBox dynamicFieldsBox = new javafx.scene.layout.VBox(10);
+
+        // Khai báo sẵn các ô nhập liệu riêng biệt
+        javafx.scene.control.TextField txtAuthor = new javafx.scene.control.TextField();
+        txtAuthor.setPromptText("Tên tác giả/Họa sĩ...");
+
+        javafx.scene.control.TextField txtMaterial = new javafx.scene.control.TextField();
+        txtMaterial.setPromptText("Chất liệu (Sơn dầu, gỗ,...)");
+
+        javafx.scene.control.TextField txtWarranty = new javafx.scene.control.TextField();
+        txtWarranty.setPromptText("Số tháng bảo hành (Ví dụ: 12)");
+
+        // Hàm cập nhật giao diện dựa trên lựa chọn
+        Runnable updateDynamicFields = () -> {
+            dynamicFieldsBox.getChildren().clear(); // Xóa sạch ô cũ
+            String selected = cbItemType.getValue();
+
+            if (selected.contains("ART")) {
+                dynamicFieldsBox.getChildren().addAll(
+                        new javafx.scene.control.Label("Tác giả:"), txtAuthor,
+                        new javafx.scene.control.Label("Chất liệu:"), txtMaterial
+                );
+            } else if (selected.contains("ELECTRONIC")) {
+                dynamicFieldsBox.getChildren().addAll(
+                        new javafx.scene.control.Label("Thời gian bảo hành (Tháng):"), txtWarranty
+                );
+            }
+            // VEHICLE không có thuộc tính riêng nên box sẽ rỗng
+        };
+
+        // Gắn sự kiện: Cứ đổi lựa chọn là form tự biến hình
+        cbItemType.setOnAction(e -> updateDynamicFields.run());
+
+        // Chạy lần đầu tiên để vẽ form ART mặc định
+        updateDynamicFields.run();
+
+        // 4. NÚT LƯU VÀ HỦY
+        javafx.scene.control.Button btnSave = new javafx.scene.control.Button("Tạo Vật Phẩm");
+        btnSave.setStyle("-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold;");
+
+        javafx.scene.control.Button btnCancel = new javafx.scene.control.Button("Hủy");
+        btnCancel.setOnAction(e -> initInventoryUI()); // Bấm Hủy thì quay lại bảng kho đồ
+
+        // SỰ KIỆN LƯU VÀ GỬI LỆNH LÊN SERVER
+        btnSave.setOnAction(e -> {
+            String name = txtName.getText().trim();
+            String price = txtPrice.getText().trim();
+            String selectedType = cbItemType.getValue();
+
+            if (name.isEmpty() || price.isEmpty()) {
+                System.out.println("Lỗi: Thiếu tên hoặc giá!");
+                return; // (Bạn nên thay bằng Alert báo lỗi trên giao diện)
+            }
+
+            // Xây dựng chuỗi lệnh đính kèm dấu |
+            StringBuilder commandBuilder = new StringBuilder("CREATE_ITEM|");
+
+            if (selectedType.contains("ART")) {
+                // CREATE_ITEM | ART | name | price | author | material
+                commandBuilder.append("ART|").append(name).append("|").append(price).append("|")
+                        .append(txtAuthor.getText().trim()).append("|")
+                        .append(txtMaterial.getText().trim());
+
+            } else if (selectedType.contains("ELECTRONIC")) {
+                // CREATE_ITEM | ELECTRONIC | name | price | monthOfWarranty
+                commandBuilder.append("ELECTRONIC|").append(name).append("|").append(price).append("|")
+                        .append(txtWarranty.getText().trim());
+
+            } else if (selectedType.contains("VEHICLE")) {
+                // CREATE_ITEM | VEHICLE | name | price
+                commandBuilder.append("VEHICLE|").append(name).append("|").append(price);
+            }
+
+            // Gửi qua mạng
+            if (connection != null) {
+                connection.sendCommand(commandBuilder.toString());
+                btnSave.setText("Đang xử lý...");
+                btnSave.setDisable(true);
+            }
+        });
+
+        javafx.scene.layout.HBox btnBox = new javafx.scene.layout.HBox(10, btnSave, btnCancel);
+
+        // Gom tất cả vào form chính
+        formBox.getChildren().addAll(
+                lblTitle,
+                lblType, cbItemType,
+                new javafx.scene.control.Label("Tên vật phẩm:"), txtName,
+                new javafx.scene.control.Label("Giá khởi điểm (VNĐ):"), txtPrice,
+                dynamicFieldsBox, // <-- Nhét cái hộp biến hình vào đây
+                btnBox
+        );
+
+        centerContent.getChildren().add(formBox);
+    }
 
     // ==========================================================
     // 5. TRẠM THU PHÁT: GHI ĐÈ HÀM TỪ MessageListener
@@ -601,6 +726,17 @@ public class UserDashboardScreen extends Application implements MessageListener 
         // TẤT CẢ TƯƠNG TÁC GIAO DIỆN PHẢI NẰM TRONG Platform.runLater
         Platform.runLater(() -> {
             switch (command) {
+                case "SUCCESS_CREATE":
+                    // Server báo tạo thành công, hoặc làm gì đó thành công
+                    String successMsg = parts[1];
+                    javafx.application.Platform.runLater(() -> {
+                        // Có thể dùng hàm Alert để hiện popup báo successMsg ở đây
+                        System.out.println("Server báo: " + successMsg);
+
+                        // Cập nhật lại giao diện (Ví dụ: Quay về form kho đồ để thấy món hàng mới tinh)
+                        initInventoryUI();
+                    });
+                    break;
                 case "SUCCESS_UPGRADE":
                     String newProfileJson = parts[1];
 
