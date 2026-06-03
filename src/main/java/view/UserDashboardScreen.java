@@ -393,7 +393,7 @@ public class UserDashboardScreen extends Application implements MessageListener 
         javafx.scene.control.TableColumn<models.Item, String> colName = new javafx.scene.control.TableColumn<>("Tên vật phẩm");
         colName.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("name"));
 
-        // 3. Cột Giá (Thay "currentPrice" bằng đúng tên biến lưu giá trong class Item của bạn)
+        // 3. Cột Giá (Thay "currentPrice" bằng đúng tên biến lưu giá trong class Item )
         javafx.scene.control.TableColumn<models.Item, Double> colPrice = new javafx.scene.control.TableColumn<>("Giá (VNĐ)");
         colPrice.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("currentPrice"));
 
@@ -406,6 +406,67 @@ public class UserDashboardScreen extends Application implements MessageListener 
 
         // Cài đặt cho bảng tự động giãn cột cho vừa khít chiều rộng
         table.setColumnResizePolicy(javafx.scene.control.TableView.CONSTRAINED_RESIZE_POLICY);
+        table.setRowFactory(tv -> {
+            javafx.scene.control.TableRow<models.Item> row = new javafx.scene.control.TableRow<>();
+            row.setOnMouseClicked(event -> {
+                // Nếu click 2 lần liên tiếp và dòng đó có chứa vật phẩm
+                if (event.getClickCount() == 2 && (!row.isEmpty())) {
+                    models.Item selectedItem = row.getItem();
+                    // Gọi hàm hiện cửa sổ chi tiết
+                    showItemDetailPopup(selectedItem);
+                }
+            });
+            return row;
+        });
+
+    }
+    // ==========================================================
+    // HÀM HIỂN THỊ HỘP THOẠI CHI TIẾT VẬT PHẨM
+    // ==========================================================
+    private void showItemDetailPopup(models.Item item) {
+        javafx.scene.control.Dialog<Void> dialog = new javafx.scene.control.Dialog<>();
+        dialog.setTitle("Chi Tiết Vật Phẩm");
+
+        // Tên vật phẩm in to ở trên cùng
+        dialog.setHeaderText("Tên sản phẩm: " + item.getName());
+
+        // Nút Đóng mặc định
+        dialog.getDialogPane().getButtonTypes().add(javafx.scene.control.ButtonType.CLOSE);
+
+        // Khung lưới xếp chữ cho ngay ngắn
+        javafx.scene.layout.GridPane grid = new javafx.scene.layout.GridPane();
+        grid.setHgap(15);
+        grid.setVgap(15);
+        grid.setPadding(new javafx.geometry.Insets(20, 40, 10, 10));
+
+        // Hàng 1: ID
+        grid.add(new javafx.scene.control.Label("Mã vật phẩm (ID):"), 0, 0);
+        javafx.scene.control.Label lblId = new javafx.scene.control.Label(item.getID() != null ? item.getID().toString() : "Chưa có ID");
+        lblId.setStyle("-fx-font-weight: bold;");
+        grid.add(lblId, 1, 0);
+
+        // Hàng 2: Giá
+        grid.add(new javafx.scene.control.Label("Giá hiện tại:"), 0, 1);
+        javafx.scene.control.Label lblPrice = new javafx.scene.control.Label(item.getPrice() + " VNĐ");
+        lblPrice.setStyle("-fx-text-fill: #c0392b; -fx-font-weight: bold; -fx-font-size: 14px;");
+        grid.add(lblPrice, 1, 1);
+
+        // Hàng 3: Mô tả (Dùng TextArea để nội dung dài tự xuống dòng)
+        grid.add(new javafx.scene.control.Label("Mô tả chi tiết:"), 0, 2);
+        String descText = item.getCondition() != null ? item.getCondition() : "Không có mô tả.";
+        javafx.scene.control.TextArea txtDesc = new javafx.scene.control.TextArea(descText);
+
+        txtDesc.setEditable(false); // Khóa không cho sửa
+        txtDesc.setWrapText(true);  // Ép tự xuống dòng
+        txtDesc.setPrefRowCount(4);
+        txtDesc.setPrefWidth(300);
+        txtDesc.setStyle("-fx-control-inner-background: #f4f4f4; -fx-background-color: transparent;");
+        grid.add(txtDesc, 1, 2);
+
+        dialog.getDialogPane().setContent(grid);
+
+        // Hiển thị hộp thoại và chờ người dùng bấm đóng
+        dialog.showAndWait();
     }
     private void showAddProductForm() {
         centerContent.getChildren().clear();
