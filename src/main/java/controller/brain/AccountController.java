@@ -92,28 +92,9 @@ public class AccountController{
         return user;
     }
 
-    public void updateUserLegal(User userNew) throws SQLException {
-        User u = getUserDAO.getbyUsername(userNew.getName());
-        //Kiểm tra mật khẩu mới:
-        if(!passwordValidator.valid(userNew.getPassword())){
-            throw new IllegalArgumentException("Mật khẩu không đủ mạnh");
-        }
-        //Kiểm tra tên mới
-        if(getUserDAO.isUsername(userNew.getName())){
-            throw new IllegalArgumentException("Tên đã tồn tại");
-        }
-        if(!userNameValidator.valid(userNew.getName())){
-            throw new IllegalArgumentException("Tên mới không đủ mạnh");
-        }
-        //Kiểm tra role
-        if(userNew.getRole().name().equals(u.getRole().name())){
-            getUserDAO.update(userNew);
-        }else if(userNew.getRole() == Role.SELLER){
-            getUserDAO.update(userNew);
-        }else {
-            throw new IllegalArgumentException("Không thể ép Seller lên Bidder");
-        }
-
+    public void upRole(User userNew){
+        Seller seller = new Seller(userNew.getID(),userNew.getName(),userNew.getPassword());
+        getUserDAO.update(seller);
     }
 
     public List<UUID> getSessionsByUserID(UUID ID) throws SQLException {

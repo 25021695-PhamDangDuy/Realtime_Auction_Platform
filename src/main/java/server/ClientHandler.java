@@ -25,6 +25,7 @@ public class ClientHandler implements Runnable {
         commandRegistry.put("REGISTER",new RegisterCommand());
         commandRegistry.put("LOGIN", new LoginCommand());
         commandRegistry.put("LOGOUT",new LogoutCommand());
+        commandRegistry.put("UPGRADE_SELLER",new UpgradeRoleCommand());
         //Item
         commandRegistry.put("CREAT_ITEM",new CreateItemCommand());
         commandRegistry.put("GET_MY_ITEMS",new GetListItemCommand());
