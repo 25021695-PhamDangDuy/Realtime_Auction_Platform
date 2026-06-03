@@ -10,6 +10,7 @@ public abstract class User {
     private Role role;
     private Wallet wallet;
 
+
     public User(String Name,String Password) {
         this.ID = UUID.randomUUID();
         this.Name = Name;

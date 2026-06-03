@@ -21,6 +21,9 @@ public class Main {
     public static void main(String[] args) throws SQLException {
         AuctionManager auctionManager = AuctionManager.getInstance();
 
-        AccountController.getInstance().Register("Linhhh","10921SsadD","10921SsadD");
+        AccountController accountController = AccountController.getInstance();
+
+        User u = accountController.getInfor("DUYPHAMm");
+        System.out.println(u instanceof Seller);
     }
 }
