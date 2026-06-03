@@ -61,7 +61,7 @@ public class AuctionSession {
         ObserverDAO observerDAO = new ObserverDAO();
         observerDAO.addObserverToSession((observer.getID()),ID);
     }
-    public void detach(AuctionSession observer) throws SQLException {
+    public void detach(AuctionObserver observer) throws SQLException {
         ObserverDAO observerDAO = new ObserverDAO();
         observerDAO.removeObserverFromSession(observer.getID(),ID);
     }

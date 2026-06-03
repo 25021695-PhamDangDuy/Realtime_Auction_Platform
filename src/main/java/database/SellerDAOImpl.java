@@ -31,7 +31,7 @@ public class SellerDAOImpl extends UserDAOImpl<Seller>{
                 String name = rs.getString("Username");
                 String pw = rs.getString("Password");
                 Wallet wallet = walletManager.getWalletbyOwner(name);
-                seller = new Seller(id,name,pw,wallet);
+                seller = new Seller(id,name,pw);
             }
         }catch (SQLException e){
             System.out.println("Khong tim thay user");
@@ -53,7 +53,7 @@ public class SellerDAOImpl extends UserDAOImpl<Seller>{
                 String name = rs.getString("Username");
                 String pw = rs.getString("Password");
                 Wallet wallet = walletManager.getWalletbyOwner(name);
-                Seller seller = new Seller(id,name,pw,wallet);
+                Seller seller = new Seller(id,name,pw);
                 userList.add(seller);
             }
         }catch (SQLException e){
