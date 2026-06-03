@@ -100,8 +100,8 @@ public class UserDashboardScreen extends Application implements MessageListener 
         javafx.scene.control.Button btnHome = createMenuButton(" 🏠 Về Trang Chủ");
         btnHome.setStyle("-fx-background-color: #c0392b; -fx-text-fill: white; -fx-font-weight: bold;");
         btnHome.setOnAction(e -> {
-            System.out.println("Quay về Sảnh...");
-            // Gọi logic chuyển về màn hình chính của bạn ở đây
+            AuctionHomeScreen homeScreen=new AuctionHomeScreen(connection,primaryStage,currentUser);
+            homeScreen.start(primaryStage);
         });
 
         javafx.scene.control.Button btnProfile = createMenuButton(" 👤 Hồ sơ cá nhân");
@@ -266,10 +266,8 @@ public class UserDashboardScreen extends Application implements MessageListener 
         Button btnWithdraw = new Button("Rút tiền");
         btnWithdraw.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold;");
 
-        Button btnHistory = new Button("Biến động");
-        btnHistory.setStyle("-fx-background-color: #9b59b6; -fx-text-fill: white; -fx-font-weight: bold;");
 
-        buttonBox.getChildren().addAll(btnDeposit, btnWithdraw, btnHistory);
+        buttonBox.getChildren().addAll(btnDeposit, btnWithdraw);
 
         // Hộp chứa form nhập liệu (ban đầu rỗng)
         actionFormBox = new VBox(10);
@@ -284,12 +282,6 @@ public class UserDashboardScreen extends Application implements MessageListener 
             showTransactionForm(actionFormBox, "Rút tiền", "WITHDRAW", "Hãy nhập số tiền cần rút:");
         });
 
-        btnHistory.setOnAction(e -> {
-            // Logic tạm để bạn bổ sung sau
-            actionFormBox.getChildren().clear();
-            actionFormBox.getChildren().add(new Label("Chức năng xem biến động ví đang được xây dựng..."));
-            // connection.sendCommand("GET_WALLET_HISTORY");
-        });
 
         // Đổ toàn bộ vào khung giữa
         centerContent.getChildren().addAll(title, lblWalletBalance, lblLockedBalance, buttonBox, actionFormBox);

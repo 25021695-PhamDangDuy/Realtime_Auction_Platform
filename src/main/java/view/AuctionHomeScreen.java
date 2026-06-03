@@ -9,6 +9,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import models.User;
 import view.network.MessageListener;
 import view.network.ServerConnection;
 
@@ -24,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 
 public class AuctionHomeScreen extends Application implements MessageListener {
-
+    private User user;
     private String username;
     private long userBalance ;
     private Label lblSystemTime;
@@ -39,7 +40,7 @@ public class AuctionHomeScreen extends Application implements MessageListener {
 
     public AuctionHomeScreen() {
     }
-    public AuctionHomeScreen(ServerConnection connection,Stage primaryStage) {
+    public AuctionHomeScreen(ServerConnection connection, Stage primaryStage, User user) {
         this.connection=connection;
         this.primaryStage = primaryStage;
     }
