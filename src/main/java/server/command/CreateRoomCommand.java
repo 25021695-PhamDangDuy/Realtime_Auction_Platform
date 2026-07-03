@@ -1,7 +1,7 @@
 package server.command;
 
-import controller.ItemService.ItemController;
-import controller.brain.AuctionManager;
+import service.ItemService.ItemController;
+import service.brain.AuctionManager;
 import server.ClientSession;
 import models.Seller;
 import models.Item;

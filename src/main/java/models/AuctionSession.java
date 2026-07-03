@@ -1,19 +1,16 @@
 package models;
 
-import controller.AuctionObserver;
-import controller.BidHistory;
+import service.AuctionObserver;
 import database.BidTicketDAO;
 import database.ObserverDAO;
 import function.ItemStatus;
 import function.SessionChecker;
 import function.SessionStatus;
-import database.items.getItemDao;
 
 import function.BidStatus;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 

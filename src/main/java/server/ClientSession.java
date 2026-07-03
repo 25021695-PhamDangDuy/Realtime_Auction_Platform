@@ -2,9 +2,8 @@ package server;
 
 import java.io.PrintWriter;
 
-import controller.AuctionObserver;
+import service.AuctionObserver;
 import models.User;
-import models.Wallet;
 
 import java.util.UUID;
 

@@ -1,7 +1,7 @@
 package server.command.ItemFactory;
 
 
-import controller.ItemService.ElectronicItemController;
+import service.ItemService.ElectronicItemController;
 import models.Item;
 import server.ClientSession;
 // import myWeb.controller.ElectronicController;

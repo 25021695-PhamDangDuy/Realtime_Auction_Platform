@@ -29,7 +29,7 @@ Realtime_Auction_Platform/
 ├── src/main/
 │   ├── java/                        # Mã nguồn gói Java chính
 │   │   ├── Application/             # Khởi tạo nền tảng cấu hình hệ thống
-│   │   ├── controller/              # Tầng điều khiển (Business Logic Layer)
+│   │   ├── service/              # Tầng điều khiển (Business Logic Layer)
 │   │   │   ├── brain/               # Quản lý cốt lõi (Account, Auction, Payment, Wallet)
 │   │   │   ├── ItemService/         # Nghiệp vụ xử lý các dịch vụ vật phẩm
 │   │   │   ├── AuctionObserver.java # Mẫu thiết kế Observer đồng bộ trạng thái

@@ -1,7 +1,6 @@
 package database;
 
-import controller.brain.WalletManager;
-import function.SessionStatus;
+import service.brain.WalletManager;
 import models.Seller;
 import models.Wallet;
 

@@ -1,7 +1,7 @@
 package function;
 
 
-import controller.brain.WalletManager;
+import service.brain.WalletManager;
 
 import models.Transaction;
 

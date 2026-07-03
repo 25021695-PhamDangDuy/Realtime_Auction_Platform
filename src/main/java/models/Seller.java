@@ -1,6 +1,6 @@
 package models;
 
-import controller.AuctionObserver;
+import service.AuctionObserver;
 import server.Role;
 
 import java.util.List;

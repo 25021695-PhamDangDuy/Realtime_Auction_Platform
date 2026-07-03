@@ -1,11 +1,10 @@
 package models;
 
 
-import controller.AuctionObserver;
+import service.AuctionObserver;
 import function.ItemStatus;
 import server.Role;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 

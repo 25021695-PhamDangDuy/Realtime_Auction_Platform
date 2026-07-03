@@ -1,6 +1,6 @@
 package database;
 
-import controller.brain.WalletManager;
+import service.brain.WalletManager;
 import models.Bidder;
 import models.Wallet;
 

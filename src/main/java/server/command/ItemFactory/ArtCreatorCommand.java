@@ -1,7 +1,7 @@
 package server.command.ItemFactory;
 
 
-import controller.ItemService.ArtItemController;
+import service.ItemService.ArtItemController;
 import models.Item;
 import server.ClientSession;
 

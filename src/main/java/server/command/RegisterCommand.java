@@ -1,6 +1,6 @@
 package server.command;
 
-import controller.brain.AccountController;
+import service.brain.AccountController;
 import server.ClientSession;
 import server.Role;
 

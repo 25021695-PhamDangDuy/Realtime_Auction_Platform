@@ -1,7 +1,6 @@
 package server.command;
 
-import controller.brain.AccountController;
-import database.UserDAO;
+import service.brain.AccountController;
 import models.Seller;
 import models.User;
 import server.ClientSession;
@@ -9,7 +8,6 @@ import server.GsonUtil;
 import server.Role;
 
 import java.util.Set;
-import java.util.UUID;
 
 public class UpgradeRoleCommand implements Command {
     public Set<Role> getAllowedRoles() {

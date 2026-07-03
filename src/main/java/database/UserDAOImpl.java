@@ -3,14 +3,11 @@ package database;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import controller.brain.WalletManager;
 import function.SystemLogger;
 import models.*;
-import server.Role;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 

@@ -2,7 +2,6 @@ package database;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import controller.BidHistory;
 import function.SessionStatus;
 
 import function.SystemLogger;

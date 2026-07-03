@@ -1,6 +1,6 @@
 package database;
 
-import controller.AuctionObserver;
+import service.AuctionObserver;
 import models.User;
 
 import java.sql.Connection;

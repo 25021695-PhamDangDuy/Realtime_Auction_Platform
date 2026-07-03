@@ -1,6 +1,6 @@
 package server.command;
 
-import controller.brain.WalletManager;
+import service.brain.WalletManager;
 import models.Wallet;
 import server.ClientSession;
 import server.Role;

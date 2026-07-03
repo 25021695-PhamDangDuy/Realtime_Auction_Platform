@@ -1,8 +1,8 @@
 package server;
 
-import controller.AuctionSessionUpcomingWatcher;
-import controller.AuctionSessionWatcher;
-import controller.brain.WalletManager;
+import service.AuctionSessionUpcomingWatcher;
+import service.AuctionSessionWatcher;
+import service.brain.WalletManager;
 
 import java.io.IOException;
 import java.net.ServerSocket;

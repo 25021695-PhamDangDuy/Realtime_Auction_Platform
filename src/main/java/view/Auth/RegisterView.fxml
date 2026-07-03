@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="420.0" style="-fx-background-color: #E05454;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.RegisterController">
+   <children>
+      <TextField fx:id="usernameTextField" layoutX="84.0" layoutY="118.0" prefHeight="26.0" prefWidth="252.0" promptText="your name" style="-fx-background-color: #F5F5F5;" />
+      <Label layoutX="114.0" layoutY="46.0" style="-fx-text-fill: #F5F5F5;" text="REGISTER ACCOUNT" textFill="#d4bebe">
+         <font>
+            <Font name="Montserrat Bold" size="18.0" />
+         </font>
+      </Label>
+      <Label layoutX="84.0" layoutY="99.0" prefHeight="18.0" prefWidth="57.0" style="-fx-text-fill: #F5F5F5;" text="Username" textFill="#ffe8e8">
+         <font>
+            <Font name="Arial Narrow Bold" size="13.0" />
+         </font>
+      </Label>
+      <Button fx:id="registerButton" layoutX="145.0" layoutY="318.0" mnemonicParsing="false" onAction="#handleRegisterButton" prefHeight="30.0" prefWidth="130.0" style="-fx-background-color: #443199;" text="Register" textFill="#695656" />
+      <Label layoutX="85.0" layoutY="169.0" prefHeight="18.0" prefWidth="72.0" style="-fx-text-fill: #F5F5F5;" text="Password" textFill="#ffe8e8">
+         <font>
+            <Font name="Arial Narrow Bold" size="13.0" />
+         </font>
+      </Label>
+      <Label layoutX="84.0" layoutY="243.0" prefHeight="18.0" prefWidth="118.0" style="-fx-text-fill: #F5F5F5;" text="Confirm Password" textFill="#ffe8e8">
+         <font>
+            <Font name="Arial Narrow Bold" size="13.0" />
+         </font>
+      </Label>
+      <PasswordField fx:id="passwordTextField" layoutX="84.0" layoutY="187.0" prefHeight="26.0" prefWidth="252.0" promptText="your password" style="-fx-background-color: #5F5F5F;" />
+      <PasswordField fx:id="confirmpasswordTextField" layoutX="84.0" layoutY="261.0" prefHeight="26.0" prefWidth="252.0" promptText="confirm your password" style="-fx-background-color: #5F5F5F;" />
+      <Label layoutX="143.0" layoutY="100.0" textFill="#b79f9f" />
+      <Label fx:id="usernameLabel" layoutX="146.0" layoutY="100.0" text="username is not enough length" />
+      <Label fx:id="passwordLabel" layoutX="183.0" layoutY="243.0" text="password is not match" />
+      <Label fx:id="registerLabel" layoutX="163.0" layoutY="299.0" text="registerLabel" />
+   </children>
+</AnchorPane>

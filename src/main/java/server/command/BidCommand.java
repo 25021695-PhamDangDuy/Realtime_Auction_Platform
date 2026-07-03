@@ -1,6 +1,6 @@
 package server.command;
 
-import controller.brain.AuctionManager;
+import service.brain.AuctionManager;
 import server.ClientSession;
 import models.Bidder;
 import models.AuctionSession;

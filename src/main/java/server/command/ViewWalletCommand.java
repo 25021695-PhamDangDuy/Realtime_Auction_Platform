@@ -1,13 +1,11 @@
 package server.command;
 
-import controller.brain.WalletManager;
-import models.Wallet;
+import service.brain.WalletManager;
 import server.ClientSession;
 import models.User;
 import server.Role;
 
 import java.util.Set;
-import java.util.UUID;
 
 public class ViewWalletCommand implements Command {
 

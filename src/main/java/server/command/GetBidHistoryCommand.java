@@ -1,9 +1,7 @@
 package server.command;
 
-import controller.BidHistory;
-import controller.brain.AuctionManager;
+import service.BidHistory;
 import server.ClientSession;
-import models.AuctionSession;
 import models.BidTicket;
 import server.GsonUtil;
 import server.Role;
