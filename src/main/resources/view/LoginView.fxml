@@ -6,10 +6,10 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="350.0" prefWidth="420.0" style="-fx-background-color: #E05454;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="CONTROLLER_NAME">
+<AnchorPane prefHeight="350.0" prefWidth="420.0" style="-fx-background-color: #E05454;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.LoginController">
    <children>
-      <TextField layoutX="89.0" layoutY="134.0" prefHeight="26.0" prefWidth="241.0" promptText="your username" style="-fx-background-color: #F5F5F5;" />
-      <TextField layoutX="89.0" layoutY="196.0" prefHeight="26.0" prefWidth="241.0" promptText="your password" style="-fx-background-color: #F5F5F5;" />
+      <TextField fx:id="usernameTextField" layoutX="89.0" layoutY="134.0" prefHeight="26.0" prefWidth="241.0" promptText="your username" style="-fx-background-color: #F5F5F5;" />
+      <TextField fx:id="passwordTextField" layoutX="89.0" layoutY="196.0" prefHeight="26.0" prefWidth="241.0" promptText="your password" style="-fx-background-color: #F5F5F5;" />
       <Label layoutX="89.0" layoutY="117.0" text="Username" textFill="#eae7e7">
          <font>
             <Font name="Arial Narrow Bold" size="13.0" />
@@ -20,7 +20,7 @@
             <Font name="Arial Narrow Bold" size="13.0" />
          </font>
       </Label>
-      <Button layoutX="153.0" layoutY="253.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="113.0" style="-fx-background-color: #443199;" text="Login" textFill="#fcfbfb">
+      <Button fx:id="loginButton" layoutX="153.0" layoutY="253.0" mnemonicParsing="false" onAction="#handleLoginButton" prefHeight="26.0" prefWidth="113.0" style="-fx-background-color: #443199;" text="Login" textFill="#fcfbfb">
          <font>
             <Font name="System Bold" size="13.0" />
          </font>

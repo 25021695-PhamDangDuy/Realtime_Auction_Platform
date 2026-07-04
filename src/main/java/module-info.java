@@ -8,13 +8,14 @@ module Realtime.Auction.Platform {
     requires org.mockito.junit.jupiter;
     requires javafx.fxml;
     opens view to javafx.fxml,com.google.gson; // Thay đổi theo package của bạn
-    exports view;
     exports database; // Cho phép các nơi khác gọi DatabaseCreator
     exports function;
 //    exports server;
     exports service;
     exports models;
-
+    exports Application to javafx.graphics;
+    opens controller to javafx.fxml;
+    opens Application to javafx.fxml;
     // THÊM: Mở package cho JUnit
     opens server to com.google.gson;
     opens function to org.junit.platform.commons, com.google.gson;
