@@ -1,5 +1,6 @@
 package server.command;
 
+import function.SystemLogger;
 import service.brain.AuctionManager;
 import models.AuctionSession;
 import server.ClientSession;
@@ -44,7 +45,7 @@ public class GetAuctionSessionCommand implements Command {
                     session.sendMessage("ERROR|Trạng thái phiên đấu giá không hợp lệ: " + status);
                     return;
             }
-
+            SystemLogger.getInstance().warning(sessionList.toString());
             // Nếu qua được ải trên mà list vẫn rỗng (đề phòng thêm)
             if (sessionList == null || sessionList.isEmpty()) {
                 session.sendMessage("SUCCESS_SESSIONS|EMPTY");

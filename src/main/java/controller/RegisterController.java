@@ -18,6 +18,7 @@ import java.net.URL;
 
 public class RegisterController implements MessageListener {
     private ServerConnection connection;
+    private Stage primaryStage;
 
 
     /*
@@ -43,6 +44,9 @@ public class RegisterController implements MessageListener {
     public void setConnection(ServerConnection conn){
         connection = conn;
         connection.setMessageListener(this);
+    }
+    public void setPrimaryStage(Stage stage){
+        primaryStage = stage;
     }
 
     //Hàm khởi tạo
@@ -134,6 +138,7 @@ public class RegisterController implements MessageListener {
 
         LoginController loginController = loader.getController();
         loginController.setConnection(connection);
+        loginController.setPrimaryStage(primaryStage);
 
         return new Scene(loginRoot);
     }

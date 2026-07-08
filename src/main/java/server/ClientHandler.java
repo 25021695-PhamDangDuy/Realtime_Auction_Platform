@@ -9,9 +9,7 @@ import java.net.Socket;
 
 import server.command.*;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class ClientHandler implements Runnable {
     private final Socket socket;
@@ -60,7 +58,16 @@ public class ClientHandler implements Runnable {
             while ((message = in.readLine()) != null) {
                 if (message.trim().isEmpty()) continue;
 
-                String[] parts = message.split("\\|");
+                String[] rawParts = message.split("\\|");
+                List<String> validPartsList = new ArrayList<>();
+
+                for (String part : rawParts) {
+                    String trimmedPart = part.trim();
+                    if (!trimmedPart.isEmpty()) {
+                        validPartsList.add(trimmedPart);
+                    }
+                }
+                String[] parts = validPartsList.toArray(new String[0]);
                 Command command = commandRegistry.get(parts[0].toUpperCase().trim());
 
                 if (command == null) {

@@ -38,12 +38,14 @@ public class App extends Application implements MessageListener {
             Parent root = loader.load();
             RegisterController registerController = loader.getController();
             registerController.setConnection(connection);
+            registerController.setPrimaryStage(primaryStage);
 
             Scene scene = new Scene(root);
 
             primaryStage.setTitle("Register");
             primaryStage.setScene(scene);
             primaryStage.initStyle(StageStyle.UNDECORATED);
+
 
 
             primaryStage.show();
