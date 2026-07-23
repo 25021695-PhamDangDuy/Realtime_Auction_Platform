@@ -96,30 +96,44 @@ public class AuctionManager {
             throw new NullPointerException("Null tham số");
         }
 
+        SystemLogger.getInstance().warning("PlaceBid in here 1");
+
         //Logic kiểm tra phiên có trong db chưa?
         //Thêm observer
-        ObserverDAO observerDAO = new ObserverDAO();
-        observerDAO.addObserverToSession(bidder.getID(),auctionSession.getID());
+//        ObserverDAO observerDAO = new ObserverDAO();
+//        observerDAO.addObserverToSession(bidder.getID(),auctionSession.getID());
+
+        SystemLogger.getInstance().warning("PlaceBid in here 2");
 
         //Cơ chế extend thời gian
         synchronized (AuctionManager.class) {
             if(auctionSession.getTopBid() == null) {
+                log.warning("==Null first");
+
                 auctionSession.placeBid(bidder, amount);
+
+                log.warning("inPlaceBid1 1");
                 sessionDAO.update(auctionSession);
+                log.warning("inPlaceBid1 2");
+
+                System.out.println(bidder.getID());
+                System.out.println(bidder.getWalletID());
                 walletManager.lockMoney(bidder.getWalletID(), bidder.getID(), amount);
 
+                SystemLogger.getInstance().warning("PlaceBid in here 3");
             }else {
                 auctionSession.placeBid(bidder,amount);
                 sessionDAO.update(auctionSession);
 
                 BidTicket second = BidHistory.getSecondBySessionID(auctionSession.getID());
-                Bidder secondBidder = second.getBidder();
-                UUID secondWallet = secondBidder.getWalletID();
+                UUID secondBidderID = second.getBidder();
+                UUID secondWallet = walletManager.getWalletbyOwner(secondBidderID).getID();
                 long money = second.getAmount();
 
-                walletManager.unlockMoney(secondWallet,secondBidder.getID(),money);
+                walletManager.unlockMoney(secondWallet,secondBidderID,money);
                 walletManager.lockMoney(bidder.getWalletID(), bidder.getID(), amount);
 
+                SystemLogger.getInstance().warning("PlaceBid in here 4");
 
             }
             log.info("Đặt giá thầu thành công: " + amount);

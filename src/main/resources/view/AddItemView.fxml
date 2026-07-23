@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="577.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="THÊM VẬT PHẨM" textAlignment="CENTER" wrappingWidth="601.3367309570312">
+         <font>
+            <Font size="30.0" />
+         </font>
+      </Text>
+      <HBox prefHeight="32.0" prefWidth="602.0">
+         <children>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Tên Vật Phẩm:" textAlignment="RIGHT" wrappingWidth="290.1367244720459">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Text>
+            <TextField prefHeight="26.0" prefWidth="202.0" />
+         </children>
+      </HBox>
+      <HBox layoutX="10.0" layoutY="50.0" prefHeight="32.0" prefWidth="602.0">
+         <children>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Giá Gốc:" textAlignment="RIGHT" wrappingWidth="290.1367244720459">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Text>
+            <TextField prefHeight="26.0" prefWidth="202.0" />
+         </children>
+      </HBox>
+      <HBox layoutX="10.0" layoutY="82.0" prefHeight="32.0" prefWidth="602.0">
+         <children>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Hiện Trạng:" textAlignment="RIGHT" wrappingWidth="290.1367244720459">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Text>
+            <TextField prefHeight="26.0" prefWidth="202.0" />
+         </children>
+      </HBox>
+      <HBox layoutX="10.0" layoutY="114.0" prefHeight="32.0" prefWidth="602.0">
+         <children>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Loại Vật Phẩm:" textAlignment="RIGHT" wrappingWidth="290.1367244720459">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Text>
+            <ChoiceBox prefWidth="150.0" />
+         </children>
+      </HBox>
+      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Notify" textAlignment="CENTER" wrappingWidth="600.5367183685303" />
+      <VBox prefHeight="300.0" prefWidth="600.0" />
+      <HBox prefHeight="100.0" prefWidth="200.0">
+         <children>
+            <AnchorPane prefHeight="99.0" prefWidth="309.0">
+               <children>
+                  <Button layoutX="108.0" layoutY="36.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="91.0" text="Xóa Toàn Bộ" />
+               </children>
+            </AnchorPane>
+            <AnchorPane prefHeight="99.0" prefWidth="295.0">
+               <children>
+                  <Button layoutX="101.0" layoutY="36.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="91.0" text="Thêm" />
+               </children>
+            </AnchorPane>
+         </children>
+      </HBox>
+   </children>
+</VBox>

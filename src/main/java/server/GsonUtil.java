@@ -12,7 +12,7 @@ public class GsonUtil {
     private static Gson createCustomGson() {
 
         // Cấu hình máy dán nhãn cho Item
-        RuntimeTypeAdapterFactory<Item> itemFactory = RuntimeTypeAdapterFactory.of(Item.class, "type")
+        RuntimeTypeAdapterFactory<Item> itemFactory = RuntimeTypeAdapterFactory.of(Item.class, "role")
                 .registerSubtype(Art.class, "ART")
                 .registerSubtype(Vehicle.class, "VEHICLE")
                 .registerSubtype(Electronics.class, "ELECTRONIC");

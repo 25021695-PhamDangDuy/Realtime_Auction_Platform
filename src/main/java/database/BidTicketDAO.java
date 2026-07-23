@@ -45,8 +45,8 @@ public class BidTicketDAO implements DataAccessObject<BidTicket> {
             PreparedStatement psmt = conn.prepareStatement(insertSQL);
 
             String idString = bidTicket.getID().toString();
-            String userIdString = bidTicket.getBidder().getID().toString();
-            String sessionIdString = bidTicket.getSession().getID().toString();
+            String userIdString = bidTicket.getBidder().toString();
+            String sessionIdString = bidTicket.getSession().toString();
 
             psmt.setString(1, idString);
             psmt.setString(2, userIdString);
@@ -210,14 +210,8 @@ public class BidTicketDAO implements DataAccessObject<BidTicket> {
         long amount = rs.getLong("amount");
         BidStatus status = BidStatus.valueOf(rs.getString("status"));
 
-        // Lấy User object
-        BidderDAOImpl bidderDAO = new BidderDAOImpl();
-        Bidder user = bidderDAO.get(userId);
-        // Lấy Session object
-        SessionDAO sessionDAO = new SessionDAO();
-        AuctionSession session = sessionDAO.get(sessionId);
 
-        return new BidTicket(bidTicketId,user,session,timestamp,amount,status);
+        return new BidTicket(bidTicketId,userId,sessionId,timestamp,amount,status);
     }
 
 }

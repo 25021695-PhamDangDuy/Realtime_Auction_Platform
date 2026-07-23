@@ -1,6 +1,153 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
-
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1040.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" />
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="646.0" prefWidth="970.0" style="-fx-background-color: #12111A;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.AuctionRoomController">
+   <children>
+      <HBox prefHeight="76.0" prefWidth="925.0">
+         <children>
+            <AnchorPane prefHeight="100.0" prefWidth="535.0">
+               <children>
+                  <Text fx:id="idSessionText" fill="WHITE" layoutY="60.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Phiên số:$00$" textAlignment="CENTER" wrappingWidth="539.4562835693359">
+                     <font>
+                        <Font size="32.0" />
+                     </font>
+                  </Text>
+               </children>
+            </AnchorPane>
+            <AnchorPane prefHeight="100.0" prefWidth="501.0">
+               <children>
+                  <Text fx:id="itemNameText" fill="WHITE" layoutX="-3.0" layoutY="61.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Tên Vật Phẩm" textAlignment="CENTER" wrappingWidth="433.05950927734375">
+                     <font>
+                        <Font size="32.0" />
+                     </font>
+                  </Text>
+               </children>
+            </AnchorPane>
+         </children>
+      </HBox>
+      <HBox prefHeight="335.0" prefWidth="970.0">
+         <children>
+            <ImageView fitHeight="337.0" fitWidth="539.0" pickOnBounds="true" preserveRatio="true" />
+            <VBox prefHeight="366.0" prefWidth="468.0">
+               <children>
+                  <HBox prefHeight="96.0" prefWidth="490.0">
+                     <children>
+                        <Text fill="WHITE" strokeType="INSIDE" strokeWidth="0.0" text="Người đăng bán:" textAlignment="CENTER" wrappingWidth="229.07007217407227">
+                           <font>
+                              <Font size="21.0" />
+                           </font>
+                           <HBox.margin>
+                              <Insets top="60.0" />
+                           </HBox.margin>
+                        </Text>
+                        <Text fx:id="sellernameText" fill="WHITE" strokeWidth="0.0" text="\$SELERNAME$" textAlignment="CENTER" wrappingWidth="198.6699619293213">
+                           <font>
+                              <Font size="21.0" />
+                           </font>
+                           <HBox.margin>
+                              <Insets top="60.0" />
+                           </HBox.margin>
+                        </Text>
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="47.0" prefWidth="490.0">
+                     <children>
+                        <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Thời gian đăng:" textAlignment="CENTER" wrappingWidth="231.20337295532227">
+                           <font>
+                              <Font size="21.0" />
+                           </font>
+                           <HBox.margin>
+                              <Insets top="10.0" />
+                           </HBox.margin>
+                        </Text>
+                        <Text fx:id="timeText" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="\$TIME$" textAlignment="CENTER" wrappingWidth="195.4700927734375">
+                           <font>
+                              <Font size="21.0" />
+                           </font>
+                           <HBox.margin>
+                              <Insets top="10.0" />
+                           </HBox.margin>
+                        </Text>
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="50.0" prefWidth="490.0">
+                     <children>
+                        <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Loại:" textAlignment="CENTER" wrappingWidth="237.60339736938477">
+                           <font>
+                              <Font size="20.0" />
+                           </font>
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin>
+                        </Text>
+                        <Text fx:id="itemTypeText" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" textAlignment="CENTER" wrappingWidth="191.20343589782715">
+                           <font>
+                              <Font size="20.0" />
+                           </font>
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin>
+                        </Text>
+                     </children>
+                  </HBox>
+                  <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Mô tả:" textAlignment="CENTER" wrappingWidth="429.6033821105957">
+                     <font>
+                        <Font size="21.0" />
+                     </font>
+                  </Text>
+                  <Label fx:id="conditionText" prefHeight="150.0" prefWidth="429.0" text="idoajhwiodhawodiahwdioawdhaiowdhawiodhawiodahiodhawiodahwoidhawd" textFill="WHITE" wrapText="true">
+                     <font>
+                        <Font size="24.0" />
+                     </font>
+                  </Label>
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+      <VBox prefHeight="180.0" prefWidth="973.0">
+         <children>
+            <Text fx:id="currencyPriceText" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Giá hiện tại:$00000$" textAlignment="CENTER" wrappingWidth="970.4033603668213">
+               <font>
+                  <Font size="22.0" />
+               </font>
+            </Text>
+            <Text fx:id="topUserText" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Người thắng hiện tại:$Username$" textAlignment="CENTER" wrappingWidth="969.3366508483887">
+               <font>
+                  <Font size="22.0" />
+               </font>
+            </Text>
+            <Text fx:id="miniumStepText" fill="WHITE" layoutX="10.0" layoutY="23.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Bước giá:$000$" textAlignment="CENTER" wrappingWidth="972.5366611480713">
+               <font>
+                  <Font size="22.0" />
+               </font>
+            </Text>
+            <TextField fx:id="inputTextField" prefHeight="30.0" prefWidth="998.0" promptText="Nhập giá" />
+            <Button fx:id="bidButton" alignment="CENTER" mnemonicParsing="false" onAction="#handleBidButton" prefHeight="38.0" prefWidth="971.0" text="Đặt giá" textAlignment="CENTER">
+               <font>
+                  <Font size="17.0" />
+               </font>
+            </Button>
+            <Text fx:id="notifyText" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="notified" textAlignment="CENTER" wrappingWidth="972.0034580230713">
+               <font>
+                  <Font size="17.0" />
+               </font>
+            </Text>
+         </children>
+      </VBox>
+      <Button fx:id="leaveButton" mnemonicParsing="false" onAction="#handleLeaveButton" prefHeight="26.0" prefWidth="1057.0" text="Rời phòng" textFill="RED">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Button>
+   </children>
+</VBox>

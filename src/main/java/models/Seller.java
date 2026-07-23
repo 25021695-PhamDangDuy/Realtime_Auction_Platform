@@ -15,6 +15,7 @@ public class Seller extends Bidder implements AuctionObserver {
     }
     public Seller(UUID ID, String name, String pw){
         super(ID, name, pw);
+        this.setRole(Role.SELLER);
     }
 
     @Override

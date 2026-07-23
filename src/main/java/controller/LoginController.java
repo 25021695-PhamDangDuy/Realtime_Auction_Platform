@@ -87,11 +87,9 @@ public class LoginController implements MessageListener {
                     loginLabel.setText("Đăng nhập thành công!");
 
                     User user = GsonUtil.gson.fromJson(parts[1], User.class);
-                    String balance = String.valueOf(user.getWallet().getBalance());
-                    nagivToDashboard(user.getName(),balance);
 
-                    connection.sendCommand("GET_SESSIONS|ACTIVE");
-                    connection.sendCommand("GET_SESSION|UPCOMING");
+                    nagivToDashboard(user);
+
 
                     break;
                 case "ERROR":
@@ -130,18 +128,15 @@ public class LoginController implements MessageListener {
         return e;
     }
 
-    private void nagivToDashboard(String name, String balance){
+    private void nagivToDashboard(User user){
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Dashboard.fxml"));
 
             Parent root = loader.load();
 
             DashboardController dashboardController = loader.getController();
-            dashboardController.setConnection(connection);
-            dashboardController.setPrimaryStage(primaryStage);
 
-            dashboardController.setUsernameText(name);
-            dashboardController.setBalanceText(balance,"VND");
+            dashboardController.setUpController(user,primaryStage,connection);
 
             Scene newScene = new Scene(root);
 

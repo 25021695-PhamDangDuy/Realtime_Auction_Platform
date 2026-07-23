@@ -58,7 +58,7 @@
                         </Text>
                      </children>
                   </AnchorPane>
-                  <AnchorPane prefHeight="200.0" prefWidth="200.0">
+                  <AnchorPane prefHeight="104.0" prefWidth="138.0">
                      <children>
                         <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1c1a27" height="33.0" layoutX="29.0" layoutY="28.0" stroke="#9ca3af" strokeType="INSIDE" width="124.0" />
                         <Text fill="#f3f4f6" layoutX="38.0" layoutY="50.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Số dư:">
@@ -69,36 +69,43 @@
                         <Text fx:id="balanceText" fill="#f3f4f6" layoutX="77.0" layoutY="50.0" strokeType="OUTSIDE" strokeWidth="0.0" text="000000000" wrappingWidth="76.33673095703125" />
                      </children>
                   </AnchorPane>
-                  <AnchorPane prefHeight="93.0" prefWidth="210.0">
+                  <AnchorPane prefHeight="104.0" prefWidth="175.0">
                      <children>
-                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1c1a27" height="33.0" layoutX="37.0" layoutY="27.0" stroke="#9ca3af" strokeType="INSIDE" width="124.0" />
-                        <Text fill="#f3f4f6" layoutX="40.0" layoutY="49.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Phiên tham gia:">
+                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1c1a27" height="33.0" layoutX="23.0" layoutY="27.0" stroke="#9ca3af" strokeType="INSIDE" width="124.0" />
+                        <Text fill="#f3f4f6" layoutX="31.0" layoutY="48.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Phiên tham gia:">
                            <font>
                               <Font name="Arial Bold" size="12.0" />
                            </font>
                         </Text>
-                        <Text fx:id="joinsText" fill="#f3f4f6" layoutX="133.0" layoutY="50.0" strokeType="OUTSIDE" strokeWidth="0.0" text="00" wrappingWidth="26.336669921875" />
+                        <Text fx:id="joinsText" fill="#f3f4f6" layoutX="121.0" layoutY="49.0" strokeType="OUTSIDE" strokeWidth="0.0" text="00" wrappingWidth="26.336669921875" />
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane prefHeight="104.0" prefWidth="111.0">
+                     <children>
+                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1c1a27" height="33.0" layoutX="9.0" layoutY="27.0" stroke="#9ca3af" strokeType="INSIDE" width="96.0" />
+                        <Text fx:id="userRoleText" fill="#f3f4f6" layoutX="42.0" layoutY="48.0" strokeType="OUTSIDE" strokeWidth="0.0" text="ROLE" />
                      </children>
                   </AnchorPane>
                </children>
             </HBox>
-            <GridPane fx:id="sessionsGridCard" hgap="3.0" prefHeight="566.0" prefWidth="970.0" style="-fx-background-color: #12111A;" vgap="3.0">
-              <columnConstraints>
-                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-              </columnConstraints>
-              <rowConstraints>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-              </rowConstraints>
-               <VBox.margin>
-                  <Insets top="50.0" />
-               </VBox.margin>
-               <opaqueInsets>
-                  <Insets />
-               </opaqueInsets>
-            </GridPane>
+            <AnchorPane fx:id="SessionsPane" prefHeight="676.0" prefWidth="970.0">
+               <children>
+                  <GridPane fx:id="sessionsGridCard" hgap="3.0" prefHeight="633.0" prefWidth="970.0" style="-fx-background-color: #12111A;" vgap="3.0">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                  </GridPane>
+               </children>
+            </AnchorPane>
          </children>
          <opaqueInsets>
             <Insets />

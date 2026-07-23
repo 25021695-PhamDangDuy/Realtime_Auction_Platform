@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1040.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="QUẢN LÍ TÀI CHÍNH" textAlignment="CENTER" wrappingWidth="1039.7367191314697">
+         <font>
+            <Font size="42.0" />
+         </font>
+      </Text>
+      <HBox prefHeight="35.0" prefWidth="1040.0">
+         <children>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Tên Tài Khoản:" textAlignment="RIGHT" wrappingWidth="512.8033695220947">
+               <font>
+                  <Font size="24.0" />
+               </font>
+            </Text>
+            <Text layoutX="10.0" layoutY="36.0" strokeType="OUTSIDE" strokeWidth="0.0" text="\$Username$" wrappingWidth="512.8033695220947">
+               <font>
+                  <Font size="24.0" />
+               </font>
+            </Text>
+         </children>
+      </HBox>
+      <HBox layoutX="10.0" layoutY="58.0" prefHeight="35.0" prefWidth="1040.0">
+         <children>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Tổng Số Dư:" textAlignment="RIGHT" wrappingWidth="512.8033695220947">
+               <font>
+                  <Font size="24.0" />
+               </font>
+            </Text>
+            <Text layoutX="10.0" layoutY="36.0" strokeType="OUTSIDE" strokeWidth="0.0" text="\$Balance + lockBalance$" wrappingWidth="512.8033695220947">
+               <font>
+                  <Font size="24.0" />
+               </font>
+            </Text>
+         </children>
+      </HBox>
+      <HBox layoutX="10.0" layoutY="93.0" prefHeight="35.0" prefWidth="1040.0">
+         <children>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Tổng Số Dư Tự Do:" textAlignment="RIGHT" wrappingWidth="512.8033695220947">
+               <font>
+                  <Font size="24.0" />
+               </font>
+            </Text>
+            <Text layoutX="10.0" layoutY="36.0" strokeType="OUTSIDE" strokeWidth="0.0" text="\$Balance$" wrappingWidth="512.8033695220947">
+               <font>
+                  <Font size="24.0" />
+               </font>
+            </Text>
+         </children>
+      </HBox>
+      <HBox layoutX="10.0" layoutY="128.0" prefHeight="35.0" prefWidth="1040.0">
+         <children>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Tổng Số Dư Bị Khóa:" textAlignment="RIGHT" wrappingWidth="512.8033695220947">
+               <font>
+                  <Font size="24.0" />
+               </font>
+            </Text>
+            <Text layoutX="10.0" layoutY="36.0" strokeType="OUTSIDE" strokeWidth="0.0" text="\$lockBalance$" wrappingWidth="512.8033695220947">
+               <font>
+                  <Font size="24.0" />
+               </font>
+            </Text>
+         </children>
+      </HBox>
+      <HBox prefHeight="234.0" prefWidth="1040.0">
+         <children>
+            <VBox prefHeight="234.0" prefWidth="545.0">
+               <children>
+                  <TextField promptText="Deposit Money" />
+                  <Button mnemonicParsing="false" prefHeight="26.0" prefWidth="520.0" text="Rút Tiền" textAlignment="CENTER" />
+               </children>
+            </VBox>
+            <VBox prefHeight="234.0" prefWidth="552.0">
+               <children>
+                  <TextField promptText="Withdraw Money" />
+                  <Button mnemonicParsing="false" prefHeight="26.0" prefWidth="526.0" text="Nạp Tiền" />
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+   </children>
+</VBox>

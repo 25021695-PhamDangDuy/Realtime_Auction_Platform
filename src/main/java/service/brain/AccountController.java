@@ -87,6 +87,14 @@ public class AccountController{
      */
     public User getInfor(String name) throws SQLException {
         User user = getUserDAO.getbyUsername(name);
+        Wallet wallet = walletManager.getWalletbyOwner(name);
+        user.setWallet(wallet);
+        return user;
+    }
+    public User getInfor(UUID userID) throws SQLException {
+        User user = getUserDAO.get(userID);
+        Wallet wallet = walletManager.getWalletbyOwner(userID);
+        user.setWallet(wallet);
         return user;
     }
 

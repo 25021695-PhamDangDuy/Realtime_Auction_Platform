@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.UUID;
 
 public class Bidder extends User implements AuctionObserver {
-    private transient Wallet wallet;
     private transient List<Item> itemList;
 
 
@@ -26,21 +25,21 @@ public class Bidder extends User implements AuctionObserver {
     //Constructor
     public Bidder(String name,String password){
         super(name,password);
-
     }
     public Bidder(UUID id, String name, String pw){
         super(id,name,pw);
+        this.setRole(Role.BIDDER);
     }
 
     //Getter
     public long getBalance() {
-        return wallet.getBalance();
+        return getWallet().getBalance();
     }
     public double getLockBalance(){
-        return  wallet.getBalanceLocked();
+        return  getWallet().getBalanceLocked();
     }
     public UUID getWalletID(){
-        return wallet.getID();
+        return getWallet().getID();
     }
     @Override
     public String getName() {
@@ -53,8 +52,6 @@ public class Bidder extends User implements AuctionObserver {
         System.out.println("Bidder " + getName() + " : " + message);
 
     }
-    //Setter
-    public void addWallet(Wallet wallet){this.wallet = wallet;}
 
     public synchronized void addItem(Item item) throws NullPointerException,IllegalArgumentException{
         //Kiểm tra xem item có null k

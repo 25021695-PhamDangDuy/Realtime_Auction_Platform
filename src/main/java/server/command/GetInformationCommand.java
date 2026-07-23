@@ -35,8 +35,8 @@ public class GetInformationCommand implements Command {
 
             } else {
                 // Trường hợp tự bấm vào avatar của chính mình
-                targetUser = session.getCurrentUser();
-
+                User preUser = session.getCurrentUser();
+                targetUser = AccountController.getInstance().getInfor(preUser.getID());
             }
 
             // Kiểm tra tồn tại
@@ -46,7 +46,7 @@ public class GetInformationCommand implements Command {
             }
             // ĐÓNG GÓI JSON ĐA HÌNH VỚI GSON
             // Gson sẽ tự động chèn cái nhãn "role":"BIDDER" hoặc "SELLER" vào chuỗi
-            String jsonProfile = GsonUtil.gson.toJson(targetUser);
+            String jsonProfile = GsonUtil.gson.toJson(targetUser, User.class);
 
             session.sendMessage("SUCCESS_INFORMATION|" + jsonProfile);
             System.out.println("[Command] Đã gửi thông tin User bằng GSON cho: " + session.getCurrentUser().getName());

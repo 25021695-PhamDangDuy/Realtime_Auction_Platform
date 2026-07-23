@@ -48,8 +48,7 @@ public class getUserDAO extends UserDAOImpl<User> {
             preparedStatement.setString(1, name);
 
             try (ResultSet rs = preparedStatement.executeQuery()) {
-                // .next() sẽ đẩy con trỏ vào dòng đầu tiên.
-                // Nếu có dữ liệu, nó trả về true. Nếu không tìm thấy username, nó trả về false.
+
                 if (rs.next()) {
                     // Đọc dữ liệu khi chắc chắn dòng này tồn tại
                     String ID = rs.getString("ID");

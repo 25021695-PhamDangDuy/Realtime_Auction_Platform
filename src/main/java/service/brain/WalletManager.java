@@ -70,6 +70,24 @@ public class WalletManager {
         }
         return rs;
     }
+    public Wallet getWalletbyOwner(UUID userID) throws SQLException, NullPointerException,IllegalArgumentException{
+        if ( userID == null ) {
+            throw new NullPointerException("owner là null");
+        }
+        Wallet rs = null;
+        try{
+            rs = walletDAO.getByOwnerID(userID);
+        } catch (SQLException e) {
+            log.crash("Lỗi SQL khi thực thi lấy thông tin ví theo ID user: " + userID, e);
+            throw new SQLException(e);
+        }
+        if(rs == null){
+            log.warning("ID: " + userID + " ví chưa tồn tại");
+            throw new IllegalArgumentException("ví chưa tồn tại: " + userID);
+        }
+        return rs;
+    }
+
 
     public long getBalancebyOwnerID(String name) throws SQLException,NullPointerException,IllegalArgumentException {
         Wallet wallet = getWalletbyOwner(name);

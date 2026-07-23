@@ -1,5 +1,7 @@
 package server.command;
 
+import function.SystemLogger;
+import models.BidTicket;
 import service.brain.AuctionManager;
 import server.ClientSession;
 import models.Bidder;
@@ -20,6 +22,7 @@ public class BidCommand implements Command {
     @Override
     public void execute(ClientSession session, String[] args) {
         try {
+            SystemLogger.getInstance().warning("Bid In here 1");
             UUID roomId = UUID.fromString(args[1]);
             long bidAmount = Long.parseLong(args[2]);
 
@@ -33,13 +36,14 @@ public class BidCommand implements Command {
                 session.sendMessage("ERROR|Phòng đấu giá không tồn tại.");
                 return;
             }
-
+            SystemLogger.getInstance().warning("Bid In here 2");
             // ========================================================
             // GỌI HÀM CỦA BẠN DUY (Nó sẽ lo hết vụ sinh BidTicket)
             // ========================================================
             // Nếu có lỗi (như giá quá thấp), hàm này sẽ ném ra IllegalArgumentException
-            targetRoom.placeBid(currentBidder, bidAmount);
+            AuctionManager.getInstance().placeBid(targetRoom,currentBidder,bidAmount);
 
+            SystemLogger.getInstance().warning("Bid In here 3");
             // ========================================================
             // NẾU CODE CHẠY XUỐNG ĐÂY NGHĨA LÀ ĐẶT GIÁ THÀNH CÔNG!
             // Chuẩn bị loa phường để hét lên (Broadcast)
@@ -47,23 +51,28 @@ public class BidCommand implements Command {
 
             // Dùng GSON đóng gói tờ Biên lai (BidTicket) mới nhất
             // topBid chính là cái tờ biên lai xịn nhất mà hàm placeBid vừa tạo ra
-            String jsonTopBid = GsonUtil.gson.toJson(targetRoom.getTopbid());
+            SystemLogger.getInstance().info(targetRoom.getTopBid().toString());
+            String jsonTopBid = GsonUtil.gson.toJson(targetRoom.getTopbid(), BidTicket.class);
+            SystemLogger.getInstance().info(jsonTopBid);
 
             String broadcastMessage = "NEW_BID_UPDATE|" + jsonTopBid;
-
+            SystemLogger.getInstance().warning("Đã gửi:" + broadcastMessage);
             // BẬT LOA!
             // Nó sẽ gửi luồng tin này cho TẤT CẢ những ai đã chạy lệnh JOIN_ROOM trước đó
             targetRoom.notifyBidObservers(broadcastMessage);
 
+            SystemLogger.getInstance().warning("notify SuccessFull");
+
             // Báo riêng cho ông A biết là ổng vừa đặt giá thành công
             session.sendMessage("SUCCESS_BID|Bạn đã đặt giá thành công!");
 
+            SystemLogger.getInstance().warning("notify for bidder is success");
         } catch (IllegalArgumentException e) {
             // Hứng những câu từ hàm placeBid (VD: "Giá thầu phải từ...")
             session.sendMessage("ERROR|" + e.getMessage());
 
         } catch (Exception e) {
-            session.sendMessage("ERROR|Lỗi hệ thống khi đặt giá.");
+            session.sendMessage("ERROR|Lỗi hệ thống khi đặt giá.|" + e.getMessage());
         }
     }
 }

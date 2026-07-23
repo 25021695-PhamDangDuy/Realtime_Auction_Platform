@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1040.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Thông Tin Cá Nhân" textAlignment="CENTER" wrappingWidth="1041.870059967041">
+         <font>
+            <Font size="36.0" />
+         </font>
+      </Text>
+      <AnchorPane prefHeight="219.0" prefWidth="1040.0">
+         <children>
+            <ImageView fitHeight="189.0" fitWidth="251.0" layoutX="394.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true" />
+         </children>
+      </AnchorPane>
+      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Tên Tài Khoản: $username$" textAlignment="CENTER" wrappingWidth="1041.8700675964355">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Text>
+      <Text layoutX="10.0" layoutY="380.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Số Phiên Tham Gia:$Sessions$" textAlignment="CENTER" wrappingWidth="1039.7367267608643">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Text>
+   </children>
+</VBox>

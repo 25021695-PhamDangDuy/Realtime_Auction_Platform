@@ -10,6 +10,7 @@ import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.*;
 import database.items.*;
+import server.GsonUtil;
 
 public class SessionDAO implements DataAccessObject<AuctionSession> {
     protected DatabaseCreator databaseCreator = DatabaseCreator.getInstance();
@@ -55,8 +56,11 @@ public class SessionDAO implements DataAccessObject<AuctionSession> {
             psmt.setLong(3, session.getCurrentPrice());
             psmt.setString(4, session.getStatus().name());
             psmt.setString(5, gson.toJson(session.getEndTime()));
-            psmt.setString(6,session.getTopBid().toString());
             psmt.setString(7, idString);
+//
+//            if(session.getTopBid() != null){
+//                psmt.setString(6, gson.toJson(session.getTopBid(),BidTicket.class));
+//            }
 
             psmt.executeUpdate();
         } catch (SQLException e) {
@@ -161,8 +165,8 @@ public class SessionDAO implements DataAccessObject<AuctionSession> {
         String querySQL = "SELECT * FROM sessions WHERE status = ?";
 
         // 🔍 DEBUG
-        System.out.println("DEBUG - Searching for status: [" + status + "]");
-        System.out.println("DEBUG - SessionStatus.RUNNING enum: " + SessionStatus.RUNNING);
+        SystemLogger.getInstance().warning("DEBUG - Searching for status: [" + status + "]");
+        SystemLogger.getInstance().warning("DEBUG - SessionStatus.RUNNING enum: " + SessionStatus.RUNNING);
 
         try (Connection conn = databaseCreator.getConnection()) {
             PreparedStatement stmt = conn.prepareStatement(querySQL);
@@ -171,14 +175,8 @@ public class SessionDAO implements DataAccessObject<AuctionSession> {
 
             // 🔍 Debug - kiểm tra xem có kết quả không
             if (!rs.next()) {
-                System.out.println("DEBUG - No results found!");
-                // Kiểm tra xem có bản ghi nào trong sessions không
-                Statement testStmt = conn.createStatement();
-                ResultSet testRs = testStmt.executeQuery("SELECT status FROM sessions LIMIT 5");
-                System.out.println("DEBUG - Actual statuses in DB:");
-                while (testRs.next()) {
-                    System.out.println("  - [" + testRs.getString("status") + "]");
-                }
+                SystemLogger.getInstance().warning("DEBUG - No results found!");
+
             } else {
                 // Nếu có kết quả, process bình thường
                 do {
@@ -192,16 +190,19 @@ public class SessionDAO implements DataAccessObject<AuctionSession> {
             throw new SQLException("Lưu thông tin phiên đấu giá đang hoạt động|FAILED|" + e.getMessage());
         }
 
-        System.out.println("DEBUG - Found " + sessions.size() + " active sessions");
+        SystemLogger.getInstance().warning("DEBUG - Found " + sessions.size() + " active sessions");
         return sessions;
     }
     public List<AuctionSession> getStartingSession() throws SQLException {
         String status = SessionStatus.UPCOMING.name();
         List<AuctionSession> sessions = new ArrayList<>();
+        // 🔍 DEBUG
+        SystemLogger.getInstance().warning("DEBUG - Searching for status: [" + status + "]");
+        SystemLogger.getInstance().warning("DEBUG - SessionStatus.UPCOMING enum: " + SessionStatus.UPCOMING);
+
         String querySQL = "SELECT * FROM sessions WHERE status = ?";
         try (Connection conn = databaseCreator.getConnection()) {
             PreparedStatement stmt = conn.prepareStatement(querySQL);
-
             stmt.setString(1,status);
             ResultSet rs = stmt.executeQuery();
 
@@ -214,6 +215,7 @@ public class SessionDAO implements DataAccessObject<AuctionSession> {
         } catch (SQLException e) {
             throw new SQLException("Lưu thông tin phiên đấu giá sắp mở|FAILED|" + e.getMessage());
         }
+        SystemLogger.getInstance().warning("DEBUG - Found " + sessions.size() + " upcoming sessions");
         return sessions;
     }
 
@@ -252,6 +254,7 @@ public class SessionDAO implements DataAccessObject<AuctionSession> {
         LocalDateTime startTime = gson.fromJson(rs.getString("startTime"), LocalDateTime.class);
         LocalDateTime endTime = gson.fromJson(rs.getString("endTime"), LocalDateTime.class);
         SessionStatus status = SessionStatus.valueOf(rs.getString("status"));
+//        BidTicket topTicket = gson.fromJson(rs.getString("topBidTicketID"),BidTicket.class);
 
 
         // Lấy Seller object

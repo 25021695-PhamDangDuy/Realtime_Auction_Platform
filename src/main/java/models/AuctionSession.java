@@ -1,13 +1,10 @@
 package models;
 
+import function.*;
 import service.AuctionObserver;
 import database.BidTicketDAO;
 import database.ObserverDAO;
-import function.ItemStatus;
-import function.SessionChecker;
-import function.SessionStatus;
-
-import function.BidStatus;
+import service.brain.AccountController;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -30,6 +27,7 @@ public class AuctionSession {
 
     private transient SessionChecker sessionChecker = new SessionChecker();
     private transient BidTicketDAO bidTicketDAO = new BidTicketDAO();
+    private transient AccountController accountController = AccountController.getInstance();
     //Tạo
     public AuctionSession(Item item,Seller seller,long startPrice,long minIncrement,LocalDateTime endTime,LocalDateTime startTime, SessionStatus status) {
         this.ID = UUID.randomUUID();
@@ -97,9 +95,9 @@ public class AuctionSession {
         return status;
     }
     public long getMinIncrement(){return minIncrement;}
-    public Bidder getTopBidder() {
+    public User getTopBidder() throws SQLException {
         if (topBid != null) {
-            Bidder top = topBid.getBidder();
+            User top = accountController.getInfor(topBid.getBidder());
             return top;
         }else{
             return null;
@@ -121,32 +119,43 @@ public class AuctionSession {
         this.status = status;
     }
 
-    public synchronized void placeBid(Bidder bidder, long bidAmount) throws IllegalArgumentException{
+    public synchronized void placeBid(Bidder bidder, long bidAmount) throws IllegalArgumentException, SQLException {
+
+        SystemLogger.getInstance().warning("AS method placebid in 1");
         // 1. Kiểm tra thời gian & trạng thái
         if (!sessionChecker.isAuctioning(this)) {
             throw new IllegalArgumentException(status.getDescription());
         }
+
+        SystemLogger.getInstance().warning("AS method placebid in 2");
         // 2. Chống gian lận: Người bán tự đẩy giá (Shill Bidding)
         if (bidder.getID().equals(seller.getID())) {
             throw new IllegalArgumentException("Người bán không thể tự đấu giá món đồ của mình!");
         }
-
+        SystemLogger.getInstance().warning("AS method placebid in 3");
         // 3. Tránh tự "đấu" chính mình
         if (this.getTopBidder() != null && bidder.getID().equals(this.getTopBidder().getID())) {
             throw new IllegalArgumentException("Bạn đang là người giữ giá cao nhất rồi!");
         }
+        SystemLogger.getInstance().warning("AS method placebid in 4");
         // 4. Kiểm tra số tiền: Phải lớn hơn hoặc bằng (Giá hiện tại + Bước giá)
         double requiredMinBid = (this.getTopBidder() == null) ? currentPrice : currentPrice + minIncrement;
         if (bidAmount < requiredMinBid) {
             throw new IllegalArgumentException("Giá thầu phải từ " + requiredMinBid + " trở lên!");
         }
+
+
+        SystemLogger.getInstance().warning("AS method placebid in 5");
         // 5. Nếu vượt qua mọi bài kiểm tra -> Cập nhật thành công!
         LocalDateTime time = LocalDateTime.now();
         this.currentPrice = bidAmount;
-        BidTicket newTicket = new BidTicket(bidder,this,time,bidAmount,BidStatus.VALID);
+
+        SystemLogger.getInstance().warning("AS method placebid in 6");
+        BidTicket newTicket = new BidTicket(bidder.getID(),this.ID,time,bidAmount,BidStatus.VALID);
         bidTicketDAO.save(newTicket);
         topBid = newTicket;
 
+        SystemLogger.getInstance().warning("AS method placebid in 7");
         if(sessionChecker.isExtendTime(this,time)){
             extendEndTime(endTime.plusMinutes(10));
         }
@@ -166,11 +175,11 @@ public class AuctionSession {
             endTime = newEndTime;
         }
     }
-    public void finishSession() throws IllegalArgumentException{
+    public void finishSession() throws IllegalArgumentException, SQLException {
         if(sessionChecker.isSessionTimeUp(this)){
             status = SessionStatus.FINISHED;
             item.setItemStatus(ItemStatus.SOLD);
-            Bidder winner = this.getTopBidder();
+            User winner = this.getTopBidder();
             Item reward = item;
 
             reward.setItemStatus(ItemStatus.SOLD);
@@ -216,7 +225,6 @@ public class AuctionSession {
     }
 
     }
-    public BidTicket getTopbid(){return topBid;}
     // Gửi thông báo cho toàn bộ khán giả trong phòng
     public void notifyBidObservers(String message) throws SQLException {
         // Lặp qua danh sách (List) những người đang theo dõi

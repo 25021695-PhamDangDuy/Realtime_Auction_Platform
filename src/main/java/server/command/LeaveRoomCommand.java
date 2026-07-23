@@ -1,5 +1,6 @@
 package server.command;
 
+import function.SystemLogger;
 import service.brain.AuctionManager;
 import server.ClientSession;
 import models.AuctionSession;
@@ -22,21 +23,25 @@ public class LeaveRoomCommand implements Command {
         try {
             UUID roomId = UUID.fromString(args[1]);
 
+            SystemLogger.getInstance().warning("LeaveCM process 1");
+
             // 1. Tìm phòng trong Database/Memory
             AuctionSession targetRoom = AuctionManager.getInstance().getSession(roomId);
 
+            SystemLogger.getInstance().warning("LeaveCM process 2");
             if (targetRoom != null) {
                 // 2. PHÉP THUẬT NẰM Ở ĐÂY: Cho ông khách này ngồi vào ghế quan sát của phòng!
-                // Vì ClientSession giờ đã implement AuctionObserver, ta có thể truyền nó vào hàm attach
+                // Vì ClientSession giờ đã implement AuctionObserver, ta có thể truyền nó vào hàm detach
                 targetRoom.detach(session);
 
-                session.sendMessage("SUCCESS_JOIN_ROOM|Bạn đã vào phòng thành công.");
-                System.out.println(session.getCurrentUser().getName() + " đã vào phòng " + roomId);
+                SystemLogger.getInstance().warning("LeaveCM process 3");
+                session.sendMessage("SUCCESS_LEAVE_ROOM|Bạn đã rời phòng thành công.");
+                System.out.println(session.getCurrentUser().getName() + " đã rời phòng " + roomId);
             } else {
                 session.sendMessage("ERROR|Phòng không tồn tại.");
             }
         } catch (Exception e) {
-            session.sendMessage("ERROR|Lỗi khi vào phòng.");
+            session.sendMessage("ERROR|Lỗi khi rời phòng|" + e.getMessage() + "|");
         }
     }
 }

@@ -8,6 +8,7 @@ import server.GsonUtil;
 import server.Role;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -29,12 +30,19 @@ public class GetAuctionSessionCommand implements Command {
 
         try {
             String status = args[1].toUpperCase();
-            List<AuctionSession> sessionList = null;
+            List<AuctionSession> sessionList = new ArrayList<>();
 
             // ========================================================
             // ĐỊNH TUYẾN THEO TRẠNG THÁI (Giống hệt lúc làm Item)
             // ========================================================
             switch (status) {
+                case "ALL":
+                    List<AuctionSession> sessionList1 = AuctionManager.getInstance().getSessionActive();
+                    List<AuctionSession> sessionList2 = AuctionManager.getInstance().getSessionUpcoming();
+
+                    sessionList.addAll(sessionList1);
+                    sessionList.addAll(sessionList2);
+                    break;
                 case "ACTIVE":
                     sessionList = AuctionManager.getInstance().getSessionActive();
                     break;
@@ -47,7 +55,7 @@ public class GetAuctionSessionCommand implements Command {
             }
             SystemLogger.getInstance().warning(sessionList.toString());
             // Nếu qua được ải trên mà list vẫn rỗng (đề phòng thêm)
-            if (sessionList == null || sessionList.isEmpty()) {
+            if (sessionList.isEmpty()) {
                 session.sendMessage("SUCCESS_SESSIONS|EMPTY");
                 return;
 

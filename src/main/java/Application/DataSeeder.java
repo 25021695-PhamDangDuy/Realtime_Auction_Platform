@@ -49,14 +49,14 @@ public class DataSeeder {
         createAndSaveAuctionSession(
                 item2, seller1, 700000L, 100000L,
                 LocalDateTime.now().minusMinutes(10),
-                LocalDateTime.now().plusMinutes(30),
+                LocalDateTime.now().plusMinutes(300),
                 SessionStatus.RUNNING
         );
 
         createAndSaveAuctionSession(
                 item3, seller2, 1000000L, 200000L,
                 LocalDateTime.now().minusMinutes(60),
-                LocalDateTime.now().minusMinutes(5),
+                LocalDateTime.now().minusMinutes(50),
                 SessionStatus.FINISHED
         );
 
@@ -82,7 +82,7 @@ public class DataSeeder {
         WalletDAO walletDAO = new WalletDAO();
         walletDAO.save(wallet);
 
-        seller.addWallet(wallet);
+        seller.setWallet(wallet);
         System.out.println("✓ Seller tạo: " + username + " (ID: " + sellerId.toString().substring(0, 8) + "...)");
         return seller;
     }
@@ -98,7 +98,7 @@ public class DataSeeder {
         WalletDAO walletDAO = new WalletDAO();
         walletDAO.save(wallet);
 
-        bidder.addWallet(wallet);
+        bidder.setWallet(wallet);
         System.out.println("✓ Bidder tạo: " + username + " (ID: " + bidderId.toString().substring(0, 8) + "...)");
         return bidder;
     }

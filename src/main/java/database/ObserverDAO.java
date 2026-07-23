@@ -46,7 +46,7 @@ public class ObserverDAO{
      * @param sessionID UUID của phiên đấu giá
      */
     public void addObserverToSession(UUID userID, UUID sessionID) throws SQLException {
-        String sql = "INSERT INTO observers_sessions (user_ID, sessions_ID) VALUES (?, ?)";
+        String sql = "INSERT OR IGNORE INTO observers_sessions (user_ID, sessions_ID) VALUES (?, ?)";
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, userID.toString());

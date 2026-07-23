@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS wallets(
 
 CREATE TABLE IF NOT EXISTS items(
                                     ID TEXT PRIMARY KEY ,
-                                    owner_ID TEXT NOT NULL UNIQUE ,
+                                    owner_ID TEXT NOT NULL ,
                                     Name TEXT NOT NULL ,
                                     Price REAL NOT NULL CHECK ( Price >= 0 ),
                                     Condition TEXT,

@@ -3,6 +3,7 @@ package models;
 import function.TransactionStatus;
 import function.TransactionType;
 
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -20,8 +21,8 @@ public class SettlementTransaction extends Transaction{
         return receiverID;
     }
 
-    public SettlementTransaction(AuctionSession session){
-        super(session.getCurrentPrice(),session.getTopBidder().getWalletID(),session.getTopBidder().getID(),LocalDateTime.now());
+    public SettlementTransaction(AuctionSession session) throws SQLException {
+        super(session.getCurrentPrice(),session.getTopBidder().getWallet().getID(),session.getTopBidder().getID(),LocalDateTime.now());
         this.session = session;
         this.receiverWalletID = session.getSeller().getWalletID();
         this.transactionType = TransactionType.AUCTION_SETTLEMENT;

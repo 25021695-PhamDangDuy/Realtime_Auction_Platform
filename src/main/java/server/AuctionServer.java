@@ -25,8 +25,8 @@ public class AuctionServer {
                 Socket clientSocket = serverSocket.accept();
                 ClientHandler handler = new ClientHandler(clientSocket);
                 ClientManager.addClient(handler);
-                threadPool.execute(auctionSessionUpcomingWatcher);
-                threadPool.execute(auctionSessionWatcher);
+//                threadPool.execute(auctionSessionUpcomingWatcher);
+//                threadPool.execute(auctionSessionWatcher);
                 threadPool.execute(handler);
 
             }
